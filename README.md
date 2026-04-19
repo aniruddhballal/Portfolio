@@ -4,7 +4,7 @@ Built with **Vite + React + TypeScript + Tailwind CSS + Framer Motion**.
 
 ## Stack
 - Vite · React 19 · TypeScript
-- Tailwind CSS v3
+- Tailwind CSS v4
 - Framer Motion (animations & parallax)
 - Lucide React (icons)
 - Google Fonts: Bebas Neue + DM Sans + DM Mono

@@ -1,40 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
 
-@layer base {
-  html { scroll-behavior: smooth; }
-  body {
-    background-color: #F5F2EC;
-    color: #0F0F0F;
-    font-family: 'DM Sans', sans-serif;
-    cursor: none;
-  }
-  * { box-sizing: border-box; }
-  ::selection { background: #E84B2E; color: #F5F2EC; }
+  --color-accent: #E84B2E;
+  --color-accent-light: #FF6B50;
+  --color-ink: #0F0F0F;
+  --color-paper: #F5F2EC;
+  --color-paper-dark: #EDE9E1;
+  --color-muted: #8A8680;
 }
 
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  cursor: none;
+}
+
+* { box-sizing: border-box; }
+
+::selection { background: var(--color-accent); color: var(--color-paper); }
+
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #F5F2EC; }
-::-webkit-scrollbar-thumb { background: #0F0F0F; border-radius: 2px; }
+::-webkit-scrollbar-track { background: var(--color-paper); }
+::-webkit-scrollbar-thumb { background: var(--color-ink); border-radius: 2px; }
 
 .cursor-dot {
   width: 8px; height: 8px;
-  background: #E84B2E; border-radius: 50%;
+  background: var(--color-accent); border-radius: 50%;
   position: fixed; pointer-events: none; z-index: 99999;
   transform: translate(-50%, -50%);
   transition: width 0.15s, height 0.15s;
 }
 .cursor-ring {
   width: 36px; height: 36px;
-  border: 1.5px solid rgba(232,75,46,0.45); border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-radius: 50%;
   position: fixed; pointer-events: none; z-index: 99998;
   transform: translate(-50%, -50%);
 }
 .cursor-dot.hovered { width: 14px; height: 14px; }
-.cursor-ring.hovered { width: 54px; height: 54px; border-color: #E84B2E; }
+.cursor-ring.hovered { width: 54px; height: 54px; border-color: var(--color-accent); }
 
 .grain-overlay {
   position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0.025;
