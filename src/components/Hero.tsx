@@ -87,7 +87,7 @@ export default function Hero() {
             <motion.div variants={item} className="flex items-center gap-3 mb-5">
               <span className="w-6 md:w-8 h-px bg-accent" />
               <span className="font-mono text-xs text-muted tracking-widest uppercase">
-                Full-Stack Developer — Bengaluru
+                Modeling & Systems Engineer — Bengaluru
               </span>
             </motion.div>
 
