@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import GitHubStatsBlock from './GitHubStatsBlock'
 
 const skills = [
   { label: 'Systems Thinking', value: 88 },
@@ -49,13 +50,13 @@ export default function About() {
 
               <div className="space-y-4 font-body text-sm text-muted leading-relaxed font-light">
                 <p>
-                    Modeling & systems engineer based in Bengaluru. I build systems grounded in real-world behavior — from physical simulations to scalable software.
+                  Modeling & systems engineer based in Bengaluru. I build systems grounded in real-world behavior — from physical simulations to scalable software.
                 </p>
                 <p>
-                    I focus on understanding how things actually work, then translating that into reliable, usable products — not just technically correct implementations.
+                  I focus on understanding how things actually work, then translating that into reliable, usable products — not just technically correct implementations.
                 </p>
                 <p>
-                    When I'm not building, I'm studying physics, exploring system design, or breaking down complex ideas to their fundamentals.
+                  When I'm not building, I'm studying physics, exploring system design, or breaking down complex ideas to their fundamentals.
                 </p>
               </div>
             </motion.div>
@@ -113,35 +114,22 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Location / stats block */}
+            {/* GitHub stats */}
             <motion.div
-              className="relative"
               style={{ y: imgY }}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="w-full h-40 md:h-56 bg-paper border border-ink/10 relative overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-display text-3xl md:text-5xl text-ink/10 tracking-widest">
-                    BENGALURU
-                  </span>
-                </div>
-                {/* Decorative corner */}
-                <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-accent" />
-                <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-accent" />
-                <div className="absolute bottom-3 left-6 md:bottom-4 md:left-8">
-                  <span className="font-mono text-xs text-muted/50">13.0342°N, 77.5808°E</span>
-                </div>
-              </div>
+              <GitHubStatsBlock />
 
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-0 border border-t-0 border-ink/10">
                 {[
                   { n: '15+', l: 'Systems built' },
-                  { n: '2+', l: 'Years of rapid iteration' },
-                  { n: '∞', l: 'Curiosity' },
+                  { n: '2+',  l: 'Years of rapid iteration' },
+                  { n: '∞',   l: 'Curiosity' },
                 ].map((s, i) => (
                   <div key={i} className={`p-4 md:p-5 ${i < 2 ? 'border-r border-ink/10' : ''}`}>
                     <p className="font-display text-2xl md:text-3xl text-ink tracking-wide">{s.n}</p>
