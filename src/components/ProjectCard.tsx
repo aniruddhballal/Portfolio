@@ -20,45 +20,45 @@ export default function ProjectCard({ project, index }: Props) {
       className="border-b border-ink/10 last:border-b-0"
     >
       <div
-        className="group flex items-start gap-6 py-8 px-0 cursor-pointer"
+        className="group flex items-start gap-3 md:gap-6 py-6 md:py-8 cursor-pointer"
         onClick={() => setExpanded(e => !e)}
         data-hover
       >
-        {/* Number */}
-        <span className="font-mono text-xs text-muted/50 pt-1 w-8 flex-shrink-0">
+        {/* Number — hidden on smallest screens */}
+        <span className="hidden sm:block font-mono text-xs text-muted/50 pt-1 w-8 flex-shrink-0">
           {String(index + 1).padStart(2, '0')}
         </span>
 
         {/* Color dot */}
         <div
-          className="w-3 h-3 rounded-full mt-1.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-150"
+          className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full mt-1.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-150"
           style={{ backgroundColor: project.color }}
         />
 
         {/* Main content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h3 className="font-display text-3xl text-ink tracking-wide group-hover:text-accent transition-colors duration-200">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="font-display text-2xl md:text-3xl text-ink tracking-wide group-hover:text-accent transition-colors duration-200 leading-tight">
                 {project.name}
               </h3>
-              <p className="font-body text-sm text-muted mt-1">{project.tagline}</p>
+              <p className="font-body text-xs md:text-sm text-muted mt-1">{project.tagline}</p>
             </div>
 
-            <div className="flex items-center gap-3 flex-shrink-0 pt-1">
-              <span className="font-mono text-xs text-muted/50">{project.year}</span>
+            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 pt-1">
+              <span className="hidden sm:block font-mono text-xs text-muted/50">{project.year}</span>
               <motion.div
                 animate={{ rotate: expanded ? 45 : 0 }}
                 transition={{ duration: 0.25 }}
-                className="w-8 h-8 border border-ink/15 flex items-center justify-center text-muted group-hover:border-accent group-hover:text-accent transition-colors"
+                className="w-7 h-7 md:w-8 md:h-8 border border-ink/15 flex items-center justify-center text-muted group-hover:border-accent group-hover:text-accent transition-colors"
               >
-                <ArrowUpRight size={14} />
+                <ArrowUpRight size={13} />
               </motion.div>
             </div>
           </div>
 
-          {/* Tags always visible */}
-          <div className="flex gap-2 flex-wrap mt-3">
+          {/* Tags */}
+          <div className="flex gap-1.5 md:gap-2 flex-wrap mt-2.5 md:mt-3">
             {project.tech.map(t => (
               <span key={t} className="font-mono text-xs px-2 py-0.5 bg-ink/5 text-ink/50">
                 {t}
@@ -81,13 +81,13 @@ export default function ProjectCard({ project, index }: Props) {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="pl-[3.25rem] pb-8 flex items-start justify-between gap-8">
+            <div className="pl-5 sm:pl-[3.25rem] pb-6 md:pb-8 flex items-start gap-4 md:gap-8">
               <div
-                className="w-1 self-stretch flex-shrink-0"
+                className="w-0.5 self-stretch flex-shrink-0"
                 style={{ backgroundColor: project.color }}
               />
-              <div className="flex-1">
-                <p className="font-body text-sm text-muted leading-relaxed max-w-2xl">
+              <div className="flex-1 min-w-0">
+                <p className="font-body text-sm text-muted leading-relaxed">
                   {project.description}
                 </p>
                 <motion.a

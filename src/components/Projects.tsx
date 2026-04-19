@@ -14,14 +14,14 @@ export default function Projects() {
   const filtered = active === 'All' ? projects : projects.filter(p => p.category === active)
 
   return (
-    <section ref={ref} id="work" className="bg-paper py-24 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-8">
+    <section ref={ref} id="work" className="bg-paper py-16 md:py-24 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-6 md:px-8">
 
-        {/* Section heading with parallax */}
-        <div className="mb-16 overflow-hidden">
-          <div className="flex items-end gap-6 mb-2">
+        {/* Section heading */}
+        <div className="mb-10 md:mb-16 overflow-hidden">
+          <div className="flex items-end gap-4 md:gap-6 mb-2">
             <motion.span
-              className="font-mono text-xs text-muted tracking-widest uppercase"
+              className="font-mono text-xs text-muted tracking-widest uppercase whitespace-nowrap"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -40,25 +40,26 @@ export default function Projects() {
 
           <motion.h2
             style={{ x: headingX }}
-            className="font-display text-[10vw] leading-none tracking-wide text-ink"
+            className="font-display text-[16vw] md:text-[10vw] leading-none tracking-wide text-ink"
           >
             PROJECTS<span className="text-accent">.</span>
           </motion.h2>
         </div>
 
-        {/* Filter pills */}
+        {/* Filter pills — horizontal scroll on mobile */}
         <motion.div
-          className="flex gap-2 flex-wrap mb-10"
+          className="flex gap-2 flex-nowrap overflow-x-auto pb-2 md:flex-wrap md:overflow-visible mb-8 md:mb-10 scrollbar-none"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {categories.map(c => (
             <button
               key={c}
               onClick={() => setActive(c)}
-              className={`font-mono text-xs px-3 py-1.5 border transition-all duration-200 ${
+              className={`font-mono text-xs px-3 py-1.5 border transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                 active === c
                   ? 'bg-ink text-paper border-ink'
                   : 'bg-transparent text-muted border-ink/15 hover:border-ink/40 hover:text-ink'

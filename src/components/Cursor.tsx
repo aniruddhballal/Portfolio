@@ -8,6 +8,11 @@ export default function Cursor() {
   const rafRef = useRef<number>(0)
 
   useEffect(() => {
+    // Don't render custom cursor on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) return
+
+    document.body.style.cursor = 'none'
+
     const onMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY }
       if (dotRef.current) {
@@ -37,6 +42,9 @@ export default function Cursor() {
       }
     }
 
+    if (dotRef.current) dotRef.current.style.display = 'block'
+    if (ringRef.current) ringRef.current.style.display = 'block'
+
     window.addEventListener('mousemove', onMove)
     window.addEventListener('mouseover', onOver)
     rafRef.current = requestAnimationFrame(animate)
@@ -45,13 +53,14 @@ export default function Cursor() {
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('mouseover', onOver)
       cancelAnimationFrame(rafRef.current)
+      document.body.style.cursor = ''
     }
   }, [])
 
   return (
     <>
-      <div ref={dotRef} className="cursor-dot" />
-      <div ref={ringRef} className="cursor-ring" />
+      <div ref={dotRef} className="cursor-dot" style={{ display: 'none' }} />
+      <div ref={ringRef} className="cursor-ring" style={{ display: 'none' }} />
     </>
   )
 }
