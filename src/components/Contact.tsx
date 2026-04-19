@@ -4,8 +4,8 @@ import { GitFork, Link, Mail, FileText, ArrowUpRight } from 'lucide-react'
 
 const links = [
   { icon: Mail, label: 'Email', value: 'aniruddhballaldeeksha@gmail.com', href: 'mailto:aniruddhballaldeeksha@gmail.com' },
-  { icon: GitFork, label: 'GitHub', value: 'https://github.com/aniruddhballal', href: 'https://github.com/aniruddhballal' },
-  { icon: Link, label: 'LinkedIn', value: 'https://www.linkedin.com/in/aniruddh-ballal-979797276/', href: 'https://www.linkedin.com/in/aniruddh-ballal-979797276/' },
+  { icon: GitFork, label: 'GitHub', value: 'aniruddhballal', href: 'https://github.com/aniruddhballal' },
+  { icon: Link, label: 'LinkedIn', value: 'aniruddh-ballal', href: 'https://www.linkedin.com/in/aniruddh-ballal-979797276/' },
   { icon: FileText, label: 'Resume', value: 'Download PDF', href: '/resume.pdf' },
 ]
 
