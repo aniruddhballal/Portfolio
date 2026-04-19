@@ -30,7 +30,7 @@ export default function Hero() {
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
       >
         <span className="font-display text-[22vw] text-ink/[0.04] whitespace-nowrap leading-none tracking-widest">
-          FULLSTACK
+          SYSTEMS
         </span>
       </motion.div>
 
