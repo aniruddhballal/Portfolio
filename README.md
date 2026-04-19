@@ -20,7 +20,7 @@ Built with **Vite + React + TypeScript + Tailwind CSS + Framer Motion**.
 - **`src/components/Footer.tsx`** — name
 
 ### Photo
-In `Hero.tsx`, replace the placeholder div inside `.photo-frame` with `<img src="/your-photo.jpg" ... />`.
+In `Hero.tsx`, replace the placeholder div inside `.photo-frame` with `<img src="/a-photo.jpg" ... />`.
 
 ### Accent color
 Change `#E84B2E` in `tailwind.config.js` (colors.accent) and `src/index.css` (cursor styles).
