@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 
-const words = ['ENGINEER', 'BUILDER', 'CREATOR', 'HACKER']
+const words = ['SCIENTIST', 'SYSTEMS THINKER', 'PROBLEM SOLVER', 'EXPLORER']
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null)
@@ -134,13 +134,13 @@ export default function Hero() {
             transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="relative">
-              {/* Photo placeholder frame */}
+              {/* Photo frame */}
               <div className="w-64 h-80 bg-paper-dark border border-ink/10 relative overflow-hidden">
-                {/* Placeholder until real photo */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-7xl text-ink/20 tracking-widest">AB</span>
-                  <span className="font-mono text-xs text-muted/50 mt-2">A photo here</span>
-                </div>
+                <img
+                  src="/aniruddh.jpg"
+                  alt="Aniruddh Ballal"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
                 {/* Corner accent */}
                 <div className="absolute top-0 right-0 w-12 h-12 bg-accent" />
                 <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-accent" />
