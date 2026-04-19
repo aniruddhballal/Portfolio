@@ -91,9 +91,7 @@ export default function Hero() {
               variants={item}
               className="font-body text-base text-muted leading-relaxed max-w-md mb-8 font-light"
             >
-              I build end-to-end products — from pixel-perfect interfaces to
-              scalable backends. I care about the whole stack, and about making
-              things people actually want to use.
+              I build systems grounded in real-world models — from simulating physical dynamics to designing financial and product systems. I focus on understanding how things actually work, then turning that into usable, scalable tools.
             </motion.p>
 
             <motion.div variants={item} className="flex items-center gap-4 flex-wrap">
