@@ -8,7 +8,10 @@ const categories = ['All', ...Array.from(new Set(projects.map(p => p.category)))
 export default function Projects() {
   const ref = useRef<HTMLElement>(null)
   const [active, setActive] = useState('All')
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 80%', 'start 20%']
+  })
   const headingX = useTransform(scrollYProgress, [0, 1], ['-3%', '3%'])
 
   const filtered = active === 'All' ? projects : projects.filter(p => p.category === active)
