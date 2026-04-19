@@ -2,18 +2,17 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 const skills = [
-  { label: 'Frontend', value: 90 },
-  { label: 'Backend / APIs', value: 85 },
-  { label: 'Databases', value: 78 },
-  { label: 'DevOps / Cloud', value: 65 },
-  { label: 'System Design', value: 72 },
+  { label: 'Systems Thinking', value: 88 },
+  { label: 'Real-World Systems Modeling', value: 75 },
+  { label: 'Full-Stack Engineering', value: 90 },
+  { label: 'Debugging & Problem Solving', value: 92 },
+  { label: 'Architecture & Design', value: 80 },
 ]
 
 const timeline = [
-  { year: '2026', event: 'Currently building & shipping' },
-  { year: '2024', event: 'Launched 4 production apps' },
-  { year: '2023', event: 'Went deep on backend & infra' },
-  { year: '2022', event: 'Started full-stack journey' },
+  { year: '2026', event: 'Moving toward simulation and real-world system modeling' },
+  { year: '2025', event: 'Rapidly built and deployed multiple real-world systems' },
+  { year: '2024', event: 'Started building — quickly went deep into full-stack engineering' },
 ]
 
 export default function About() {
@@ -43,26 +42,20 @@ export default function About() {
 
               <h2 className="font-display text-5xl md:text-6xl text-ink tracking-wide leading-none mb-7 md:mb-8">
                 CODE THAT<br />
-                <span className="text-accent">WORKS,</span><br />
+                <span className="text-accent">MODELS,</span><br />
                 NOT JUST<br />
                 RUNS<span className="text-accent">.</span>
               </h2>
 
               <div className="space-y-4 font-body text-sm text-muted leading-relaxed font-light">
                 <p>
-                  Full-stack developer based in Bengaluru. I focus on building
-                  products that are fast, reliable, and actually used — not just
-                  technically correct.
+                    Modeling & systems engineer based in Bengaluru. I build systems grounded in real-world behavior — from physical simulations to scalable software.
                 </p>
                 <p>
-                  I care about the whole stack, from database query performance
-                  to button hover states. The best software is invisible — it
-                  just works, and people trust it.
+                    I focus on understanding how things actually work, then translating that into reliable, usable products — not just technically correct implementations.
                 </p>
                 <p>
-                  When I'm not shipping, I'm reading about distributed systems,
-                  contributing to open source, or experimenting with new tools
-                  before they're mainstream.
+                    When I'm not building, I'm studying physics, exploring system design, or breaking down complex ideas to their fundamentals.
                 </p>
               </div>
             </motion.div>
@@ -139,16 +132,16 @@ export default function About() {
                 <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-accent" />
                 <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-accent" />
                 <div className="absolute bottom-3 left-6 md:bottom-4 md:left-8">
-                  <span className="font-mono text-xs text-muted/50">12.9716° N, 77.5946° E</span>
+                  <span className="font-mono text-xs text-muted/50">13.0342°N, 77.5808°E</span>
                 </div>
               </div>
 
               {/* Stats row */}
               <div className="grid grid-cols-3 gap-0 border border-t-0 border-ink/10">
                 {[
-                  { n: '10+', l: 'Projects shipped' },
-                  { n: '4+', l: 'Years building' },
-                  { n: '∞', l: 'Coffees consumed' },
+                  { n: '15+', l: 'Systems built' },
+                  { n: '2+', l: 'Years of rapid iteration' },
+                  { n: '∞', l: 'Curiosity' },
                 ].map((s, i) => (
                   <div key={i} className={`p-4 md:p-5 ${i < 2 ? 'border-r border-ink/10' : ''}`}>
                     <p className="font-display text-2xl md:text-3xl text-ink tracking-wide">{s.n}</p>
