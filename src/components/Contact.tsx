@@ -60,7 +60,7 @@ export default function Contact() {
               </p>
 
               <motion.a
-                href="mailto:you@email.com"
+                href="mailto:aniruddhballaldeeksha@gmail.com"
                 className="inline-flex items-center gap-2 mt-7 md:mt-8 bg-accent text-paper px-6 md:px-8 py-3 md:py-4 font-body text-sm font-medium hover:bg-accent-light transition-colors duration-300"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

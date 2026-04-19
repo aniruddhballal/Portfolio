@@ -46,7 +46,7 @@ export default function Navbar() {
               </motion.a>
             ))}
             <motion.a
-              href="mailto:you@email.com"
+              href="mailto:aniruddhballaldeeksha@gmail.com"
               className="font-mono text-xs px-4 py-2 border border-ink text-ink hover:bg-ink hover:text-paper transition-all duration-200"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -100,7 +100,7 @@ export default function Navbar() {
                 </motion.a>
               ))}
               <motion.a
-                href="mailto:you@email.com"
+                href="mailto:aniruddhballaldeeksha@gmail.com"
                 className="inline-block font-mono text-sm px-6 py-3 border border-ink text-ink mt-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
