@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ExternalLink, ArrowUpRight } from 'lucide-react'
+import { ExternalLink, ArrowUpRight, GitFork, LockKeyhole } from 'lucide-react'
 import type { Project } from '../data/projects'
 
 interface Props {
@@ -90,17 +90,51 @@ export default function ProjectCard({ project, index }: Props) {
                 <p className="font-body text-sm text-muted leading-relaxed">
                   {project.description}
                 </p>
-                <motion.a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 mt-4 font-mono text-xs text-ink border-b border-ink pb-0.5 hover:text-accent hover:border-accent transition-colors"
-                  whileHover={{ x: 3 }}
-                  onClick={e => e.stopPropagation()}
-                >
-                  <ExternalLink size={11} />
-                  Visit live site
-                </motion.a>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-3 mt-5 flex-wrap">
+                  {/* Live site */}
+                  {project.url ? (
+                    <motion.a
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 bg-ink text-paper hover:bg-accent transition-colors duration-200"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <ExternalLink size={11} />
+                      Live site
+                    </motion.a>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 border border-ink/10 text-muted/40 cursor-default select-none">
+                      <ExternalLink size={11} />
+                      Not deployed
+                    </span>
+                  )}
+
+                  {/* Repo */}
+                  {project.repo ? (
+                    <motion.a
+                      href={project.repo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 border border-ink/15 text-ink hover:border-ink hover:text-ink transition-colors duration-200"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <GitFork size={11} />
+                      Source
+                    </motion.a>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 border border-ink/10 text-muted/40 cursor-default select-none">
+                      <LockKeyhole size={11} />
+                      Private repo
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>
