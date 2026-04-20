@@ -139,7 +139,7 @@ export const projects: Project[] = [
       'A responsive public-facing website for Sankalpa For Change, a Karnataka-based NGO focused on children\'s emotional well-being, life skills coaching, and community outreach. Built with Next.js App Router, it presents the organisation\'s mission, five program areas, an image-rich field stories blog with 8 published posts at dynamic routes, and a funding/support history. Full SEO coverage: per-page metadata, Open Graph, Twitter cards, sitemap, robots, and a generated favicon. Deployed at sankalpaforchange.com.',
     tech: ['Next.js', 'TypeScript', 'React', 'Tailwind CSS', 'App Router'],
     category: 'Web App',
-    url: 'https://sankalpaforchange.vercel.app',
+    url: 'https://sankalpaforchange.com',
     year: '2025',
     color: '#5C4A1A',
   },
