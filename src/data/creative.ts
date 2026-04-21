@@ -129,7 +129,7 @@ that roared in storms — all of it, always water.
     id: 2,
     type: 'poem',
     title: 'Lullaby of the Other Realm',
-    date: '2024',
+    date: '25th October 2024',
     excerpt: 'Lying on my bed, listening to her sing; It is like sitting next to a campfire after trekking into a cold forest, late at night',
     body: `
 Lying on my bed, listening to her sing
@@ -174,7 +174,7 @@ To a place where sound is the only truth.
     id: 3,
     type: 'poem',
     title: 'The Runner’s Lament',
-    date: '2025',
+    date: '31st December 2024',
     excerpt: 'I have two choices, both asking me to fall off the edge; One whispers faithfully:',
     body: `
 I have two choices, both asking me to fall off the edge
@@ -228,7 +228,7 @@ And some stars refuse to let my body soar?
     id: 4,
     type: 'article',
     title: 'A Phonotosynthetic World',
-    date: '2026',
+    date: '20th April 2026',
     excerpt: 'A world where sound is the primary energy source for plants, instead of light. How would plants evolve to harness sound energy? What would the ecology of such a world be like?',
     body: `
 plants, over millions of years have evolved to make maximum and optimised utilisation of sunlight. the type of star that the planet revolves around, decides which wavelengths the plants absorb, and hence what are all the possible colours that all of the flowers, leaves and branches of plants in that planet end up taking. for example if our sun's wavelength did not peak at the green part of the spectrum - then most of the plants would have evolved naturally to be of different colours. plants are mostly green to avoid the sun's peak energy - they reflect those wavelengths off. this helps them maintain a steady, stable energy supply without damaging their internal mechanisms. an F type star (more massive and hotter than our sun) would peak in blue-UV part of the spectrum - so most of the plants would also appear white in such planetary systems. an M type star on the other hand would peak in the dark red or orange wavelengths - and hence plants there would be dark-almost black - enabling them to absorb any/all wavelengths of light energy.
@@ -244,14 +244,20 @@ but realistically speaking, sound carries far lesser energy than light and it al
   {
     id: 5,
     type: 'article',
-    title: 'Your Second Article Title',
-    date: '2024',
-    excerpt: 'A concise summary of this article. What is the central idea or argument it makes?',
-    body: `Second article body goes here.
-
-Paragraph two of the second article. This placeholder is just to show how the layout works — replace it entirely with your actual piece.
-
-Continue writing for as long as the article needs.`,
+    title: 'The Chinese Room Argument and the Nature of Consciousness',
+    date: '17th April 2026',
+    excerpt: '',
+    body: `
+The Chinese room argument was an idea proposed by Searle – a thought experiment that was in its essence trying to prove that no amount of computation/syntactic complexity/symbol advancement could ever add up to a conscious understanding of anything.
+The setup consists of a room, a person who does not know Chinese at all sitting inside that room. But this person has a rulebook, a very detailed guidebook which is written in a language which this person understands. It tells the person the specific Chinese characters/phrases/sentences that the person should be responding with, to specific inputs. The person is locked in that room, with the book – and messages in Chinese are slid under the door.
+The person’s duty would be to consider the Chinese parchments of paper as inputs and look up the rulebook, and to produce an output indistinguishable from that of a native speaker, thanks to the extensive detailing present in the rulebook. So, at the end of the day, the people outside the room would have exchanged several parchments of paper with this person – each with a message or a question in Chinese, and the person inside the locked room, with the help of the master rulebook, would be replying to all those messages or questions in Chinese, without actually ever understanding any of the symbols, what the words meant, or what any of the responses that they wrote back – ever meant.
+Taking a tangent from here – its like we all have developed our own rulebooks. All of us aren’t so different from the person in the locked room. We experience, imbibe and develop our own custom, internal guidebooks – that help translate what we can sense, to what we can process. It defines how we process what we sense. It is a reference manual that mostly contains “how to respond” to an extensive set of events – and these how to’s can be direct, indirect or chained to one another.
+This makes most of one’s life – a script. Most of our daily interactions and emotional expressions are vlookups and xlookups we do, consulting our personal manuals – deciding how to react – instinctively. And that’s what makes our responses feel natural. We have a syntax, and everyone has their own syntax – when relationships (any sort) between two individuals fail, the incompatibility can be seen as misalignment of these internal codebases/rulebooks. The degree of misalignment and alignment can vary, it’s a multidimensional space of vectors.
+Outside these “most interactions” are some few interactions that could happen outside the rulebook. A fraction of a second of eye-contact, a tiny expression through wrinkles on the face, or shift in body language – these could act as a direct individual-to-individual interaction. Bypassing the step where both individuals look through their own rulebook internally, to decide what flows as logical and sensible to them.
+These few moments don’t have the individuals locked in their own rooms, or standing behind doors. These are raw, biochemphysiological (bruh) and immediate. These moments or interactions don’t need any translation, because the meaning is felt intuitively even before the minds of the two individuals decide to add noise to the signals by trying to route and process it via the rulebook.
+True intimacy could be an act of putting this rulebook down – while we spend most of our time in the default social state, there exists this real backdoor – to simply step out of the room we have locked ourselves in – and simply “be” with the other person without the need of sliding parchments or translating events into feelings that only one of the two can make sense out of.
+Extending searle’s idea – while the individuals locked in their rooms don’t possess consciousness or actual understanding; the whole setup – consisting of the rooms, the messages, the rulebooks, the people – this whole setup does. Semantic meaning for the codebases arise when components are used together, made to implement a certain feature or idea, the individual codefiles themselves, on their own – with perfect syntax – might barely hold any semantic value.
+`,
   },
   {
     id: 6,
