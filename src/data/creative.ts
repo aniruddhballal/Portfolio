@@ -227,16 +227,19 @@ And some stars refuse to let my body soar?
   {
     id: 4,
     type: 'article',
-    title: 'Your Article Title Here',
-    date: '2025',
-    excerpt: 'One or two sentences summarising what this article is about. This is what draws the reader in on the card.',
-    body: `Your full article goes here. Replace this paragraph with your actual writing.
-
-This is the second paragraph. Articles can be as long as you need — the modal scrolls. You can structure your writing however you like: paragraphs separated by blank lines will render as distinct blocks.
-
-Third paragraph here. Keep going for as many paragraphs as the piece requires.
-
-You can add as many sections as you want. The reading experience inside the modal is clean and focused — just the text, your name, and the date.`,
+    title: 'A Phonotosynthetic World',
+    date: '2026',
+    excerpt: 'A world where sound is the primary energy source for plants, instead of light. How would plants evolve to harness sound energy? What would the ecology of such a world be like?',
+    body: `
+plants, over millions of years have evolved to make maximum and optimised utilisation of sunlight. the type of star that the planet revolves around, decides which wavelengths the plants absorb, and hence what are all the possible colours that all of the flowers, leaves and branches of plants in that planet end up taking. for example if our sun's wavelength did not peak at the green part of the spectrum - then most of the plants would have evolved naturally to be of different colours. plants are mostly green to avoid the sun's peak energy - they reflect those wavelengths off. this helps them maintain a steady, stable energy supply without damaging their internal mechanisms. an F type star (more massive and hotter than our sun) would peak in blue-UV part of the spectrum - so most of the plants would also appear white in such planetary systems. an M type star on the other hand would peak in the dark red or orange wavelengths - and hence plants there would be dark-almost black - enabling them to absorb any/all wavelengths of light energy.
+now, shift perspective, haha.
+imagine a world guided and moulded by sound instead of light. there doesnt exist vacuum between the star and the planet - instead there's a subtle medium – an aether that carries sound across vast distances. sunrises and sunsets wouldnt exist - there would instead be a constant source of sound/murmur/whisper/humming from the star to the planet. the planet too would have its own internal sound that all the living things in the planet can feel. so, plants here in this planet would use specific sound frequencies as their energy sources. i mean light could still exist, so some plants would evolve to use only sound energy; some, to use only light and then there would be another set of plants that use both – hybrid, using the best of both worlds.
+so in this world, the plants would have internal structures like resonance chambers - tiny, tuned cavities of sorts. and only certain frequencies would vibrate these structures efficiently. the vibration energy would be converted into chemical energy (analogous to the process of photosynthesis but driven by sound instead of light). call it phonotosynthesis. energy would depend on frequency that should match the plant's tuning. when the right sound arrives – with matching frequency, sufficient amplitude, sustained over time – these structures would vibrate. Longer exposure to louder sounds of the right frequency would lead to rich, nutritious yield.
+form would follow function. over generations, these plants would evolve to tune themselves to the most dominant type of sound in their surroundings. for example, the plants near waterfalls would be tuned to low, constant rumbling sounds. if the area is filled with insect swarms then maybe the plants would be tuned to special high frequencies. plants near cities would adapt to machinery/human made tones. this is like natural selection, shaped by sound instead of light.
+forests would be acoustic instruments themselves – producing and consuming harmonies, their collective structures amplifying and redistributing energy.
+ecologies would reorganise - quiet places would turn into deserts – regions starved of usable energy; loud environments would cause diverse and dense growth. shade and sunlight would be replaced with bass/treble zones and interference patterns causing acoustic shadows. animal life would co-evolve. some species evolve to avoid making noise (predators stay near-perfect silent). other species they could generate specific frequencies, singing or vibrating wings to stimulate plants directly, possibly triggering the release of nutrient-ruch sap in real time (symbiosis).
+but realistically speaking, sound carries far lesser energy than light and it also gets dissipated sooner/more easily than light, even with this aether like medium. so, even in loud, harmonic areas, the growth rate/speed might be slow and highly sensitive. and plants could mostly become hybrid systems combining light based processes with sound harvesting – one compensating where the other lacks, depending on geographics and demographics.
+`,
   },
   {
     id: 5,
