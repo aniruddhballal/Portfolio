@@ -21,7 +21,7 @@ export const creativeItems: CreativeItem[] = [
     type: 'poem',
     title: 'Woman & the Sea',
     date: '19th April 2025',
-    excerpt: 'She waited with the sand covering her skin, For she thought the waves would rush to hold her hand.',
+    excerpt: 'She waited with the sand covering her skin, For she thought the waves would rush to hold her hand. They did, but then they collapsed back into the waters. She thought that they loved her, but they did not?',
     body: `
 She waited with the sand covering her skin,
 For she thought the waves would rush to hold her hand.
@@ -130,7 +130,7 @@ that roared in storms — all of it, always water.
     type: 'poem',
     title: 'Lullaby of the Other Realm',
     date: '25th October 2024',
-    excerpt: 'Lying on my bed, listening to her sing; It is like sitting next to a campfire after trekking into a cold forest, late at night',
+    excerpt: 'Lying on my bed, listening to her sing; It is like sitting next to a campfire after trekking into a cold forest, late at night. I suddenly don’t feel lost anymore, Or rather it doesn’t bother me as much if im lost or not.',
     body: `
 Lying on my bed, listening to her sing
 It is like sitting next to a campfire after trekking into a cold forest, late at night.
@@ -175,7 +175,7 @@ To a place where sound is the only truth.
     type: 'poem',
     title: 'The Runner’s Lament',
     date: '31st December 2024',
-    excerpt: 'I have two choices, both asking me to fall off the edge; One whispers faithfully:',
+    excerpt: 'I have two choices, both asking me to fall off the edge; One whispers faithfully: “Offer yourself to the fire, the universe shall conspire, To guide and protect you, to shape and align your path”',
     body: `
 I have two choices, both asking me to fall off the edge
 One whispers faithfully:
@@ -246,7 +246,7 @@ but realistically speaking, sound carries far lesser energy than light and it al
     type: 'article',
     title: 'The Chinese Room Argument and the Nature of Consciousness',
     date: '17th April 2026',
-    excerpt: '',
+    excerpt: 'Through the Chinese Room Argument, I argue most of my interactions are scripted, not true understanding.',
     body: `
 The Chinese room argument was an idea proposed by Searle – a thought experiment that was in its essence trying to prove that no amount of computation/syntactic complexity/symbol advancement could ever add up to a conscious understanding of anything.
 The setup consists of a room, a person who does not know Chinese at all sitting inside that room. But this person has a rulebook, a very detailed guidebook which is written in a language which this person understands. It tells the person the specific Chinese characters/phrases/sentences that the person should be responding with, to specific inputs. The person is locked in that room, with the book – and messages in Chinese are slid under the door.
@@ -262,14 +262,14 @@ Extending searle’s idea – while the individuals locked in their rooms don’
   {
     id: 6,
     type: 'article',
-    title: 'Your Third Article Title',
-    date: '2024',
-    excerpt: 'What is this piece about? Summarise it in one or two lines for the card preview.',
-    body: `Third article body here.
-
-Second paragraph. The modal renders each blank-line-separated block as its own paragraph, so your natural writing structure is preserved.
-
-Third paragraph and so on.`,
+    title: 'Orch-OR Theory and the Mystery of Consciousness',
+    date: '30th January 2026',
+    excerpt: 'Roger Penrose’s Orch-OR theory posits that consciousness arises in microtubules within brain cells, suggesting a non-computational basis for conscious experience.',
+    body: `
+roger penrose spoke about orchestrated objective reduction theory, worked on it with a mind like his – explaining how computation could never mirror consciousness. equations – as simple as newton’s and as complex as schrodinger’s and ones as beautiful and complete as maxwell’s – all could be fit into computers – and the computing minds inside of these could logically make sense and put the math together. but does completing an equation, or solving a differential ever actually help one understand why something is the way it is? godel’s theorem stresses on this point – proofs can be understood logically, but the method behind the proof – why the proof is even understandable/logically correct/complete in the first place – this is not explainable by any proof. logic explains everything but how logic came into existence, and why it even is such an integral part of human and arguably other lives. microtubules – as speculated by roger and hameroff – could allow quantum states to exist for longer – without reaching decoherence too soon. but of course this is an imagination. this same orch or theory guesses that maybe because of the way microtubules are structured – they might support tiny quantum processes better than anywhere else, and these q processes – when coordinated (thanks to years of evolution) could contribute to consciousness. this is of course a highly imaginative and interesting theory – especially for someone who has watched memento (2000) – and can draw parallels from that movie to this. (thank you nolan, always) insights that living beings get, as consequences of living – don’t seem computationally achievable – for the reason that computation is perfect, and complete and stable and devoid of contradictions. and life is everything but that. Consciousness, like penrose says – must involve some non physical process that should be devoid of logic (like non algorithmic physics (q) ). coming to the movie – memento – yes. There’s the monologue that the protagonist gives towards the end of the movie. It goes as follows:
+“Do I lie to myself to be happy? You know, I think I'd rather be mistaken for a dead guy than a killer. I have to believe in a world outside my own mind. I have to believe that my actions still have meaning. Even if I can't remember them. I have to believe that when my eyes are closed, the world's still here. Do I believe the world's still here? Is it still out there? Yeah. We all need memories to remind ourselves who we are. I'm no different.”
+Lies that a door wont lead one anywhere, when they have seen light shine from its cracks into their dark room. And one, for any number of reasons (well justified too), could always choose to not go to the door, and stay. (don’t let me leave murph RAAAHHH) – and for those reasons, one could choose to not walk out that door – and stay in the dark, a conscious choice. I link this to life trying to understand itself. Let’s imagine there was a path for the consciousness to absolutely understand and realise itself – now why on earth (lol yes earth) would it choose to understand itself – it would then have to stop experiencing life (the life that it has known and lived for so long) – it would feel the same thing that the protagonist of memento feels. In fact, we are all the protagonists of memento. Our own mementos. And our consciousness is no different. We are the memento for our consciousness. we are what it reminds itself it is. its not that consciousness doesn’t want to learn or realise anything about itself – it does, its innocent and its intents are pure – but it just is heavily resisted by the way it is. its existence implies resistance to the understanding of its own self – and it also implies indefinite pursuit of the understanding of its own self. Life sustains itself only because its incomplete - it contradicts, it moves. 
+`,
   },
 
   // ── SKETCHES ───────────────────────────────────────────────────────────
