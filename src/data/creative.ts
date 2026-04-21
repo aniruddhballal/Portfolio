@@ -19,7 +19,7 @@ export const creativeItems: CreativeItem[] = [
   {
     id: 1,
     type: 'poem',
-    title: 'Water Woman',
+    title: 'Woman & the Sea',
     date: '19th April 2025',
     excerpt: 'She waited with the sand covering her skin, For she thought the waves would rush to hold her hand.',
     body: `
@@ -128,15 +128,47 @@ that roared in storms — all of it, always water.
   {
     id: 2,
     type: 'poem',
-    title: 'Your Second Poem Title',
+    title: 'Lullaby of the Other Realm',
     date: '2024',
-    excerpt: 'Opening lines of this poem appear here on the card as a teaser for the reader.',
-    body: `Replace this with your second poem.
-
-Stanza two here.
-
-And so on — the entire poem
-lives in this body field.`,
+    excerpt: 'Lying on my bed, listening to her sing; It is like sitting next to a campfire after trekking into a cold forest, late at night',
+    body: `
+Lying on my bed, listening to her sing
+It is like sitting next to a campfire after trekking into a cold forest, late at night.
+I suddenly don’t feel lost anymore,
+Or rather it doesn’t bother me as much if im lost or not.
+As long as I hear her melody, I know I will find a way out, or maybe I wont-
+There is a weird comforting feeling about her voice
+Cleansing me of my past sins, with every note that she sings
+Getting me closer to reconnecting with a higher energy
+It is a lullaby but not one that puts you into any normal sleep, no
+It leads me somewhere deeper.
+It suddenly puts me in a dream so real,
+I begin to question:
+Is the world I fell asleep in any more real
+Than the dream I’m now in?
+Her voice lulls me to sleep, but opens my eyes
+It quiets my mind, yet sets my thoughts free.
+In this state of ecstasy that her voice puts me in,
+I no longer accept the illusory nature of this reality.
+Neither do I want to stay here in this dream—
+For her voice, comes from another realm.
+Her lullabies don’t just carry me into sleep, no
+They help me transcend
+Into a scary, featureless world
+A world that does not know light,
+A world that does not think.
+A world where everything is a sound.
+Khair, light thoughts and sounds – are all vibrations.
+So, it’s not a different world, no,
+But it’s a way perceive this same world,
+Where everything manifests and expresses as sound.
+And the visuals are nothing but illusions.
+You can’t see this world,
+You can only hear it and imagine its shape.
+And every night, when she sings,
+That’s where she takes me—
+To a place where sound is the only truth.
+`,
   },
   {
     id: 3,
