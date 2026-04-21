@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Projects from './components/Projects'
 import About from './components/About'
+import BeyondCode from './components/BeyondCode'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 
@@ -16,6 +17,7 @@ export default function App() {
         <Hero />
         <Projects />
         <About />
+        <BeyondCode />
         <Contact />
       </main>
       <Footer />

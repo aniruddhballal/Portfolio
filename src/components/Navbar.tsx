@@ -12,7 +12,7 @@ export default function Navbar() {
     return scrollY.onChange(v => setScrolled(v > 50))
   }, [scrollY])
 
-  const links = ['Work', 'About', 'Contact']
+  const links = ['Work', 'About', 'Beyond', 'Contact']
 
   const closeMenu = () => setMenuOpen(false)
 
@@ -37,7 +37,7 @@ export default function Navbar() {
             {links.map(l => (
               <motion.a
                 key={l}
-                href={`#${l.toLowerCase()}`}
+                href={l === 'Beyond' ? '#beyond' : `#${l.toLowerCase()}`}
                 className="font-body text-sm text-muted hover:text-ink transition-colors relative group"
                 whileHover={{ y: -1 }}
               >
@@ -89,7 +89,7 @@ export default function Navbar() {
               {links.map((l, i) => (
                 <motion.a
                   key={l}
-                  href={`#${l.toLowerCase()}`}
+                  href={l === 'Beyond' ? '#beyond' : `#${l.toLowerCase()}`}
                   className="block font-display text-6xl text-ink tracking-wide hover:text-accent transition-colors"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
