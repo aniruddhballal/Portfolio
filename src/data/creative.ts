@@ -19,20 +19,111 @@ export const creativeItems: CreativeItem[] = [
   {
     id: 1,
     type: 'poem',
-    title: 'Your Poem Title Here',
-    date: '2025',
-    excerpt: 'First few lines of your poem go here — this is what shows on the card before the reader opens it.',
-    body: `Your full poem goes here.
-
-Each stanza separated by a blank line.
-
-Replace this placeholder with your actual poem.
-You can write as many stanzas as you like —
-the modal scrolls.
-
-The line breaks and spacing
-you put here
-will be preserved exactly as written.`,
+    title: 'Water Woman',
+    date: '19th April 2025',
+    excerpt: 'She waited with the sand covering her skin, For she thought the waves would rush to hold her hand.',
+    body: `
+She waited with the sand covering her skin,
+For she thought the waves would rush to hold her hand.
+They did, but then they collapsed back into the waters.
+She thought that they loved her, but they did not?
+Waves rise in beautiful patterns - only to dissolve into the waters they arose from,
+Born to return to where they began their short lived journeys.
+But she did feel loved, based on what she thought love was.
+The waves brought gifts from the deep waters,
+As if they were asking to be forgiven for having disappointed her in the past.
+They promised to stay and she believed them.
+But they were waves, emerging and vanishing cyclically.
+Now, in doubt, she whispered:
+"Am I being loved?"
+"Or am I loving what cannot stay?"
+"Do I ask too much?"
+"Am I not enough?"
+Her love turned into questions, based on fundamental conflict of ideas.
+She ignored the answers she got and stayed in silence—
+Because she liked it and had danced with the sea too long
+To hate it for leaving repeatedly, at times when she needed it the most.
+Perplexed and exhausted, she planted herself away from the shore,
+and fixed her gaze on the distant waters
+with shiny glimmers and the dance of the sunlight on the still waters.
+This sight brought peace to her troubled mind.
+The mere presence of the deep, still and silent waters was soothing.
+She now stayed away from the disturbing waves,
+for she liked the way the ocean existed -
+Not in motion, but in presence.
+The ocean, silent and deep,
+soothed what the waves had once stirred.
+The sun sank low, and the tides grew bold.
+No matter how far away she sat, the waves still reached for her.
+She had turned away— 'yet' they came.
+This confused her even more, because
+The attempts seemed persistent,
+as if they loved her, despite and through it all.
+“Do they love me?” she wondered,
+as she let herself play again, in their rise and fall.
+Through the night she stayed, learning at last:
+to love the waves was to love their coming
+and their leaving.
+But that wasn't how she wanted to be loved -
+sharply, irregularly - something felt incomplete.
+And when dawn broke, with birds composed songs of yearning.
+The orange sun emerged from under the deep waters,
+and she witnessed a sunrise,
+more beautiful than any before.
+Now the waves receded back into the oceans—
+retreating farther than ever.
+The waves who once had crossed seemingly large distances
+to reach for her, now slipped from her grasp.
+Confusions layered themselves.
+She was stranded between
+the play with the restless waves
+and the sight of the distant, silent sea.
+The ocean - steady, glimmering, untouched and eternal-
+was a soothing comfort she could only watch, never hold.
+The waves, shared proximity with her and
+offered joy in motion, but they left. They always left.
+They promised consistency, but came in storms or silence.
+Too much at times, or not enough, at other times.
+Never the same.
+She stood exhausted at the shore—
+loving both - what reached her, and what never could.
+She’d had enough noise in her mind—
+the waves seemed to bring the absolute opposite of solace.
+She turned her gaze to the distant sea,
+unsure of its depths, unsure if it, too,
+would someday shift and transform like the waves
+that she once held so close.
+The deep sea looked back at her,
+disappointed and responded in silence observing the irony of it all:
+a simple soul, healthily whole in body and mind,
+planted deeply and cluelessly into the sand at the distinctive shore,
+Her own indecision tearing her insides up,
+She was tired and doubtful of her needs and wants beyond words,
+For her claims were to have loved the shore,
+but the longer she stayed there, she more she felt lost,
+trying to understand the pull of the waves and the silence of the sea.
+She longed to swim, and to leave the restless waves behind
+and lose herself in the quiet depths.
+But her doubts held her still.
+the ocean was vast, and she, vastly unsure.
+She turned back to the shore,
+for that made her feel safe, and resonated with the word 'home'.
+But clouds gathered, a storm began to stir, reflective of the state of her mind.
+For she was the Goddess of Water and she was stuck in this loop -
+Creating versions of water and failing to understand
+The meaning to all these different forms of her own self.
+She hurried away into the land, and a thunderclap cracked the sky open.
+Rain poured down, soaking her as she reached for safety in vain.
+She didn’t mind because she loved the rain.
+In fact, it was the ocean, the ocean that she doubted and loved -
+reaching her in fragments after drifting across skies,
+and crossing miles, just to touch her skin.
+The deep water could not come whole, so it sent what it could:
+small offerings, and whispers to convey her what it was made of.
+The raindrops were the same water that shaped the waves,
+that danced in sunlit stillness far away in the ocean,
+that roared in storms — all of it, always water.
+`,
   },
   {
     id: 2,
