@@ -25,21 +25,36 @@ export default function BeyondCode() {
           {/* Heading */}
           <div className="mb-12 md:mb-16 overflow-hidden">
             <div className="flex items-end gap-4 md:gap-6 mb-2">
-              <motion.span className="font-mono text-xs text-muted tracking-widest uppercase whitespace-nowrap"
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ duration: 0.5 }}>
+              <motion.span
+                className="font-mono text-xs text-muted tracking-widest uppercase whitespace-nowrap"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
                 Writing & art
               </motion.span>
-              <motion.div className="flex-1 h-px bg-ink/10 mb-1" initial={{ scaleX: 0, originX: 0 }} whileInView={{
-                scaleX: 1
-              }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }} />
+              <motion.div
+                className="flex-1 h-px bg-ink/10 mb-1"
+                initial={{ scaleX: 0, originX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
             </div>
-            <motion.h2 style={{ x: headingX }}
-              className="font-display text-[14vw] md:text-[9vw] leading-none tracking-wide text-ink">
+            <motion.h2
+              style={{ x: headingX }}
+              className="font-display text-[14vw] md:text-[9vw] leading-none tracking-wide text-ink"
+            >
               BEYOND CODE<span className="text-accent">.</span>
             </motion.h2>
-            <motion.p className="font-body text-sm text-muted font-light mt-4 max-w-lg" initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}>
+            <motion.p
+              className="font-body text-sm text-muted font-light mt-4 max-w-lg"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
               Systems thinking bleeds into everything. Some of it ends up as code. The rest ends up here.
             </motion.p>
           </div>
@@ -53,12 +68,16 @@ export default function BeyondCode() {
                 <span className="font-mono text-xs text-muted tracking-widest uppercase">Poems</span>
               </div>
               {poems.map((item, i) => (
-                <motion.button key={item.id} onClick={() => setActive(item)}
-                  className={`w-full text-left px-6 py-5 group hover:bg-paper transition-colors duration-150 ${i <
-                    poems.length - 1 ? 'border-b border-ink/10' : ''}`} initial={{ opacity: 0, x: -20 }} whileInView={{
-                      opacity: 1, x: 0
-                    }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.07 }}
-                  data-hover>
+                <motion.button
+                  key={item.id}
+                  onClick={() => setActive(item)}
+                  className={`w-full text-left px-6 py-5 group hover:bg-paper transition-colors duration-150 ${i < poems.length - 1 ? 'border-b border-ink/10' : ''}`}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.07 }}
+                  data-hover
+                >
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <h3
                       className="font-display text-xl text-ink tracking-wide group-hover:text-accent transition-colors leading-tight">
@@ -83,12 +102,16 @@ export default function BeyondCode() {
                 <span className="font-mono text-xs text-muted tracking-widest uppercase">Articles</span>
               </div>
               {articles.map((item, i) => (
-                <motion.button key={item.id} onClick={() => setActive(item)}
-                  className={`w-full text-left px-6 py-5 group hover:bg-paper transition-colors duration-150 ${i <
-                    articles.length - 1 ? 'border-b border-ink/10' : ''}`} initial={{ opacity: 0, x: 20 }} whileInView={{
-                      opacity: 1, x: 0
-                    }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.07 }}
-                  data-hover>
+                <motion.button
+                  key={item.id}
+                  onClick={() => setActive(item)}
+                  className={`w-full text-left px-6 py-5 group hover:bg-paper transition-colors duration-150 ${i < articles.length - 1 ? 'border-b border-ink/10' : ''}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.07 }}
+                  data-hover
+                >
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <h3
                       className="font-display text-xl text-ink tracking-wide group-hover:text-accent transition-colors leading-tight">
@@ -114,14 +137,22 @@ export default function BeyondCode() {
               <span className="font-mono text-xs text-muted tracking-widest uppercase">Sketches & paintings</span>
               <div className="flex-1 h-px bg-ink/10" />
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
               {sketches.map((item, i) => (
-                <motion.div key={item.id}
+                <motion.div
+                  key={item.id}
                   className="group relative aspect-square bg-paper border border-ink/10 overflow-hidden cursor-pointer"
-                  initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.06 }} whileHover={{ scale: 1.02 }} data-hover>
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.06 }}
+                  whileHover={{ scale: 1.02 }}
+                  data-hover
+                >
                   {/* Image */}
-                  <img src={item.imagePath} alt={item.imageAlt}
+                  <img
+                    src={item.imagePath}
+                    alt={item.imageAlt}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
                       // Graceful fallback if image not found
