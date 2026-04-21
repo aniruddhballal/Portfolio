@@ -173,13 +173,54 @@ To a place where sound is the only truth.
   {
     id: 3,
     type: 'poem',
-    title: 'Your Third Poem Title',
-    date: '2024',
-    excerpt: 'A short excerpt from this poem — two or three lines that give a flavour of what it is about.',
-    body: `Your third poem goes here.
-
-This can be as long as you need it to be.
-The modal handles the scroll gracefully.`,
+    title: 'The Runner’s Lament',
+    date: '2025',
+    excerpt: 'I have two choices, both asking me to fall off the edge; One whispers faithfully:',
+    body: `
+I have two choices, both asking me to fall off the edge
+One whispers faithfully:
+“Offer yourself to the fire, the universe shall conspire,
+To guide and protect you, to shape and align your path”
+The other shouts in rage:
+“Fight back when the stars don’t align
+Revolt against the silence, against celestial rules”
+This is why I run.
+Not because the universe blesses every hop and bounce,
+But because it curses me.
+I run because of my love for it, because of my want for excellence at it.
+And because I am not supposed to.
+The pain that follows—sharp, crippling—
+Is it the universe’s refutation?
+A warning? A denial?
+Not for me? But why?
+Why give me lungs and legs that help me float with the wind,
+A rhythm in my heart that makes running a poetry in motion.
+To later castigate me for using them?
+Why carve a sculpture so intricate,
+If it’s not meant to be seen by anyone?
+I rage because it feels like betrayal.
+If I weren’t meant to run,
+Why make me fall in love with it?
+Or better, why make me good at it?
+I never sought dancing, I never missed it,
+Why not make me indifferent,
+Like I am to dancing?
+Isn’t the universe cruel?
+Gifting me with hunger and food,
+To only deny my feast.
+Gifting me with technology and the knowledge to use it,
+To only deny my technological advancement?
+So I revolt.
+Simply because I must.
+If this desperate, aching joy-
+That I derive from running is truly mine,
+I would pay for it by breaking rules and experiencing the pain.
+Knowing the price that it comes at, I run-
+It’s a battle that will leave scars on me,
+But what else would my mind let me do?
+When my soul was made for motion,
+And some stars refuse to let my body soar?
+`,
   },
 
   // ── ARTICLES ───────────────────────────────────────────────────────────
