@@ -9,25 +9,26 @@ const runningStats = {
   allTime: { activities: 260, distanceKm: 1305.3, timeHours: 117.5, elevGainM: 7030 },
   last4Weeks: { activitiesPerWeek: 8, avgDistKm: 48.6, avgTimeHm: '4h 5m', elevGainM: 119 },
   pbs: [
-    { label: '5K',           time: '20:44' },
-    { label: '10K',          time: '46:02' },
-    { label: '15K',          time: '1:15:48' },
-    { label: 'Half-Marathon',time: '1:57:42' },
-    { label: '30K',          time: '3:13:44' },
-    { label: 'Marathon',     time: '4:32:14' },
-    { label: '50K',          time: '5:24:45' },
+    { label: '5K (1st December 2025)',           time: '20:44' },
+    { label: '10K (7th April 2026)',          time: '46:02' },
+    { label: '15K (9th April 2026)',          time: '1:15:48' },
+    { label: 'Half-Marathon (26th January 2026)',time: '1:57:42' },
+    { label: '30K (15th November 2025)',          time: '3:13:44' },
+    { label: 'Marathon (15th November 2025)',     time: '4:32:14' },
+    { label: '50K (15th November 2025)',          time: '5:24:45' },
   ],
 }
 
 const cyclingStats = {
   allTime: { activities: 135, distanceKm: 2059.7, timeHours: 216.9, elevGainM: 15297 },
   pbs: [
-    { label: '10K',  time: '16:49' },
-    { label: '20K',  time: '38:14' },
-    { label: '30K',  time: '57:30' },
-    { label: '40K',  time: '1:20:04' },
-    { label: '50K',  time: '1:44:05' },
-    { label: '77.8K (longest)', time: '3:22:52' },
+    { label: '5K (9th July 2025)',  time: '7:51' },
+    { label: '10K (9th July 2025)',  time: '16:49' },
+    { label: '20K (9th July 2025)',  time: '38:14' },
+    { label: '30K (9th July 2025)',  time: '57:30' },
+    { label: '40K (9th July 2025)',  time: '1:20:04' },
+    { label: '50K (9th July 2025)',  time: '1:44:05' },
+    { label: '77.8K (1st May 2024)', time: '3:22:52' },
   ],
 }
 
@@ -246,7 +247,7 @@ export default function BeyondCode() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between">
-                  <span className="font-mono text-xs text-muted tracking-widest uppercase">Running</span>
+                  <span className="font-mono text-xs text-muted tracking-widest uppercase">Running (as of 21st April 2026)</span>
                   <span className="font-mono text-xs text-muted/40">
                     {runningStats.allTime.activities} activities · {runningStats.allTime.distanceKm.toLocaleString()} km
                   </span>
@@ -287,7 +288,7 @@ export default function BeyondCode() {
                 </div>
 
                 {/* All-time footer */}
-                <div className="px-5 py-3 bg-ink/[0.02] flex gap-4 flex-wrap">
+                <div className="px-5 py-3 bg-ink/[0.02]">
                   <span className="font-mono text-xs text-muted/50">{runningStats.allTime.timeHours}h total · {runningStats.allTime.elevGainM.toLocaleString()}m elevation</span>
                 </div>
               </motion.div>
@@ -301,9 +302,9 @@ export default function BeyondCode() {
                 transition={{ duration: 0.6, delay: 0.1 }}
               >
                 <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between">
-                  <span className="font-mono text-xs text-muted tracking-widest uppercase">Cycling</span>
+                  <span className="font-mono text-xs text-muted tracking-widest uppercase">Cycling (As of 9th July 2025)</span>
                   <span className="font-mono text-xs text-muted/40">
-                    {cyclingStats.allTime.activities} activities · {cyclingStats.allTime.distanceKm.toLocaleString()} km
+                    {cyclingStats.allTime.activities} activities
                   </span>
                 </div>
 
