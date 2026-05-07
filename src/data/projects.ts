@@ -14,19 +14,6 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: 1,
-    name: 'Credex',
-    tagline: 'B2B procurement and embedded trade finance for Indian SMEs',
-    description:
-      'A unified platform that brings procurement, payment tracking, cash flow optimisation, and trade finance into a single product. Buyers submit RFQs, negotiate terms, confirm purchase orders, and access working capital — linked directly to confirmed orders. A Python FastAPI microservice runs a linear programming cash flow optimiser (PuLP/CBC solver) and an XGBoost credit scoring model. The backend spans 17 MongoDB collections covering immutable payment and audit records, signed-URL KYC document access via Backblaze B2, and role-based access for buyers, suppliers, underwriters, and admins. Credex is the unification of VenPay, LOANlo, and VenPayRL.',
-    tech: ['Next.js', 'TypeScript', 'Node.js', 'MongoDB', 'Python', 'FastAPI', 'XGBoost', 'PuLP'],
-    category: 'FinTech',
-    url: null,
-    repo: null,
-    year: '2026',
-    color: '#1A3A5C',
-  },
-  {
-    id: 2,
     name: 'Sunalyse',
     tagline: 'Interactive 3D viewer for 14 years of solar coronal magnetic fields',
     description:
@@ -39,7 +26,7 @@ export const projects: Project[] = [
     color: '#B5451B',
   },
   {
-    id: 3,
+    id: 2,
     name: 'SatLies',
     tagline: 'Satellite orbit simulator with real astrodynamics',
     description:
@@ -50,6 +37,19 @@ export const projects: Project[] = [
     repo: null,
     year: '2026',
     color: '#2D3A6B',
+  },
+  {
+    id: 3,
+    name: 'Credex',
+    tagline: 'B2B procurement and embedded trade finance for Indian SMEs',
+    description:
+      'A unified platform that brings procurement, payment tracking, cash flow optimisation, and trade finance into a single product. Buyers submit RFQs, negotiate terms, confirm purchase orders, and access working capital — linked directly to confirmed orders. A Python FastAPI microservice runs a linear programming cash flow optimiser (PuLP/CBC solver) and an XGBoost credit scoring model. The backend spans 17 MongoDB collections covering immutable payment and audit records, signed-URL KYC document access via Backblaze B2, and role-based access for buyers, suppliers, underwriters, and admins. Credex is the unification of VenPay, LOANlo, and VenPayRL.',
+    tech: ['Next.js', 'TypeScript', 'Node.js', 'MongoDB', 'Python', 'FastAPI', 'XGBoost', 'PuLP'],
+    category: 'FinTech',
+    url: null,
+    repo: null,
+    year: '2026',
+    color: '#1A3A5C',
   },
   {
     id: 4,
