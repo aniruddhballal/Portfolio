@@ -42,21 +42,21 @@ export default function About() {
               </div>
 
               <h2 className="font-display text-5xl md:text-6xl text-ink tracking-wide leading-none mb-7 md:mb-8">
-                CODE THAT<br />
-                <span className="text-accent">MODELS,</span><br />
-                NOT JUST<br />
-                RUNS<span className="text-accent">.</span>
+                PHYSICS<br />
+                <span className="text-accent">FIRST,</span><br />
+                CODE<br />
+                SECOND<span className="text-accent">.</span>
               </h2>
 
               <div className="space-y-4 font-body text-sm text-muted leading-relaxed font-light">
                 <p>
-                  Modeling & systems engineer based in Bengaluru. I build systems grounded in real-world behavior — from physical simulations to scalable software.
+                  I work at the intersection of physical simulation and software — building tools that make complex systems visible and explorable.
                 </p>
                 <p>
-                  I focus on understanding how things actually work, then translating that into reliable, usable products — not just technically correct implementations.
+                  In 2024 I worked under a solar physics professor at IISc, analysing coronal magnetic field data. That work became Sunalyse — a physics-based 3D visualiser I built independently, processing 14 years of NASA/SDO magnetograms through a full PFSS pipeline with spherical harmonics and field-line tracing.
                 </p>
                 <p>
-                  When I'm not building, I'm studying physics, exploring system design, or breaking down complex ideas to their fundamentals.
+                  I'm drawn to problems where deep domain understanding changes what you build — not just how you build it.
                 </p>
               </div>
             </motion.div>

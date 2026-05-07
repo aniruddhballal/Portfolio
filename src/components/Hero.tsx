@@ -87,7 +87,7 @@ export default function Hero() {
             <motion.div variants={item} className="flex items-center gap-3 mb-5">
               <span className="w-6 md:w-8 h-px bg-accent" />
               <span className="font-mono text-xs text-muted tracking-widest uppercase">
-                Modeling & Systems Engineer — Bengaluru
+                Physics & Systems — Bengaluru
               </span>
             </motion.div>
 
@@ -112,7 +112,7 @@ export default function Hero() {
               variants={item}
               className="font-body text-sm md:text-base text-muted leading-relaxed max-w-md mb-7 font-light"
             >
-              I build systems grounded in real-world models — from simulating physical dynamics to designing financial and product systems. I focus on understanding how things actually work, then turning that into usable, scalable tools.
+              I build at the intersection of physics and software — from coronal magnetic field simulations and orbital mechanics to financial systems and developer tools. I care about understanding how things actually work, then making that understanding visible and usable.
             </motion.p>
 
             <motion.div variants={item} className="flex items-center gap-4 flex-wrap">
@@ -135,7 +135,7 @@ export default function Hero() {
 
             {/* Stack pills */}
             <motion.div variants={item} className="flex gap-2 md:gap-3 flex-wrap mt-8 md:mt-10">
-              {['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'AWS', 'Docker'].map(s => (
+              {['Python', 'React', 'Three.js', 'Node.js', 'TypeScript', 'NumPy/SciPy', 'GLSL', 'Rust/WASM'].map(s => (
                 <span key={s} className="font-mono text-xs text-muted border border-ink/10 px-2.5 py-1">
                   {s}
                 </span>
