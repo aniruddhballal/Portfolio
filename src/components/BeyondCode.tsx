@@ -6,8 +6,8 @@ import CreativeModal from './CreativeModal'
 
 // ── Strava data (hardcoded — update manually or swap for API later) ──────
 const runningStats = {
-  allTime: { activities: 260, distanceKm: 1305.3, timeHours: 117.5, elevGainM: 7030 },
-  last4Weeks: { activitiesPerWeek: 8, avgDistKm: 48.6, avgTimeHm: '4h 5m', elevGainM: 119 },
+  allTime: { activities: 293, distanceKm: 1525.8, timeHours: 138, elevGainM: 7652 },
+  last4Weeks: { activitiesPerWeek: 8, avgDistKm: 51.4, avgTimeHm: '4h 50m', elevGainM: 142 },
   pbs: [
     { label: '5K (1st December 2025)',           time: '20:44' },
     { label: '10K (7th April 2026)',          time: '46:02' },
@@ -20,7 +20,7 @@ const runningStats = {
 }
 
 const cyclingStats = {
-  allTime: { activities: 135, distanceKm: 2059.7, timeHours: 216.9, elevGainM: 15297 },
+  allTime: { activities: 152, distanceKm: 2168.1, timeHours: 222.34, elevGainM: 15790 },
   pbs: [
     { label: '5K (9th July 2025)',  time: '7:51' },
     { label: '10K (9th July 2025)',  time: '16:49' },
@@ -247,7 +247,7 @@ export default function BeyondCode() {
                 transition={{ duration: 0.6 }}
               >
                 <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between">
-                  <span className="font-mono text-xs text-muted tracking-widest uppercase">Running (as of 21st April 2026)</span>
+                  <span className="font-mono text-xs text-muted tracking-widest uppercase">Running (as of 28th May 2026)</span>
                   <span className="font-mono text-xs text-muted/40">
                     {runningStats.allTime.activities} activities · {runningStats.allTime.distanceKm.toLocaleString()} km
                   </span>
