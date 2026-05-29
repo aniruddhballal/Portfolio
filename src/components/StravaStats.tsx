@@ -38,11 +38,8 @@ function weekRangeLabel(iso: string) {
   const end = new Date(iso)
   end.setDate(end.getDate() + 6)
   const s = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-  if (start.getFullYear() === end.getFullYear()) {
-    const eShort = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-    return `${s} – ${eShort}`
-  }
-  return `${s} – ${end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+  const e = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  return `${s} – ${e}`
 }
 
 // Header range label: "9 Mar 2025"
