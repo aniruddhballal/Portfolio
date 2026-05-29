@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { PersonStanding, Bike } from 'lucide-react'
 import stravaData from '../data/strava.json'
 import type { StravaData, PeriodStats, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../data/strava-types'
 
@@ -116,8 +117,8 @@ function ProgressionBars({ entries, metric }: {
                 <div className="absolute bottom-full mb-1 z-10 pointer-events-none left-1/2 -translate-x-1/2">
                   <div className="bg-ink text-paper font-mono text-[10px] px-2 py-1 whitespace-nowrap">
                     {entry.label}<br />
-                    🏃 {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}{' '}
-                    🚴 {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}
+                    <span className="flex items-center gap-1"><PersonStanding size={10} /> {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}{' '}
+                    <Bike size={10} /> {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}</span>
                   </div>
                 </div>
               )}
@@ -161,10 +162,12 @@ function ProgressionBars({ entries, metric }: {
       <div className="flex items-center gap-4 mt-3">
         <div className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 bg-ink/40" />
+          <PersonStanding size={11} className="text-muted/60" />
           <span className="font-mono text-[10px] text-muted/60">Run</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 bg-ink/20" />
+          <Bike size={11} className="text-muted/60" />
           <span className="font-mono text-[10px] text-muted/60">Ride</span>
         </div>
       </div>
@@ -228,7 +231,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       {/* Summary */}
       <div className="grid grid-cols-2 border-b border-ink/10">
         <div className="px-5 py-3 border-r border-ink/10">
-          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest block mb-2">🏃 Run</span>
+          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2"><PersonStanding size={13} /> Run</span>
           <div className="flex gap-4 flex-wrap">
             <span className="font-display text-sm text-ink">{fmtDist(totRun.distanceKm)} km</span>
             <span className="font-mono text-xs text-muted self-end">{fmtHours(totRun.timeHours)}</span>
@@ -237,7 +240,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           </div>
         </div>
         <div className="px-5 py-3">
-          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest block mb-2">🚴 Ride</span>
+          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2"><Bike size={13} /> Ride</span>
           <div className="flex gap-4 flex-wrap">
             <span className="font-display text-sm text-ink">{fmtDist(totRide.distanceKm)} km</span>
             <span className="font-mono text-xs text-muted self-end">{fmtHours(totRide.timeHours)}</span>
