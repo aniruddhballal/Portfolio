@@ -97,10 +97,11 @@ function ProgressionBars({ entries, metric }: {
         {metricLabel[metric]} per period
       </span>
 
-      <div className="flex items-end gap-1 h-28">
+      <div className="flex items-end gap-1 h-28" style={{ height: 112 }}>
         {entries.map((entry, i) => {
-          const runH = (entry.run[metric] / maxVal) * 100
-          const rideH = (entry.ride[metric] / maxVal) * 100
+          const CONTAINER_H = 112
+          const runPx = Math.max((entry.run[metric] / maxVal) * CONTAINER_H, entry.run[metric] > 0 ? 2 : 0)
+          const ridePx = Math.max((entry.ride[metric] / maxVal) * CONTAINER_H, entry.ride[metric] > 0 ? 2 : 0)
           const total = entry.run[metric] + entry.ride[metric]
           const isHov = hovered === i
 
@@ -121,22 +122,20 @@ function ProgressionBars({ entries, metric }: {
                 </div>
               )}
               {/* Ride bar */}
-              <motion.div
-                className={`w-full transition-colors ${isHov ? 'bg-accent/60' : 'bg-ink/20'}`}
-                style={{ height: `${rideH}%`, minHeight: entry.ride[metric] > 0 ? 2 : 0 }}
-                initial={{ scaleY: 0, originY: 1 }}
-                whileInView={{ scaleY: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.02 }}
+              <div
+                className={`w-full transition-all duration-500 ease-out ${isHov ? 'bg-accent/60' : 'bg-ink/20'}`}
+                style={{
+                  height: entry.ride[metric] > 0 ? ridePx : 0,
+                  transitionDelay: `${i * 20}ms`,
+                }}
               />
               {/* Run bar */}
-              <motion.div
-                className={`w-full transition-colors ${isHov ? 'bg-accent' : 'bg-ink/40'}`}
-                style={{ height: `${runH}%`, minHeight: entry.run[metric] > 0 ? 2 : 0 }}
-                initial={{ scaleY: 0, originY: 1 }}
-                whileInView={{ scaleY: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.02 + 0.05 }}
+              <div
+                className={`w-full transition-all duration-500 ease-out ${isHov ? 'bg-accent' : 'bg-ink/40'}`}
+                style={{
+                  height: entry.run[metric] > 0 ? runPx : 0,
+                  transitionDelay: `${i * 20 + 50}ms`,
+                }}
               />
             </div>
           )
