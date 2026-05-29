@@ -4,3 +4,5 @@ dist
 *.local
 .env
 temp files
+.strava-cache.json
+strava.json
