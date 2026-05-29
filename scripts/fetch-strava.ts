@@ -262,18 +262,11 @@ async function main() {
   const allTimeRide = activities.filter(a => a.type === 'Ride' || a.type === 'VirtualRide')
     .reduce(addActivity, emptyPeriod())
 
-  // ── Weekly (last 12 weeks) ────────────────────────────────────────────────
+  // ── Weekly (all weeks) ───────────────────────────────────────────────────
   const weekMap = new Map<string, { run: PeriodStats; ride: PeriodStats }>()
-  const now = new Date()
-  for (let w = 11; w >= 0; w--) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - w * 7)
-    const key = weekStart(d)
-    if (!weekMap.has(key)) weekMap.set(key, { run: emptyPeriod(), ride: emptyPeriod() })
-  }
   for (const act of activities) {
     const key = weekStart(new Date(act.start_date))
-    if (!weekMap.has(key)) continue
+    if (!weekMap.has(key)) weekMap.set(key, { run: emptyPeriod(), ride: emptyPeriod() })
     const entry = weekMap.get(key)!
     if (act.type === 'Run')
       entry.run = addActivity(entry.run, act)
@@ -284,16 +277,11 @@ async function main() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([weekStart, v]) => ({ weekStart, ...v }))
 
-  // ── Monthly (last 12 months) ──────────────────────────────────────────────
+  // ── Monthly (all months) ─────────────────────────────────────────────────
   const monthMap = new Map<string, { run: PeriodStats; ride: PeriodStats }>()
-  for (let m = 11; m >= 0; m--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - m, 1)
-    const key = monthKey(d)
-    if (!monthMap.has(key)) monthMap.set(key, { run: emptyPeriod(), ride: emptyPeriod() })
-  }
   for (const act of activities) {
     const key = monthKey(new Date(act.start_date))
-    if (!monthMap.has(key)) continue
+    if (!monthMap.has(key)) monthMap.set(key, { run: emptyPeriod(), ride: emptyPeriod() })
     const entry = monthMap.get(key)!
     if (act.type === 'Run')
       entry.run = addActivity(entry.run, act)

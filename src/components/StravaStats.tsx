@@ -347,7 +347,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
     activities: a.activities + e.ride.activities,
   }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
 
-  const periodLabel = mode === 'weekly' ? 'Last 12 weeks' : mode === 'monthly' ? 'Last 12 months' : 'All years'
+  const periodLabel = mode === 'weekly' ? 'All weeks' : mode === 'monthly' ? 'All months' : 'All years'
 
   return (
     <div className="border border-ink/10 overflow-hidden">
