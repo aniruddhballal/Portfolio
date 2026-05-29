@@ -30,6 +30,15 @@ function weekLabel(iso: string) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
+function weekRangeLabel(iso: string) {
+  const start = new Date(iso)
+  const end = new Date(iso)
+  end.setDate(end.getDate() + 6)
+  const s = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  const e = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  return `${s} – ${e}`
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 function StatCell({ value, label, border = true }: { value: string; label: string; border?: boolean }) {
   return (
@@ -70,6 +79,7 @@ type ProgressionMode = 'weekly' | 'monthly' | 'annual'
 
 interface BarEntry {
   label: string
+  tooltipLabel: string
   run: PeriodStats
   ride: PeriodStats
 }
@@ -120,8 +130,9 @@ function ProgressionChart({ entries, metric }: {
       <div className="relative w-full" style={{ height: H }}>
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          preserveAspectRatio="none"
-          className="w-full h-full overflow-visible"
+          preserveAspectRatio="xMidYMid meet"
+          className="w-full overflow-visible"
+          style={{ height: H }}
         >
           <defs>
             <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
@@ -224,7 +235,7 @@ function ProgressionChart({ entries, metric }: {
               style={{ left: `${pct}%`, transform: alignRight ? 'translateX(-100%)' : 'translateX(-50%)' }}
             >
               <div className="bg-ink text-paper font-mono text-[10px] px-2 py-1.5 whitespace-nowrap">
-                <div className="text-paper/50 mb-0.5">{entry.label}</div>
+                <div className="text-paper/50 mb-0.5">{entry.tooltipLabel}</div>
                 <div className="flex items-center gap-1">
                   <PersonStanding size={9} />
                   {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}
@@ -271,10 +282,10 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
 
   const entries: BarEntry[] = mode === 'weekly'
-    ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), run: w.run, ride: w.ride }))
+    ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), tooltipLabel: weekRangeLabel(w.weekStart), run: w.run, ride: w.ride }))
     : mode === 'monthly'
-      ? (data.monthly as MonthlyEntry[]).map(m => ({ label: m.label, run: m.run, ride: m.ride }))
-      : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), run: a.run, ride: a.ride }))
+      ? (data.monthly as MonthlyEntry[]).map(m => ({ label: m.label, tooltipLabel: m.label, run: m.run, ride: m.ride }))
+      : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
 
   const metrics: { key: typeof metric; label: string }[] = [
     { key: 'distanceKm', label: 'Distance' },
