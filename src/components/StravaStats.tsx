@@ -37,6 +37,18 @@ function weekRangeLabel(iso: string) {
   return `${s} – ${e}`
 }
 
+// Returns just the Monday (start) of a week ISO string
+function weekStartLabel(iso: string) {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+// Returns the Sunday (end) of a week ISO string
+function weekEndLabel(iso: string) {
+  const end = new Date(iso)
+  end.setDate(end.getDate() + 6)
+  return end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 function StatCell({ value, label, border = true }: { value: string; label: string; border?: boolean }) {
   return (
@@ -78,6 +90,7 @@ type ProgressionMode = 'weekly' | 'monthly' | 'annual'
 interface BarEntry {
   label: string
   tooltipLabel: string
+  isoStart?: string
   run: PeriodStats
   ride: PeriodStats
 }
@@ -321,7 +334,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
 
   const allEntries: BarEntry[] = mode === 'weekly'
-    ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), tooltipLabel: weekRangeLabel(w.weekStart), run: w.run, ride: w.ride }))
+    ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), tooltipLabel: weekRangeLabel(w.weekStart), isoStart: w.weekStart, run: w.run, ride: w.ride }))
     : mode === 'monthly'
       ? (data.monthly as MonthlyEntry[]).map(m => ({ label: m.label, tooltipLabel: m.label, run: m.run, ride: m.ride }))
       : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
@@ -331,9 +344,6 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const windowStart = Math.max(0, windowEnd - WINDOW)
   const entries = allEntries.slice(windowStart, windowEnd)
-
-  const canBack = windowStart > 0
-  const canForward = windowEnd < allEntries.length
 
   const metrics: { key: typeof metric; label: string }[] = [
     { key: 'distanceKm', label: 'Distance' },
@@ -358,27 +368,26 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const periodLabel = mode === 'weekly' ? 'All weeks' : mode === 'monthly' ? 'All months' : 'All years'
 
+  // Precise range label: start-of-first to end-of-last
+  function rangeLabel() {
+    const first = entries[0]
+    const last = entries[entries.length - 1]
+    if (mode === 'weekly' && first.isoStart && last.isoStart) {
+      return `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
+    }
+    // monthly / annual: tooltipLabel is already a single token (e.g. "Jan 2024" or "2024")
+    return `${first.tooltipLabel} – ${last.tooltipLabel}`
+  }
+
   return (
     <div className="border border-ink/10 overflow-hidden">
       <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <span className="font-mono text-xs text-muted tracking-widest uppercase">{periodLabel}</span>
           {WINDOW < allEntries.length && (
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setWindowEnd(e => Math.max(WINDOW, e - WINDOW))}
-                disabled={!canBack}
-                className="font-mono text-xs px-2 py-0.5 border border-ink/10 text-muted hover:border-ink/30 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
-              >‹</button>
-              <span className="font-mono text-[10px] text-muted/40">
-                {entries[0].tooltipLabel} – {entries[entries.length - 1].tooltipLabel}
-              </span>
-              <button
-                onClick={() => setWindowEnd(e => Math.min(allEntries.length, e + WINDOW))}
-                disabled={!canForward}
-                className="font-mono text-xs px-2 py-0.5 border border-ink/10 text-muted hover:border-ink/30 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
-              >›</button>
-            </div>
+            <span className="font-mono text-[10px] text-muted/40">
+              {rangeLabel()}
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -396,6 +405,27 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           ))}
         </div>
       </div>
+
+      {/* Scroll slider — only shown when there are more entries than the window */}
+      {WINDOW < allEntries.length && (
+        <div className="px-5 py-2 border-b border-ink/10 flex items-center gap-3">
+          <span className="font-mono text-[10px] text-muted/40 shrink-0">
+            {mode === 'weekly' ? weekStartLabel(allEntries[0].isoStart!) : allEntries[0].tooltipLabel}
+          </span>
+          <input
+            type="range"
+            min={WINDOW}
+            max={allEntries.length}
+            value={windowEnd}
+            onChange={e => setWindowEnd(Number(e.target.value))}
+            className="flex-1 h-1 cursor-pointer"
+            style={{ accentColor: 'var(--color-ink, #1a1a1a)' }}
+          />
+          <span className="font-mono text-[10px] text-muted/40 shrink-0">
+            {mode === 'weekly' ? weekEndLabel(allEntries[allEntries.length - 1].isoStart!) : allEntries[allEntries.length - 1].tooltipLabel}
+          </span>
+        </div>
+      )}
 
       {/* Summary */}
       <div className="grid grid-cols-2 border-b border-ink/10">
