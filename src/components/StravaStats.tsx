@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SportShoe, Bike } from 'lucide-react'
 import stravaData from '../data/strava.json'
@@ -114,6 +114,13 @@ function ProgressionChart({ entries, metric }: {
   metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Scroll to the right (most recent) on mount and when entries change
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) el.scrollLeft = el.scrollWidth
+  }, [entries.length])
 
   const metricLabel: Record<typeof metric, string> = {
     distanceKm: 'km per period',
@@ -122,20 +129,19 @@ function ProgressionChart({ entries, metric }: {
     activities: 'activities per period',
   }
 
-  // SVG coordinate space
-  const W = 600
+  // Fixed column width per entry — feels like a calendar/timeline
+  const COL_W = 48
   const H = 200
-  const PAD = { top: 16, bottom: 32, left: 42, right: 12 }
-  const cW = W - PAD.left - PAD.right
+  const PAD = { top: 16, bottom: 32, left: 42, right: 16 }
   const cH = H - PAD.top - PAD.bottom
 
-  const maxVal = Math.max(...entries.map(e => e.run[metric] + e.ride[metric]), 1)
+  const totalW = PAD.left + entries.length * COL_W + PAD.right
 
-  // Y axis: 3 nice ticks
+  const maxVal = Math.max(...entries.map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
   const yTicks = [0, Math.round(niceMax / 2), niceMax]
 
-  const xOf = (i: number) => PAD.left + (i / (entries.length - 1)) * cW
+  const xOf = (i: number) => PAD.left + i * COL_W + COL_W / 2
   const yOf = (val: number) => PAD.top + cH - (val / niceMax) * cH
 
   const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
@@ -151,10 +157,6 @@ function ProgressionChart({ entries, metric }: {
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
-  // Show every label, or every 2nd/3rd if crowded
-  const step = entries.length > 18 ? 3 : entries.length > 10 ? 2 : 1
-
-  // Format a single metric value for the info bar
   function fmtVal(val: number) {
     if (metric === 'timeHours') return fmtHours(val)
     if (metric === 'elevGainM') return `${Math.round(val)} m`
@@ -186,19 +188,24 @@ function ProgressionChart({ entries, metric }: {
           ) : (
             <>
               <p className="font-mono text-sm md:text-base text-ink/0 leading-none select-none">—</p>
-              <p className="font-mono text-xs md:text-sm text-muted/30 mt-1">— hover to inspect</p>
+              <p className="font-mono text-xs md:text-sm text-muted/30 mt-1">— {typeof window !== 'undefined' && 'ontouchstart' in window ? 'tap' : 'hover'} to inspect</p>
             </>
           )}
         </div>
       </div>
 
-      {/* SVG chart — everything lives inside here */}
-      <div className="relative w-full">
+      {/* Scrollable chart container */}
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto overflow-y-hidden"
+        style={{ WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'], scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'], msOverflowStyle: 'none' }}
+        onMouseLeave={() => setHovered(null)}
+      >
         <svg
-          viewBox={`0 0 ${W} ${H}`}
-          preserveAspectRatio="xMidYMid meet"
-          className="w-full"
-          style={{ height: 'clamp(160px, 30vw, 280px)' }}
+          width={totalW}
+          height={H}
+          viewBox={`0 0 ${totalW} ${H}`}
+          style={{ display: 'block', minWidth: totalW }}
         >
           <defs>
             <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
@@ -224,7 +231,7 @@ function ProgressionChart({ entries, metric }: {
             return (
               <g key={tick}>
                 <line
-                  x1={PAD.left} y1={y} x2={W - PAD.right} y2={y}
+                  x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
                   stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
                 />
                 <text
@@ -264,7 +271,7 @@ function ProgressionChart({ entries, metric }: {
             />
           )}
 
-          {/* Ride dots — open circles Strava-style */}
+          {/* Ride dots */}
           {ridePoints.map((p, i) => (
             <circle
               key={`ride-${i}`}
@@ -277,7 +284,7 @@ function ProgressionChart({ entries, metric }: {
             />
           ))}
 
-          {/* Run dots — open circles */}
+          {/* Run dots */}
           {runPoints.map((p, i) => (
             <circle
               key={`run-${i}`}
@@ -290,39 +297,33 @@ function ProgressionChart({ entries, metric }: {
             />
           ))}
 
-          {/* X-axis labels inside SVG — perfectly aligned to each point */}
-          {entries.map((entry, i) => {
-            if (i % step !== 0) return null
-            return (
-              <text
-                key={`xlabel-${i}`}
-                x={xOf(i)} y={H - 3}
-                textAnchor="middle"
-                fontSize="10"
-                fill="#1a1a1a"
-                fillOpacity="0.35"
-                fontFamily="monospace"
-              >
-                {entry.label}
-              </text>
-            )
-          })}
+          {/* X-axis labels */}
+          {entries.map((entry, i) => (
+            <text
+              key={`xlabel-${i}`}
+              x={xOf(i)} y={H - 3}
+              textAnchor="middle"
+              fontSize="10"
+              fill="#1a1a1a"
+              fillOpacity="0.35"
+              fontFamily="monospace"
+            >
+              {entry.label}
+            </text>
+          ))}
 
           {/* Invisible hover targets */}
-          {entries.map((_, i) => {
-            const colW = cW / (entries.length - 1)
-            return (
-              <rect
-                key={`hit-${i}`}
-                x={xOf(i) - colW / 2} y={0}
-                width={colW} height={H}
-                fill="transparent"
-                style={{ cursor: 'default' }}
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(null)}
-              />
-            )
-          })}
+          {entries.map((_, i) => (
+            <rect
+              key={`hit-${i}`}
+              x={xOf(i) - COL_W / 2} y={0}
+              width={COL_W} height={H}
+              fill="transparent"
+              style={{ cursor: 'default' }}
+              onMouseEnter={() => setHovered(i)}
+              onTouchStart={() => setHovered(i)}
+            />
+          ))}
         </svg>
       </div>
 
@@ -363,11 +364,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
         }))
       : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
 
-  const WINDOW = mode === 'weekly' ? 12 : mode === 'monthly' ? 12 : allEntries.length
-  const [windowEnd, setWindowEnd] = useState(allEntries.length)
-
-  const windowStart = Math.max(0, windowEnd - WINDOW)
-  const entries = allEntries.slice(windowStart, windowEnd)
+  const entries = allEntries
 
   const metrics: { key: typeof metric; label: string }[] = [
     { key: 'distanceKm', label: 'Distance' },
@@ -392,15 +389,12 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const periodLabel = mode === 'weekly' ? 'All weeks' : mode === 'monthly' ? 'All months' : 'All years'
 
-  // Header range label with years
   function rangeLabel() {
     const first = entries[0]
     const last = entries[entries.length - 1]
     if (mode === 'weekly' && first.isoStart && last.isoStart) {
       return `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
     }
-    // monthly: tooltipLabel is now "Jan 2025" etc.
-    // annual: tooltipLabel is "2024" etc.
     return `${first.tooltipLabel} – ${last.tooltipLabel}`
   }
 
@@ -409,11 +403,9 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <span className="font-mono text-xs text-muted tracking-widest uppercase">{periodLabel}</span>
-          {WINDOW < allEntries.length && (
-            <span className="font-mono text-[10px] text-muted/40">
-              {rangeLabel()}
-            </span>
-          )}
+          <span className="font-mono text-[10px] text-muted/40">
+            {rangeLabel()}
+          </span>
         </div>
         <div className="flex items-center gap-1">
           {metrics.map(m => (
@@ -430,27 +422,6 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           ))}
         </div>
       </div>
-
-      {/* Scroll slider — only shown when there are more entries than the window */}
-      {WINDOW < allEntries.length && (
-        <div className="px-5 py-2 border-b border-ink/10 flex items-center gap-3">
-          <span className="font-mono text-[10px] text-muted/40 shrink-0">
-            {mode === 'weekly' ? weekStartLabel(allEntries[0].isoStart!) : allEntries[0].tooltipLabel}
-          </span>
-          <input
-            type="range"
-            min={WINDOW}
-            max={allEntries.length}
-            value={windowEnd}
-            onChange={e => setWindowEnd(Number(e.target.value))}
-            className="flex-1 h-1 cursor-pointer"
-            style={{ accentColor: 'var(--color-ink, #1a1a1a)' }}
-          />
-          <span className="font-mono text-[10px] text-muted/40 shrink-0">
-            {mode === 'weekly' ? weekEndLabel(allEntries[allEntries.length - 1].isoStart!) : allEntries[allEntries.length - 1].tooltipLabel}
-          </span>
-        </div>
-      )}
 
       {/* Summary */}
       <div className="grid grid-cols-2 border-b border-ink/10">
