@@ -94,18 +94,24 @@ function ProgressionChart({ entries, metric }: {
     distanceKm: 'km',
     timeHours: 'hrs',
     elevGainM: 'm elev',
-    activities: 'activities',
+    activities: 'acts',
   }
 
-  const W = 800
-  const H = 120
-  const PAD = { top: 12, bottom: 4, left: 0, right: 0 }
-  const chartH = H - PAD.top - PAD.bottom
+  // SVG coordinate space
+  const W = 600
+  const H = 200
+  const PAD = { top: 16, bottom: 28, left: 36, right: 12 }
+  const cW = W - PAD.left - PAD.right
+  const cH = H - PAD.top - PAD.bottom
 
   const maxVal = Math.max(...entries.map(e => e.run[metric] + e.ride[metric]), 1)
 
-  const xOf = (i: number) => (i / (entries.length - 1)) * W
-  const yOf = (val: number) => PAD.top + chartH - (val / maxVal) * chartH
+  // Y axis: 3 nice ticks
+  const niceMax = Math.ceil(maxVal / 10) * 10
+  const yTicks = [0, Math.round(niceMax / 2), niceMax]
+
+  const xOf = (i: number) => PAD.left + (i / (entries.length - 1)) * cW
+  const yOf = (val: number) => PAD.top + cH - (val / niceMax) * cH
 
   const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
   const ridePoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.ride[metric]) }))
@@ -113,155 +119,174 @@ function ProgressionChart({ entries, metric }: {
   const toPolyline = (pts: { x: number; y: number }[]) =>
     pts.map(p => `${p.x},${p.y}`).join(' ')
 
-  const toArea = (pts: { x: number; y: number }[]) =>
-    `M ${pts[0].x},${H} ` +
-    pts.map(p => `L ${p.x},${p.y}`).join(' ') +
-    ` L ${pts[pts.length - 1].x},${H} Z`
+  const toArea = (pts: { x: number; y: number }[]) => {
+    const base = yOf(0)
+    return `M ${pts[0].x},${base} ` +
+      pts.map(p => `L ${p.x},${p.y}`).join(' ') +
+      ` L ${pts[pts.length - 1].x},${base} Z`
+  }
 
-  const step = entries.length > 24 ? 4 : entries.length > 12 ? 2 : 1
+  // Show every label, or every 2nd/3rd if crowded
+  const step = entries.length > 18 ? 3 : entries.length > 10 ? 2 : 1
 
   return (
     <div className="px-5 py-5">
-      <span className="font-mono text-xs text-muted/50 tracking-widest uppercase mb-4 block">
+      <span className="font-mono text-xs text-muted/50 tracking-widest uppercase mb-3 block">
         {metricLabel[metric]} per period
       </span>
 
-      {/* SVG chart */}
-      <div className="relative w-full" style={{ height: H }}>
+      {/* SVG chart — everything lives inside here */}
+      <div className="relative w-full">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="xMidYMid meet"
-          className="w-full overflow-visible"
-          style={{ height: H }}
+          className="w-full"
+          style={{ height: H * 1.2 }}
         >
           <defs>
             <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" className="text-ink" />
-              <stop offset="100%" stopColor="currentColor" stopOpacity="0.01" className="text-ink" />
+              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
+              <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
             </linearGradient>
             <linearGradient id="rideGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="currentColor" stopOpacity="0.08" className="text-ink" />
-              <stop offset="100%" stopColor="currentColor" stopOpacity="0.01" className="text-ink" />
+              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
             </linearGradient>
           </defs>
+
+          {/* Y-axis grid lines + labels */}
+          {yTicks.map(tick => {
+            const y = yOf(tick)
+            return (
+              <g key={tick}>
+                <line
+                  x1={PAD.left} y1={y} x2={W - PAD.right} y2={y}
+                  stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
+                />
+                <text
+                  x={PAD.left - 6} y={y + 3.5}
+                  textAnchor="end"
+                  fontSize="8"
+                  fill="#1a1a1a"
+                  fillOpacity="0.35"
+                  fontFamily="monospace"
+                >
+                  {tick}
+                </text>
+              </g>
+            )
+          })}
 
           {/* Ride area + line */}
           <path d={toArea(ridePoints)} fill="url(#rideGrad)" />
           <polyline
             points={toPolyline(ridePoints)}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity="0.25"
-            strokeWidth="1.5"
-            className="text-ink"
+            fill="none" stroke="#1a1a1a" strokeOpacity="0.22" strokeWidth="1.5"
           />
 
           {/* Run area + line */}
           <path d={toArea(runPoints)} fill="url(#runGrad)" />
           <polyline
             points={toPolyline(runPoints)}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity="0.55"
-            strokeWidth="1.5"
-            className="text-ink"
+            fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
           />
 
           {/* Hover vertical line */}
           {hovered !== null && (
             <line
               x1={xOf(hovered)} y1={PAD.top}
-              x2={xOf(hovered)} y2={H}
-              stroke="currentColor"
-              strokeOpacity="0.15"
-              strokeWidth="1"
-              strokeDasharray="3 3"
-              className="text-ink"
+              x2={xOf(hovered)} y2={PAD.top + cH}
+              stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
             />
           )}
 
-          {/* Ride dots */}
+          {/* Ride dots — open circles Strava-style */}
           {ridePoints.map((p, i) => (
             <circle
-              key={`ride-dot-${i}`}
-              cx={p.x} cy={p.y} r={hovered === i ? 3.5 : 2}
-              fill="currentColor"
-              fillOpacity={hovered === i ? 0.5 : 0.2}
-              className="text-ink transition-all duration-150 cursor-pointer"
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
+              key={`ride-${i}`}
+              cx={p.x} cy={p.y}
+              r={hovered === i ? 4 : 3}
+              fill={hovered === i ? '#1a1a1a' : 'transparent'}
+              fillOpacity={hovered === i ? 0.15 : 0}
+              stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.5 : 0.25}
+              strokeWidth="1.5"
             />
           ))}
 
-          {/* Run dots */}
+          {/* Run dots — open circles */}
           {runPoints.map((p, i) => (
             <circle
-              key={`run-dot-${i}`}
-              cx={p.x} cy={p.y} r={hovered === i ? 3.5 : 2}
-              fill="currentColor"
-              fillOpacity={hovered === i ? 0.9 : 0.45}
-              className="text-ink transition-all duration-150 cursor-pointer"
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
+              key={`run-${i}`}
+              cx={p.x} cy={p.y}
+              r={hovered === i ? 4 : 3}
+              fill={hovered === i ? '#1a1a1a' : 'transparent'}
+              fillOpacity={hovered === i ? 0.3 : 0}
+              stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.9 : 0.5}
+              strokeWidth="1.5"
             />
           ))}
 
-          {/* Invisible hover targets spanning full column width */}
+          {/* X-axis labels inside SVG — perfectly aligned to each point */}
+          {entries.map((entry, i) => {
+            if (i % step !== 0) return null
+            return (
+              <text
+                key={`xlabel-${i}`}
+                x={xOf(i)} y={H - 4}
+                textAnchor="middle"
+                fontSize="8"
+                fill="#1a1a1a"
+                fillOpacity="0.35"
+                fontFamily="monospace"
+              >
+                {entry.label}
+              </text>
+            )
+          })}
+
+          {/* Tooltip rendered inside SVG as a foreignObject for rich HTML */}
+          {hovered !== null && (() => {
+            const entry = entries[hovered]
+            const total = entry.run[metric] + entry.ride[metric]
+            if (total === 0) return null
+            const tx = xOf(hovered)
+            const ttW = 130
+            const ttH = 42
+            const ttX = tx + ttW > W - PAD.right ? tx - ttW - 6 : tx + 6
+            const ttY = PAD.top
+            return (
+              <g>
+                <rect x={ttX} y={ttY} width={ttW} height={ttH} fill="#1a1a1a" rx="1" />
+                <text x={ttX + 8} y={ttY + 13} fontSize="8.5" fill="white" fillOpacity="0.5" fontFamily="monospace">
+                  {entry.tooltipLabel}
+                </text>
+                <text x={ttX + 8} y={ttY + 29} fontSize="9" fill="white" fontFamily="monospace">
+                  ↑ {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}  ⊙ {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}
+                </text>
+              </g>
+            )
+          })()}
+
+          {/* Invisible hover targets */}
           {entries.map((_, i) => {
-            const colW = W / entries.length
+            const colW = cW / (entries.length - 1)
             return (
               <rect
                 key={`hit-${i}`}
                 x={xOf(i) - colW / 2} y={0}
                 width={colW} height={H}
                 fill="transparent"
+                style={{ cursor: 'default' }}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
               />
             )
           })}
         </svg>
-
-        {/* Tooltip */}
-        {hovered !== null && (() => {
-          const entry = entries[hovered]
-          const total = entry.run[metric] + entry.ride[metric]
-          if (total === 0) return null
-          const pct = xOf(hovered) / W * 100
-          const alignRight = pct > 70
-          return (
-            <div
-              className="absolute bottom-full mb-2 pointer-events-none z-10"
-              style={{ left: `${pct}%`, transform: alignRight ? 'translateX(-100%)' : 'translateX(-50%)' }}
-            >
-              <div className="bg-ink text-paper font-mono text-[10px] px-2 py-1.5 whitespace-nowrap">
-                <div className="text-paper/50 mb-0.5">{entry.tooltipLabel}</div>
-                <div className="flex items-center gap-1">
-                  <PersonStanding size={9} />
-                  {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}
-                  <span className="text-paper/30 mx-0.5">·</span>
-                  <Bike size={9} />
-                  {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}
-                </div>
-              </div>
-            </div>
-          )
-        })()}
-      </div>
-
-      {/* X-axis labels */}
-      <div className="flex items-start mt-1" style={{ gap: 0 }}>
-        {entries.map((entry, i) => (
-          <div key={i} className="flex-1 overflow-hidden">
-            {i % step === 0 && (
-              <span className="font-mono text-[9px] text-muted/40 block truncate">{entry.label}</span>
-            )}
-          </div>
-        ))}
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3">
+      <div className="flex items-center gap-4 mt-1">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-px bg-ink/50" />
           <PersonStanding size={11} className="text-muted/60" />
