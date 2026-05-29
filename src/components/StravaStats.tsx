@@ -142,7 +142,7 @@ function ProgressionChart({ entries, metric }: {
         <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
           {metricLabel[metric]}
         </span>
-        <div className="mt-0.5 min-h-8 flex flex-col justify-center">
+        <div className="mt-0.5 h-10 flex flex-col justify-center overflow-hidden">
           {hovered !== null && entries[hovered].run[metric] + entries[hovered].ride[metric] > 0 ? (
             <>
               <p className="font-mono text-sm md:text-base text-ink leading-none">{entries[hovered].tooltipLabel}</p>
@@ -157,7 +157,10 @@ function ProgressionChart({ entries, metric }: {
               </div>
             </>
           ) : (
-            <p className="font-mono text-xs md:text-sm text-muted/30">— hover to inspect</p>
+            <>
+              <p className="font-mono text-sm md:text-base text-ink/0 leading-none select-none">—</p>
+              <p className="font-mono text-xs md:text-sm text-muted/30 mt-1">— hover to inspect</p>
+            </>
           )}
         </div>
       </div>
