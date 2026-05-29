@@ -127,11 +127,40 @@ function ProgressionChart({ entries, metric }: {
   // Show every label, or every 2nd/3rd if crowded
   const step = entries.length > 18 ? 3 : entries.length > 10 ? 2 : 1
 
+  // Format a single metric value for the info bar
+  function fmtVal(val: number) {
+    if (metric === 'timeHours') return fmtHours(val)
+    if (metric === 'elevGainM') return `${Math.round(val)} m`
+    if (metric === 'activities') return val.toFixed(0)
+    return `${val.toFixed(1)} km`
+  }
+
   return (
     <div className="px-5 py-5">
-      <span className="font-mono text-xs text-muted/50 tracking-widest uppercase mb-3 block">
-        {metricLabel[metric]}
-      </span>
+      {/* Info bar — label + hover-reactive period/values */}
+      <div className="mb-4">
+        <span className="font-mono text-xs text-muted/50 tracking-widest uppercase">
+          {metricLabel[metric]}
+        </span>
+        <div className="mt-1 h-9 flex flex-col justify-center">
+          {hovered !== null && entries[hovered].run[metric] + entries[hovered].ride[metric] > 0 ? (
+            <>
+              <p className="font-mono text-xs text-ink leading-none">{entries[hovered].tooltipLabel}</p>
+              <div className="flex items-center gap-3 mt-1">
+                <span className="flex items-center gap-1 font-mono text-xs text-muted">
+                  <SportShoe size={10} /> {fmtVal(entries[hovered].run[metric])}
+                </span>
+                <span className="text-muted/30 font-mono text-xs">·</span>
+                <span className="flex items-center gap-1 font-mono text-xs text-muted">
+                  <Bike size={10} /> {fmtVal(entries[hovered].ride[metric])}
+                </span>
+              </div>
+            </>
+          ) : (
+            <p className="font-mono text-xs text-muted/30">— hover to inspect</p>
+          )}
+        </div>
+      </div>
 
       {/* SVG chart — everything lives inside here */}
       <div className="relative w-full">
@@ -248,35 +277,6 @@ function ProgressionChart({ entries, metric }: {
               </text>
             )
           })}
-
-          {/* Tooltip rendered inside SVG as a foreignObject for rich HTML */}
-          {hovered !== null && (() => {
-            const entry = entries[hovered]
-            const total = entry.run[metric] + entry.ride[metric]
-            if (total === 0) return null
-            const tx = xOf(hovered)
-            const ttW = 140
-            const ttH = 42
-            const ttX = tx + ttW > W - PAD.right ? tx - ttW - 6 : tx + 6
-            const ttY = PAD.top
-            return (
-              <g>
-                <rect x={ttX} y={ttY} width={ttW} height={ttH} fill="#1a1a1a" rx="1" />
-                <foreignObject x={ttX} y={ttY} width={ttW} height={ttH}>
-                  <div style={{ padding: '5px 8px', fontFamily: 'monospace', fontSize: 9, color: 'white', lineHeight: 1.4 }}>
-                    <div style={{ opacity: 0.5, fontSize: 8.5, marginBottom: 3 }}>{entry.tooltipLabel}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <SportShoe size={9} />
-                      {metric === 'timeHours' ? fmtHours(entry.run[metric]) : metric === 'elevGainM' ? `${Math.round(entry.run[metric])}m` : metric === 'activities' ? entry.run[metric].toFixed(0) : `${entry.run[metric].toFixed(1)}km`}
-                      <span style={{ opacity: 0.3 }}>·</span>
-                      <Bike size={9} />
-                      {metric === 'timeHours' ? fmtHours(entry.ride[metric]) : metric === 'elevGainM' ? `${Math.round(entry.ride[metric])}m` : metric === 'activities' ? entry.ride[metric].toFixed(0) : `${entry.ride[metric].toFixed(1)}km`}
-                    </div>
-                  </div>
-                </foreignObject>
-              </g>
-            )
-          })()}
 
           {/* Invisible hover targets */}
           {entries.map((_, i) => {
