@@ -320,11 +320,20 @@ function ProgressionChart({ entries, metric }: {
 function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
 
-  const entries: BarEntry[] = mode === 'weekly'
+  const allEntries: BarEntry[] = mode === 'weekly'
     ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), tooltipLabel: weekRangeLabel(w.weekStart), run: w.run, ride: w.ride }))
     : mode === 'monthly'
       ? (data.monthly as MonthlyEntry[]).map(m => ({ label: m.label, tooltipLabel: m.label, run: m.run, ride: m.ride }))
       : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
+
+  const WINDOW = mode === 'weekly' ? 12 : mode === 'monthly' ? 12 : allEntries.length
+  const [windowEnd, setWindowEnd] = useState(allEntries.length)
+
+  const windowStart = Math.max(0, windowEnd - WINDOW)
+  const entries = allEntries.slice(windowStart, windowEnd)
+
+  const canBack = windowStart > 0
+  const canForward = windowEnd < allEntries.length
 
   const metrics: { key: typeof metric; label: string }[] = [
     { key: 'distanceKm', label: 'Distance' },
@@ -352,7 +361,26 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   return (
     <div className="border border-ink/10 overflow-hidden">
       <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-2">
-        <span className="font-mono text-xs text-muted tracking-widest uppercase">{periodLabel}</span>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-xs text-muted tracking-widest uppercase">{periodLabel}</span>
+          {WINDOW < allEntries.length && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setWindowEnd(e => Math.max(WINDOW, e - WINDOW))}
+                disabled={!canBack}
+                className="font-mono text-xs px-2 py-0.5 border border-ink/10 text-muted hover:border-ink/30 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+              >‹</button>
+              <span className="font-mono text-[10px] text-muted/40">
+                {windowStart + 1}–{windowEnd} / {allEntries.length}
+              </span>
+              <button
+                onClick={() => setWindowEnd(e => Math.min(allEntries.length, e + WINDOW))}
+                disabled={!canForward}
+                className="font-mono text-xs px-2 py-0.5 border border-ink/10 text-muted hover:border-ink/30 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+              >›</button>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-1">
           {metrics.map(m => (
             <button
