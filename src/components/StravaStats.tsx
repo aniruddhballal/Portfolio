@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { PersonStanding, Bike } from 'lucide-react'
+import { SportShoe, Bike } from 'lucide-react'
 import stravaData from '../data/strava.json'
 import type { StravaData, PeriodStats, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../data/strava-types'
 
@@ -266,7 +266,7 @@ function ProgressionChart({ entries, metric }: {
                   <div style={{ padding: '5px 8px', fontFamily: 'monospace', fontSize: 9, color: 'white', lineHeight: 1.4 }}>
                     <div style={{ opacity: 0.5, fontSize: 8.5, marginBottom: 3 }}>{entry.tooltipLabel}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <PersonStanding size={9} />
+                      <SportShoe size={9} />
                       {metric === 'timeHours' ? fmtHours(entry.run[metric]) : metric === 'elevGainM' ? `${Math.round(entry.run[metric])}m` : metric === 'activities' ? entry.run[metric].toFixed(0) : `${entry.run[metric].toFixed(1)}km`}
                       <span style={{ opacity: 0.3 }}>·</span>
                       <Bike size={9} />
@@ -300,7 +300,7 @@ function ProgressionChart({ entries, metric }: {
       <div className="flex items-center gap-4 mt-1">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-px bg-ink/50" />
-          <PersonStanding size={11} className="text-muted/60" />
+          <SportShoe size={11} className="text-muted/60" />
           <span className="font-mono text-[10px] text-muted/60">Run</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -369,7 +369,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       {/* Summary */}
       <div className="grid grid-cols-2 border-b border-ink/10">
         <div className="px-5 py-3 border-r border-ink/10">
-          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2"><PersonStanding size={13} /> Run</span>
+          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2"><SportShoe size={13} /> Run</span>
           <div className="flex gap-4 flex-wrap">
             <span className="font-display text-sm text-ink">{fmtDist(totRun.distanceKm)} km</span>
             <span className="font-mono text-xs text-muted self-end">{fmtHours(totRun.timeHours)}</span>
