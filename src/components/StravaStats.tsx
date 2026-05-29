@@ -65,7 +65,7 @@ function PBList({ pbs, direction = -1 }: { pbs: StravaData['run']['pbs']; direct
   )
 }
 
-// ── Progression bar chart ─────────────────────────────────────────────────────
+// ── Progression area chart ────────────────────────────────────────────────────
 type ProgressionMode = 'weekly' | 'monthly' | 'annual'
 
 interface BarEntry {
@@ -74,7 +74,7 @@ interface BarEntry {
   ride: PeriodStats
 }
 
-function ProgressionBars({ entries, metric }: {
+function ProgressionChart({ entries, metric }: {
   entries: BarEntry[]
   metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
 }) {
@@ -87,10 +87,28 @@ function ProgressionBars({ entries, metric }: {
     activities: 'activities',
   }
 
-  const maxVal = Math.max(
-    ...entries.map(e => e.run[metric] + e.ride[metric]),
-    1
-  )
+  const W = 800
+  const H = 120
+  const PAD = { top: 12, bottom: 4, left: 0, right: 0 }
+  const chartH = H - PAD.top - PAD.bottom
+
+  const maxVal = Math.max(...entries.map(e => e.run[metric] + e.ride[metric]), 1)
+
+  const xOf = (i: number) => (i / (entries.length - 1)) * W
+  const yOf = (val: number) => PAD.top + chartH - (val / maxVal) * chartH
+
+  const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
+  const ridePoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.ride[metric]) }))
+
+  const toPolyline = (pts: { x: number; y: number }[]) =>
+    pts.map(p => `${p.x},${p.y}`).join(' ')
+
+  const toArea = (pts: { x: number; y: number }[]) =>
+    `M ${pts[0].x},${H} ` +
+    pts.map(p => `L ${p.x},${p.y}`).join(' ') +
+    ` L ${pts[pts.length - 1].x},${H} Z`
+
+  const step = entries.length > 24 ? 4 : entries.length > 12 ? 2 : 1
 
   return (
     <div className="px-5 py-5">
@@ -98,75 +116,148 @@ function ProgressionBars({ entries, metric }: {
         {metricLabel[metric]} per period
       </span>
 
-      <div className="flex items-end gap-1 h-28" style={{ height: 112 }}>
-        {entries.map((entry, i) => {
-          const CONTAINER_H = 112
-          const runPx = Math.max((entry.run[metric] / maxVal) * CONTAINER_H, entry.run[metric] > 0 ? 2 : 0)
-          const ridePx = Math.max((entry.ride[metric] / maxVal) * CONTAINER_H, entry.ride[metric] > 0 ? 2 : 0)
-          const total = entry.run[metric] + entry.ride[metric]
-          const isHov = hovered === i
+      {/* SVG chart */}
+      <div className="relative w-full" style={{ height: H }}>
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          className="w-full h-full overflow-visible"
+        >
+          <defs>
+            <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" className="text-ink" />
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0.01" className="text-ink" />
+            </linearGradient>
+            <linearGradient id="rideGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.08" className="text-ink" />
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0.01" className="text-ink" />
+            </linearGradient>
+          </defs>
 
-          return (
-            <div
-              key={i}
-              className="flex-1 flex flex-col justify-end gap-px cursor-default relative"
+          {/* Ride area + line */}
+          <path d={toArea(ridePoints)} fill="url(#rideGrad)" />
+          <polyline
+            points={toPolyline(ridePoints)}
+            fill="none"
+            stroke="currentColor"
+            strokeOpacity="0.25"
+            strokeWidth="1.5"
+            className="text-ink"
+          />
+
+          {/* Run area + line */}
+          <path d={toArea(runPoints)} fill="url(#runGrad)" />
+          <polyline
+            points={toPolyline(runPoints)}
+            fill="none"
+            stroke="currentColor"
+            strokeOpacity="0.55"
+            strokeWidth="1.5"
+            className="text-ink"
+          />
+
+          {/* Hover vertical line */}
+          {hovered !== null && (
+            <line
+              x1={xOf(hovered)} y1={PAD.top}
+              x2={xOf(hovered)} y2={H}
+              stroke="currentColor"
+              strokeOpacity="0.15"
+              strokeWidth="1"
+              strokeDasharray="3 3"
+              className="text-ink"
+            />
+          )}
+
+          {/* Ride dots */}
+          {ridePoints.map((p, i) => (
+            <circle
+              key={`ride-dot-${i}`}
+              cx={p.x} cy={p.y} r={hovered === i ? 3.5 : 2}
+              fill="currentColor"
+              fillOpacity={hovered === i ? 0.5 : 0.2}
+              className="text-ink transition-all duration-150 cursor-pointer"
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
+            />
+          ))}
+
+          {/* Run dots */}
+          {runPoints.map((p, i) => (
+            <circle
+              key={`run-dot-${i}`}
+              cx={p.x} cy={p.y} r={hovered === i ? 3.5 : 2}
+              fill="currentColor"
+              fillOpacity={hovered === i ? 0.9 : 0.45}
+              className="text-ink transition-all duration-150 cursor-pointer"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            />
+          ))}
+
+          {/* Invisible hover targets spanning full column width */}
+          {entries.map((_, i) => {
+            const colW = W / entries.length
+            return (
+              <rect
+                key={`hit-${i}`}
+                x={xOf(i) - colW / 2} y={0}
+                width={colW} height={H}
+                fill="transparent"
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+              />
+            )
+          })}
+        </svg>
+
+        {/* Tooltip */}
+        {hovered !== null && (() => {
+          const entry = entries[hovered]
+          const total = entry.run[metric] + entry.ride[metric]
+          if (total === 0) return null
+          const pct = xOf(hovered) / W * 100
+          const alignRight = pct > 70
+          return (
+            <div
+              className="absolute bottom-full mb-2 pointer-events-none z-10"
+              style={{ left: `${pct}%`, transform: alignRight ? 'translateX(-100%)' : 'translateX(-50%)' }}
             >
-              {isHov && total > 0 && (
-                <div className="absolute bottom-full mb-1 z-10 pointer-events-none left-1/2 -translate-x-1/2">
-                  <div className="bg-ink text-paper font-mono text-[10px] px-2 py-1 whitespace-nowrap">
-                    {entry.label}<br />
-                    <span className="flex items-center gap-1"><PersonStanding size={10} /> {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}{' '}
-                    <Bike size={10} /> {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}</span>
-                  </div>
+              <div className="bg-ink text-paper font-mono text-[10px] px-2 py-1.5 whitespace-nowrap">
+                <div className="text-paper/50 mb-0.5">{entry.label}</div>
+                <div className="flex items-center gap-1">
+                  <PersonStanding size={9} />
+                  {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}
+                  <span className="text-paper/30 mx-0.5">·</span>
+                  <Bike size={9} />
+                  {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}
                 </div>
-              )}
-              {/* Ride bar */}
-              <motion.div
-                key={`ride-${i}-${metric}`}
-                className={`w-full transition-colors ${isHov ? 'bg-accent/60' : 'bg-ink/20'}`}
-                initial={{ height: 0 }}
-                animate={{ height: entry.ride[metric] > 0 ? ridePx : 0 }}
-                transition={{ duration: 0.5, delay: i * 0.02, ease: 'easeOut' }}
-              />
-              {/* Run bar */}
-              <motion.div
-                key={`run-${i}-${metric}`}
-                className={`w-full transition-colors ${isHov ? 'bg-accent' : 'bg-ink/40'}`}
-                initial={{ height: 0 }}
-                animate={{ height: entry.run[metric] > 0 ? runPx : 0 }}
-                transition={{ duration: 0.5, delay: i * 0.02 + 0.05, ease: 'easeOut' }}
-              />
+              </div>
             </div>
           )
-        })}
+        })()}
       </div>
 
       {/* X-axis labels */}
-      <div className="flex items-start gap-1 mt-1">
-        {entries.map((entry, i) => {
-          const step = entries.length > 24 ? 4 : entries.length > 12 ? 2 : 1
-          const show = i % step === 0
-          return (
-            <div key={i} className="flex-1 overflow-hidden">
-              {show && (
-                <span className="font-mono text-[9px] text-muted/40 block truncate">{entry.label}</span>
-              )}
-            </div>
-          )
-        })}
+      <div className="flex items-start mt-1" style={{ gap: 0 }}>
+        {entries.map((entry, i) => (
+          <div key={i} className="flex-1 overflow-hidden">
+            {i % step === 0 && (
+              <span className="font-mono text-[9px] text-muted/40 block truncate">{entry.label}</span>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Legend */}
       <div className="flex items-center gap-4 mt-3">
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 bg-ink/40" />
+          <div className="w-4 h-px bg-ink/50" />
           <PersonStanding size={11} className="text-muted/60" />
           <span className="font-mono text-[10px] text-muted/60">Run</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2.5 h-2.5 bg-ink/20" />
+          <div className="w-4 h-px bg-ink/20" />
           <Bike size={11} className="text-muted/60" />
           <span className="font-mono text-[10px] text-muted/60">Ride</span>
         </div>
@@ -251,7 +342,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       </div>
 
       <div className="relative">
-        <ProgressionBars entries={entries} metric={metric} />
+        <ProgressionChart entries={entries} metric={metric} />
       </div>
     </div>
   )
