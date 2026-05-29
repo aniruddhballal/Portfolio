@@ -371,7 +371,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
                 className="font-mono text-xs px-2 py-0.5 border border-ink/10 text-muted hover:border-ink/30 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
               >‹</button>
               <span className="font-mono text-[10px] text-muted/40">
-                {windowStart + 1}–{windowEnd} / {allEntries.length}
+                {entries[0].tooltipLabel} – {entries[entries.length - 1].tooltipLabel}
               </span>
               <button
                 onClick={() => setWindowEnd(e => Math.min(allEntries.length, e + WINDOW))}
