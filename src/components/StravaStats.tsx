@@ -1,36 +1,333 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import stravaData from '../data/strava.json'
+import type { StravaData, PeriodStats, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../data/strava-types'
 
-// ── Strava data (hardcoded — update manually or swap for API later) ──────
-const runningStats = {
-  allTime: { activities: 293, distanceKm: 1525.8, timeHours: 138, elevGainM: 7652 },
-  last4Weeks: { activitiesPerWeek: 8, avgDistKm: 51.4, avgTimeHm: '4h 50m', elevGainM: 142 },
-  pbs: [
-    { label: '5K (1st December 2025)',            time: '20:44' },
-    { label: '10K (7th April 2026)',              time: '46:02' },
-    { label: '15K (9th April 2026)',              time: '1:15:48' },
-    { label: 'Half-Marathon (26th January 2026)', time: '1:57:42' },
-    { label: '30K (15th November 2025)',          time: '3:13:44' },
-    { label: 'Marathon (15th November 2025)',     time: '4:32:14' },
-    { label: '50K (15th November 2025)',          time: '5:24:45' },
-  ],
-}
-
-const cyclingStats = {
-  allTime: { activities: 152, distanceKm: 2168.1, timeHours: 222.34, elevGainM: 15790 },
-  pbs: [
-    { label: '5K (9th July 2025)',  time: '7:51' },
-    { label: '10K (9th July 2025)', time: '16:49' },
-    { label: '20K (9th July 2025)', time: '38:14' },
-    { label: '30K (9th July 2025)', time: '57:30' },
-    { label: '40K (9th July 2025)', time: '1:20:04' },
-    { label: '50K (9th July 2025)', time: '1:44:05' },
-    { label: '77.8K (1st May 2024)', time: '3:22:52' },
-  ],
-}
-
+const data = stravaData as StravaData
 const STRAVA_URL = 'https://www.strava.com/athletes/111442086'
 
+// ── Formatting helpers ────────────────────────────────────────────────────────
+function fmtDist(km: number) {
+  return km >= 1000
+    ? `${(km / 1000).toFixed(1)}k`
+    : `${km.toFixed(1)}`
+}
+
+function fmtHours(h: number) {
+  const hrs = Math.floor(h)
+  const mins = Math.round((h - hrs) * 60)
+  if (hrs === 0) return `${mins}m`
+  return mins > 0 ? `${hrs}h ${mins}m` : `${hrs}h`
+}
+
+function fmtElev(m: number) {
+  return m >= 1000 ? `${(m / 1000).toFixed(1)}k m` : `${Math.round(m)} m`
+}
+
+function weekLabel(iso: string) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+function StatCell({ value, label, border = true }: { value: string; label: string; border?: boolean }) {
+  return (
+    <div className={`px-4 py-4 ${border ? 'border-r border-ink/10' : ''}`}>
+      <p className="font-display text-xl md:text-2xl text-ink tracking-wide leading-none">{value}</p>
+      <p className="font-mono text-xs text-muted mt-1">{label}</p>
+    </div>
+  )
+}
+
+function PBList({ pbs, direction = -1 }: { pbs: StravaData['run']['pbs']; direction?: number }) {
+  return (
+    <>
+      <div className="px-5 py-3 border-b border-ink/10">
+        <span className="font-mono text-xs text-muted/50 tracking-widest uppercase">Personal bests</span>
+      </div>
+      <div className="divide-y divide-ink/[0.06]">
+        {pbs.map((pb, i) => (
+          <motion.div
+            key={pb.label}
+            className="flex items-center justify-between px-5 py-2.5"
+            initial={{ opacity: 0, x: direction * 10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3, delay: i * 0.04 }}
+          >
+            <span className="font-body text-sm text-muted">{pb.label}</span>
+            <span className="font-mono text-sm text-ink font-medium">{pb.time}</span>
+          </motion.div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+// ── Progression bar chart ─────────────────────────────────────────────────────
+type ProgressionMode = 'weekly' | 'monthly' | 'annual'
+
+interface BarEntry {
+  label: string
+  run: PeriodStats
+  ride: PeriodStats
+}
+
+function ProgressionBars({ entries, metric }: {
+  entries: BarEntry[]
+  metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
+}) {
+  const [hovered, setHovered] = useState<number | null>(null)
+
+  const metricLabel: Record<typeof metric, string> = {
+    distanceKm: 'km',
+    timeHours: 'hrs',
+    elevGainM: 'm elev',
+    activities: 'activities',
+  }
+
+  const maxVal = Math.max(
+    ...entries.map(e => e.run[metric] + e.ride[metric]),
+    1
+  )
+
+  return (
+    <div className="px-5 py-5">
+      <span className="font-mono text-xs text-muted/50 tracking-widest uppercase mb-4 block">
+        {metricLabel[metric]} per period
+      </span>
+
+      <div className="flex items-end gap-1 h-28">
+        {entries.map((entry, i) => {
+          const runH = (entry.run[metric] / maxVal) * 100
+          const rideH = (entry.ride[metric] / maxVal) * 100
+          const total = entry.run[metric] + entry.ride[metric]
+          const isHov = hovered === i
+
+          return (
+            <div
+              key={i}
+              className="flex-1 flex flex-col justify-end gap-px cursor-default relative"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              {isHov && total > 0 && (
+                <div className="absolute bottom-full mb-1 z-10 pointer-events-none left-1/2 -translate-x-1/2">
+                  <div className="bg-ink text-paper font-mono text-[10px] px-2 py-1 whitespace-nowrap">
+                    {entry.label}<br />
+                    🏃 {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}{' '}
+                    🚴 {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}
+                  </div>
+                </div>
+              )}
+              {/* Ride bar */}
+              <motion.div
+                className={`w-full transition-colors ${isHov ? 'bg-accent/60' : 'bg-ink/20'}`}
+                style={{ height: `${rideH}%`, minHeight: entry.ride[metric] > 0 ? 2 : 0 }}
+                initial={{ scaleY: 0, originY: 1 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.02 }}
+              />
+              {/* Run bar */}
+              <motion.div
+                className={`w-full transition-colors ${isHov ? 'bg-accent' : 'bg-ink/40'}`}
+                style={{ height: `${runH}%`, minHeight: entry.run[metric] > 0 ? 2 : 0 }}
+                initial={{ scaleY: 0, originY: 1 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.02 + 0.05 }}
+              />
+            </div>
+          )
+        })}
+      </div>
+
+      {/* X-axis labels */}
+      <div className="flex items-start gap-1 mt-1">
+        {entries.map((entry, i) => {
+          const step = entries.length > 24 ? 4 : entries.length > 12 ? 2 : 1
+          const show = i % step === 0
+          return (
+            <div key={i} className="flex-1 overflow-hidden">
+              {show && (
+                <span className="font-mono text-[9px] text-muted/40 block truncate">{entry.label}</span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 mt-3">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 bg-ink/40" />
+          <span className="font-mono text-[10px] text-muted/60">Run</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 bg-ink/20" />
+          <span className="font-mono text-[10px] text-muted/60">Ride</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Progression panel ─────────────────────────────────────────────────────────
+function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
+  const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
+
+  const entries: BarEntry[] = mode === 'weekly'
+    ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), run: w.run, ride: w.ride }))
+    : mode === 'monthly'
+      ? (data.monthly as MonthlyEntry[]).map(m => ({ label: m.label, run: m.run, ride: m.ride }))
+      : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), run: a.run, ride: a.ride }))
+
+  const metrics: { key: typeof metric; label: string }[] = [
+    { key: 'distanceKm', label: 'Distance' },
+    { key: 'timeHours', label: 'Time' },
+    { key: 'elevGainM', label: 'Elevation' },
+    { key: 'activities', label: 'Activities' },
+  ]
+
+  const totRun = entries.reduce((a, e) => ({
+    distanceKm: a.distanceKm + e.run.distanceKm,
+    timeHours: a.timeHours + e.run.timeHours,
+    elevGainM: a.elevGainM + e.run.elevGainM,
+    activities: a.activities + e.run.activities,
+  }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
+
+  const totRide = entries.reduce((a, e) => ({
+    distanceKm: a.distanceKm + e.ride.distanceKm,
+    timeHours: a.timeHours + e.ride.timeHours,
+    elevGainM: a.elevGainM + e.ride.elevGainM,
+    activities: a.activities + e.ride.activities,
+  }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
+
+  const periodLabel = mode === 'weekly' ? 'Last 12 weeks' : mode === 'monthly' ? 'Last 12 months' : 'All years'
+
+  return (
+    <div className="border border-ink/10 overflow-hidden">
+      <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-2">
+        <span className="font-mono text-xs text-muted tracking-widest uppercase">{periodLabel}</span>
+        <div className="flex items-center gap-1">
+          {metrics.map(m => (
+            <button
+              key={m.key}
+              onClick={() => setMetric(m.key)}
+              className={`font-mono text-[10px] px-2 py-1 border transition-colors ${metric === m.key
+                  ? 'border-accent text-accent'
+                  : 'border-ink/10 text-muted hover:border-ink/30'
+                }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Summary */}
+      <div className="grid grid-cols-2 border-b border-ink/10">
+        <div className="px-5 py-3 border-r border-ink/10">
+          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest block mb-2">🏃 Run</span>
+          <div className="flex gap-4 flex-wrap">
+            <span className="font-display text-sm text-ink">{fmtDist(totRun.distanceKm)} km</span>
+            <span className="font-mono text-xs text-muted self-end">{fmtHours(totRun.timeHours)}</span>
+            <span className="font-mono text-xs text-muted self-end">{fmtElev(totRun.elevGainM)}</span>
+            <span className="font-mono text-xs text-muted self-end">{totRun.activities} runs</span>
+          </div>
+        </div>
+        <div className="px-5 py-3">
+          <span className="font-mono text-xs text-muted/50 uppercase tracking-widest block mb-2">🚴 Ride</span>
+          <div className="flex gap-4 flex-wrap">
+            <span className="font-display text-sm text-ink">{fmtDist(totRide.distanceKm)} km</span>
+            <span className="font-mono text-xs text-muted self-end">{fmtHours(totRide.timeHours)}</span>
+            <span className="font-mono text-xs text-muted self-end">{fmtElev(totRide.elevGainM)}</span>
+            <span className="font-mono text-xs text-muted self-end">{totRide.activities} rides</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative">
+        <ProgressionBars entries={entries} metric={metric} />
+      </div>
+    </div>
+  )
+}
+
+// ── All-time cards ────────────────────────────────────────────────────────────
+function AllTimeCards() {
+  const { run, ride } = data
+  const fetchedDate = new Date(data.fetchedAt).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  })
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <motion.div
+        className="border border-ink/10 overflow-hidden"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-1">
+          <span className="font-mono text-xs text-muted tracking-widest uppercase">Running</span>
+          <span className="font-mono text-xs text-muted/40">
+            {run.allTime.activities} activities · {fmtDist(run.allTime.distanceKm)} km
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-0 border-b border-ink/10">
+          <StatCell value={`${fmtDist(run.allTime.distanceKm)} km`} label="Total distance" />
+          <StatCell value={fmtHours(run.allTime.timeHours)} label="Total time" />
+          <StatCell value={fmtElev(run.allTime.elevGainM)} label="Elevation" border={false} />
+        </div>
+        <PBList pbs={run.pbs} direction={-1} />
+        <div className="px-5 py-3 bg-ink/[0.02]">
+          <span className="font-mono text-xs text-muted/50">As of {fetchedDate}</span>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="border border-ink/10 overflow-hidden"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+      >
+        <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-1">
+          <span className="font-mono text-xs text-muted tracking-widest uppercase">Cycling</span>
+          <span className="font-mono text-xs text-muted/40">
+            {ride.allTime.activities} activities · {fmtDist(ride.allTime.distanceKm)} km
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-0 border-b border-ink/10">
+          <StatCell value={`${fmtDist(ride.allTime.distanceKm)} km`} label="Total distance" />
+          <StatCell value={fmtHours(ride.allTime.timeHours)} label="Total time" />
+          <StatCell value={fmtElev(ride.allTime.elevGainM)} label="Elevation" border={false} />
+        </div>
+        <PBList pbs={ride.pbs} direction={1} />
+        <div className="px-5 py-3 bg-ink/[0.02]">
+          <span className="font-mono text-xs text-muted/50">Ultramarathon · Triathlon · Self-supported</span>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+// ── Root ──────────────────────────────────────────────────────────────────────
+type Tab = 'all-time' | 'weekly' | 'monthly' | 'annual'
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: 'all-time', label: 'All-time' },
+  { key: 'weekly', label: 'Weekly' },
+  { key: 'monthly', label: 'Monthly' },
+  { key: 'annual', label: 'Annual' },
+]
+
 export default function StravaStats() {
+  const [tab, setTab] = useState<Tab>('all-time')
+
   return (
     <div>
       {/* Section header */}
@@ -45,130 +342,56 @@ export default function StravaStats() {
           whileHover={{ scale: 1.02 }}
           data-hover
         >
-          {/* Strava-ish icon */}
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0 0 13.828h4.172"/>
+            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0 0 13.828h4.172" />
           </svg>
           View on Strava
         </motion.a>
       </div>
 
-      {/* Running + Cycling side by side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-
-        {/* Running */}
-        <motion.div
-          className="border border-ink/10 overflow-hidden"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between">
-            <span className="font-mono text-xs text-muted tracking-widest uppercase">Running (as of 28th May 2026)</span>
-            <span className="font-mono text-xs text-muted/40">
-              {runningStats.allTime.activities} activities · {runningStats.allTime.distanceKm.toLocaleString()} km
-            </span>
-          </div>
-
-          {/* Weekly snapshot */}
-          <div className="grid grid-cols-3 gap-0 border-b border-ink/10">
-            {[
-              { n: `${runningStats.last4Weeks.avgDistKm} km`, l: 'Avg / week' },
-              { n: runningStats.last4Weeks.avgTimeHm,         l: 'Time / week' },
-              { n: `${runningStats.last4Weeks.activitiesPerWeek}`, l: 'Runs / week' },
-            ].map((s, i) => (
-              <div key={i} className={`px-4 py-4 ${i < 2 ? 'border-r border-ink/10' : ''}`}>
-                <p className="font-display text-2xl text-ink tracking-wide leading-none">{s.n}</p>
-                <p className="font-mono text-xs text-muted mt-1">{s.l}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* PBs */}
-          <div className="px-5 py-3 border-b border-ink/10">
-            <span className="font-mono text-xs text-muted/50 tracking-widest uppercase">Personal bests</span>
-          </div>
-          <div className="divide-y divide-ink/[0.06]">
-            {runningStats.pbs.map((pb, i) => (
+      {/* Tab bar */}
+      <div className="flex items-center gap-0 border border-ink/10 mb-6 w-fit">
+        {TABS.map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`relative font-mono text-xs px-4 py-2.5 transition-colors ${tab === t.key
+                ? 'text-accent bg-ink/[0.03]'
+                : 'text-muted hover:text-ink'
+              }`}
+          >
+            {tab === t.key && (
               <motion.div
-                key={pb.label}
-                className="flex items-center justify-between px-5 py-2.5"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.04 }}
-              >
-                <span className="font-body text-sm text-muted">{pb.label}</span>
-                <span className="font-mono text-sm text-ink font-medium">{pb.time}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* All-time footer */}
-          <div className="px-5 py-3 bg-ink/[0.02]">
-            <span className="font-mono text-xs text-muted/50">
-              {runningStats.allTime.timeHours}h total · {runningStats.allTime.elevGainM.toLocaleString()}m elevation
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Cycling */}
-        <motion.div
-          className="border border-ink/10 overflow-hidden"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-        >
-          <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between">
-            <span className="font-mono text-xs text-muted tracking-widest uppercase">Cycling (As of 9th July 2025)</span>
-            <span className="font-mono text-xs text-muted/40">
-              {cyclingStats.allTime.activities} activities
-            </span>
-          </div>
-
-          {/* All-time stats */}
-          <div className="grid grid-cols-3 gap-0 border-b border-ink/10">
-            {[
-              { n: `${cyclingStats.allTime.distanceKm.toLocaleString()} km`, l: 'Total distance' },
-              { n: `${cyclingStats.allTime.timeHours}h`,                     l: 'Total time' },
-              { n: `${(cyclingStats.allTime.elevGainM / 1000).toFixed(1)}k m`, l: 'Elevation' },
-            ].map((s, i) => (
-              <div key={i} className={`px-4 py-4 ${i < 2 ? 'border-r border-ink/10' : ''}`}>
-                <p className="font-display text-xl md:text-2xl text-ink tracking-wide leading-none">{s.n}</p>
-                <p className="font-mono text-xs text-muted mt-1">{s.l}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* PBs */}
-          <div className="px-5 py-3 border-b border-ink/10">
-            <span className="font-mono text-xs text-muted/50 tracking-widest uppercase">Personal bests</span>
-          </div>
-          <div className="divide-y divide-ink/[0.06]">
-            {cyclingStats.pbs.map((pb, i) => (
-              <motion.div
-                key={pb.label}
-                className="flex items-center justify-between px-5 py-2.5"
-                initial={{ opacity: 0, x: 10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.04 }}
-              >
-                <span className="font-body text-sm text-muted">{pb.label}</span>
-                <span className="font-mono text-sm text-ink font-medium">{pb.time}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Note */}
-          <div className="px-5 py-3 bg-ink/[0.02]">
-            <span className="font-mono text-xs text-muted/50">Ultramarathon · Triathlon · Self-supported</span>
-          </div>
-        </motion.div>
-
+                layoutId="tab-indicator"
+                className="absolute inset-0 border-b-2 border-accent"
+              />
+            )}
+            {t.label}
+          </button>
+        ))}
       </div>
+
+      {/* Tab content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+        >
+          {tab === 'all-time' && <AllTimeCards />}
+          {tab === 'weekly' && <ProgressionPanel mode="weekly" />}
+          {tab === 'monthly' && <ProgressionPanel mode="monthly" />}
+          {tab === 'annual' && <ProgressionPanel mode="annual" />}
+        </motion.div>
+      </AnimatePresence>
+
+      <p className="font-mono text-[10px] text-muted/30 mt-4 text-right">
+        Last synced: {new Date(data.fetchedAt).toLocaleDateString('en-GB', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        })}
+      </p>
     </div>
   )
 }
