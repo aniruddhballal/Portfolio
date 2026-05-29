@@ -12,16 +12,15 @@
  *   STRAVA_REFRESH_TOKEN
  *
  * Install deps if not already present:
- *   npm install --save-dev tsx dotenv
+ *   npm install --save-dev tsx
  */
 
 /// <reference types="node" />
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 // ── Load .env.local ──────────────────────────────────────────────────────────
-// tsx doesn't auto-load .env, so we do it manually
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const envPath = path.resolve(__dirname, '../.env.local')
 if (fs.existsSync(envPath)) {
@@ -43,7 +42,7 @@ if (!CLIENT_ID || !CLIENT_SECRET || !REFRESH_TOKEN) {
   process.exit(1)
 }
 
-// ── Types (inline so script is self-contained) ───────────────────────────────
+// ── Types ────────────────────────────────────────────────────────────────────
 interface PeriodStats {
   distanceKm: number
   timeHours: number
@@ -52,6 +51,24 @@ interface PeriodStats {
 }
 
 interface PB { label: string; time: string; date: string }
+
+interface BestEffort {
+  name: string
+  elapsed_time: number
+  start_date: string
+}
+
+interface StravaActivity {
+  id: number
+  type: string
+  sport_type: string
+  start_date: string
+  distance: number
+  moving_time: number
+  elapsed_time: number
+  total_elevation_gain: number
+  best_efforts?: BestEffort[]
+}
 
 // ── Strava API helpers ────────────────────────────────────────────────────────
 async function getAccessToken(): Promise<string> {
@@ -72,15 +89,21 @@ async function getAccessToken(): Promise<string> {
   return data.access_token
 }
 
-async function stravaGet<T>(token: string, path: string): Promise<T> {
-  const res = await fetch(`https://www.strava.com/api/v3${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) throw new Error(`Strava API ${path} → ${res.status} ${res.statusText}`)
-  return res.json() as Promise<T>
+async function stravaGet<T>(token: string, endpoint: string): Promise<T> {
+  while (true) {
+    const res = await fetch(`https://www.strava.com/api/v3${endpoint}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.status === 429) {
+      console.log('\n⏳ Rate limited — waiting 15 minutes...')
+      await new Promise(r => setTimeout(r, 15 * 60 * 1000))
+      continue
+    }
+    if (!res.ok) throw new Error(`Strava API ${endpoint} → ${res.status} ${res.statusText}`)
+    return res.json() as Promise<T>
+  }
 }
 
-// Paginate through all activities (max 200 per page)
 async function getAllActivities(token: string): Promise<StravaActivity[]> {
   console.log('📦 Fetching all activities (paginated)...')
   const all: StravaActivity[] = []
@@ -94,36 +117,22 @@ async function getAllActivities(token: string): Promise<StravaActivity[]> {
     all.push(...batch)
     console.log(`   page ${page} → ${batch.length} activities (total so far: ${all.length})`)
     page++
-    // Respect rate limits — small delay between pages
     await new Promise(r => setTimeout(r, 300))
   }
   console.log(`✅ Total activities fetched: ${all.length}`)
   return all
 }
 
-interface StravaActivity {
-  id: number
-  type: string           // 'Run', 'Ride', 'VirtualRide', etc.
-  sport_type: string
-  start_date: string     // ISO
-  distance: number       // metres
-  moving_time: number    // seconds
-  elapsed_time: number   // seconds
-  total_elevation_gain: number // metres
-  best_efforts?: BestEffort[]
+// ── Cache ─────────────────────────────────────────────────────────────────────
+const CACHE_PATH = path.resolve(__dirname, '../.strava-cache.json')
+
+function loadCache(): Record<number, StravaActivity> {
+  if (!fs.existsSync(CACHE_PATH)) return {}
+  return JSON.parse(fs.readFileSync(CACHE_PATH, 'utf-8'))
 }
 
-interface BestEffort {
-  name: string           // '5k', '10k', 'Half-Marathon', 'Marathon', etc.
-  elapsed_time: number   // seconds
-  start_date: string
-}
-
-interface StravaStats {
-  recent_run_totals: { count: number; distance: number; moving_time: number; elevation_gain: number }
-  recent_ride_totals: { count: number; distance: number; moving_time: number; elevation_gain: number }
-  all_run_totals: { count: number; distance: number; moving_time: number; elevation_gain: number }
-  all_ride_totals: { count: number; distance: number; moving_time: number; elevation_gain: number }
+function saveCache(cache: Record<number, StravaActivity>) {
+  fs.writeFileSync(CACHE_PATH, JSON.stringify(cache))
 }
 
 // ── Formatting helpers ────────────────────────────────────────────────────────
@@ -160,10 +169,9 @@ function addActivity(acc: PeriodStats, a: StravaActivity): PeriodStats {
   }
 }
 
-// Monday of the week containing a given date
 function weekStart(date: Date): string {
   const d = new Date(date)
-  const day = d.getDay() // 0 = Sun
+  const day = d.getDay()
   const diff = (day === 0 ? -6 : 1 - day)
   d.setDate(d.getDate() + diff)
   return d.toISOString().slice(0, 10)
@@ -180,34 +188,36 @@ function monthLabel(key: string): string {
 }
 
 // ── PB extraction ─────────────────────────────────────────────────────────────
-// Strava best_efforts names we care about (run)
 const RUN_PB_NAMES: Record<string, string> = {
+  '400m': '400m',
+  '1/2 mile': '800m',
+  '1k': '1K',
+  '1 mile': '1 Mile',
+  '2 mile': '2 Mile',
   '5k': '5K',
   '10k': '10K',
-  '15k': '15K',
-  'half marathon': 'Half-Marathon',
+  '15k': '15K',           // ← missing
+  '10 mile': '10 Mile',   // ← missing
+  '20k': '20K',           // ← missing
+  'half-marathon': 'Half-Marathon', // ← missing the hyphen
+  '30k': '30K',           // ← missing
   'marathon': 'Marathon',
+  '50k': '50K',           // ← missing
 }
 
-// For cycling we derive PBs from activities since Strava doesn't provide
-// segment-based best efforts in the activities list endpoint.
-// We keep the best (fastest avg speed) activity for each distance bucket.
-const RIDE_DIST_BUCKETS = [5, 10, 20, 30, 40, 50, 75, 100] // km
+const RIDE_DIST_BUCKETS = [5, 10, 20, 30, 40, 50, 75, 100]
 
 function extractRunPBs(activities: StravaActivity[]): PB[] {
   const best: Record<string, { time: number; date: string }> = {}
-
   for (const act of activities) {
     if (act.type !== 'Run') continue
     for (const effort of act.best_efforts ?? []) {
       const key = effort.name.toLowerCase()
       if (!RUN_PB_NAMES[key]) continue
-      if (!best[key] || effort.elapsed_time < best[key].time) {
+      if (!best[key] || effort.elapsed_time < best[key].time)
         best[key] = { time: effort.elapsed_time, date: effort.start_date }
-      }
     }
   }
-
   return Object.entries(RUN_PB_NAMES)
     .filter(([key]) => best[key])
     .map(([key, label]) => ({
@@ -218,25 +228,19 @@ function extractRunPBs(activities: StravaActivity[]): PB[] {
 }
 
 function extractRidePBs(activities: StravaActivity[]): PB[] {
-  // For each distance bucket, find the ride whose moving time was fastest
   const best: Record<number, { time: number; dist: number; date: string }> = {}
-
   for (const act of activities) {
     if (act.type !== 'Ride' && act.type !== 'VirtualRide') continue
     const distKm = act.distance / 1000
     for (const bucket of RIDE_DIST_BUCKETS) {
-      // Activity must be within ±20% of the bucket distance
       if (distKm >= bucket * 0.8 && distKm <= bucket * 1.3) {
-        // Normalise time to the bucket distance (pace × bucket)
-        const pace = act.moving_time / distKm // sec/km
+        const pace = act.moving_time / distKm
         const normTime = Math.round(pace * bucket)
-        if (!best[bucket] || normTime < best[bucket].time) {
+        if (!best[bucket] || normTime < best[bucket].time)
           best[bucket] = { time: normTime, dist: r2(distKm), date: act.start_date }
-        }
       }
     }
   }
-
   return RIDE_DIST_BUCKETS
     .filter(b => best[b])
     .map(b => ({
@@ -253,7 +257,6 @@ async function main() {
 
   console.log('📊 Computing aggregates...')
 
-  // ── All-time totals (from activities, more accurate than /athlete/stats) ──
   const allTimeRun = activities.filter(a => a.type === 'Run')
     .reduce(addActivity, emptyPeriod())
   const allTimeRide = activities.filter(a => a.type === 'Ride' || a.type === 'VirtualRide')
@@ -262,7 +265,6 @@ async function main() {
   // ── Weekly (last 12 weeks) ────────────────────────────────────────────────
   const weekMap = new Map<string, { run: PeriodStats; ride: PeriodStats }>()
   const now = new Date()
-  // Seed last 12 weeks so even empty weeks appear
   for (let w = 11; w >= 0; w--) {
     const d = new Date(now)
     d.setDate(d.getDate() - w * 7)
@@ -270,9 +272,8 @@ async function main() {
     if (!weekMap.has(key)) weekMap.set(key, { run: emptyPeriod(), ride: emptyPeriod() })
   }
   for (const act of activities) {
-    const d = new Date(act.start_date)
-    const key = weekStart(d)
-    if (!weekMap.has(key)) continue // outside our 12-week window
+    const key = weekStart(new Date(act.start_date))
+    if (!weekMap.has(key)) continue
     const entry = weekMap.get(key)!
     if (act.type === 'Run')
       entry.run = addActivity(entry.run, act)
@@ -318,23 +319,30 @@ async function main() {
     .sort(([a], [b]) => a - b)
     .map(([year, v]) => ({ year, ...v }))
 
-  // ── PBs ───────────────────────────────────────────────────────────────────
-  console.log('🏅 Extracting PBs...')
+  // ── PBs (with cache) ──────────────────────────────────────────────────────
   console.log('🏅 Fetching run best efforts (detail pass)...')
+  const cache = loadCache()
   const runActivities = activities.filter(a => a.type === 'Run')
   const runsWithEfforts: StravaActivity[] = []
   for (let i = 0; i < runActivities.length; i++) {
     const act = runActivities[i]
-    process.stdout.write(`\r   ${i + 1}/${runActivities.length} runs fetched`)
+    if (cache[act.id]) {
+      runsWithEfforts.push(cache[act.id])
+      process.stdout.write(`\r   ${i + 1}/${runActivities.length} (${i + 1} from cache)   `)
+      continue
+    }
+    process.stdout.write(`\r   ${i + 1}/${runActivities.length} fetching...              `)
     const detail = await stravaGet<StravaActivity>(token, `/activities/${act.id}`)
+    cache[act.id] = detail
+    saveCache(cache)
     runsWithEfforts.push(detail)
-    await new Promise(r => setTimeout(r, 1000)) // stay under rate limit
+    await new Promise(r => setTimeout(r, 1000))
   }
   console.log()
   const runPBs = extractRunPBs(runsWithEfforts)
   const ridePBs = extractRidePBs(activities)
 
-  // ── Assemble output ───────────────────────────────────────────────────────
+  // ── Assemble & write ──────────────────────────────────────────────────────
   const output = {
     fetchedAt: new Date().toISOString(),
     run: {
@@ -350,7 +358,6 @@ async function main() {
     annual,
   }
 
-  // ── Write file ────────────────────────────────────────────────────────────
   const outPath = path.resolve(__dirname, '../src/data/strava.json')
   fs.mkdirSync(path.dirname(outPath), { recursive: true })
   fs.writeFileSync(outPath, JSON.stringify(output, null, 2))
