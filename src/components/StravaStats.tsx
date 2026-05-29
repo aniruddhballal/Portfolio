@@ -23,30 +23,47 @@ function fmtElev(m: number) {
   return `${Math.round(m)} m`
 }
 
-function weekLabel(iso: string) {
+// X-axis label: "Jan 25" at year boundary, else "9 Mar"
+function weekLabelAxis(iso: string) {
   const d = new Date(iso)
+  if (d.getMonth() === 0) {
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })
+  }
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
+// Hover tooltip: full range with year e.g. "7 Jul 2025 – 13 Jul 2025"
 function weekRangeLabel(iso: string) {
   const start = new Date(iso)
   const end = new Date(iso)
   end.setDate(end.getDate() + 6)
-  const s = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-  const e = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-  return `${s} – ${e}`
+  const s = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  if (start.getFullYear() === end.getFullYear()) {
+    const eShort = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    return `${s} – ${eShort}`
+  }
+  return `${s} – ${end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
 }
 
-// Returns just the Monday (start) of a week ISO string
+// Header range label: "9 Mar 2025"
 function weekStartLabel(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// Returns the Sunday (end) of a week ISO string
+// Header range label end: "31 May 2026"
 function weekEndLabel(iso: string) {
   const end = new Date(iso)
   end.setDate(end.getDate() + 6)
-  return end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  return end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+// Monthly x-axis: "Jan 25" at boundary, else "Feb"
+function monthLabelAxis(iso: string) {
+  const d = new Date(iso)
+  if (d.getMonth() === 0) {
+    return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })
+  }
+  return d.toLocaleDateString('en-GB', { month: 'short' })
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -334,9 +351,19 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
 
   const allEntries: BarEntry[] = mode === 'weekly'
-    ? (data.weekly as WeeklyEntry[]).map(w => ({ label: weekLabel(w.weekStart), tooltipLabel: weekRangeLabel(w.weekStart), isoStart: w.weekStart, run: w.run, ride: w.ride }))
+    ? (data.weekly as WeeklyEntry[]).map(w => ({
+        label: weekLabelAxis(w.weekStart),
+        tooltipLabel: weekRangeLabel(w.weekStart),
+        isoStart: w.weekStart,
+        run: w.run, ride: w.ride,
+      }))
     : mode === 'monthly'
-      ? (data.monthly as MonthlyEntry[]).map(m => ({ label: m.label, tooltipLabel: m.label, run: m.run, ride: m.ride }))
+      ? (data.monthly as MonthlyEntry[]).map(m => ({
+          label: monthLabelAxis(m.month + '-01'),
+          tooltipLabel: m.label,
+          isoStart: m.month + '-01',
+          run: m.run, ride: m.ride,
+        }))
       : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
 
   const WINDOW = mode === 'weekly' ? 12 : mode === 'monthly' ? 12 : allEntries.length
@@ -368,14 +395,15 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const periodLabel = mode === 'weekly' ? 'All weeks' : mode === 'monthly' ? 'All months' : 'All years'
 
-  // Precise range label: start-of-first to end-of-last
+  // Header range label with years
   function rangeLabel() {
     const first = entries[0]
     const last = entries[entries.length - 1]
     if (mode === 'weekly' && first.isoStart && last.isoStart) {
       return `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
     }
-    // monthly / annual: tooltipLabel is already a single token (e.g. "Jan 2024" or "2024")
+    // monthly: tooltipLabel is now "Jan 2025" etc.
+    // annual: tooltipLabel is "2024" etc.
     return `${first.tooltipLabel} – ${last.tooltipLabel}`
   }
 
