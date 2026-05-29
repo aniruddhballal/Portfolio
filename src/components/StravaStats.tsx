@@ -136,28 +136,28 @@ function ProgressionChart({ entries, metric }: {
   }
 
   return (
-    <div className="px-5 py-5">
-      {/* Info bar — label + hover-reactive period/values */}
-      <div className="mb-4">
-        <span className="font-mono text-xs text-muted/50 tracking-widest uppercase">
+    <div className="px-4 md:px-5 py-4 md:py-5">
+      {/* Info bar */}
+      <div className="mb-3">
+        <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
           {metricLabel[metric]}
         </span>
-        <div className="mt-1 h-9 flex flex-col justify-center">
+        <div className="mt-1 h-10 md:h-12 flex flex-col justify-center">
           {hovered !== null && entries[hovered].run[metric] + entries[hovered].ride[metric] > 0 ? (
             <>
-              <p className="font-mono text-xs text-ink leading-none">{entries[hovered].tooltipLabel}</p>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="flex items-center gap-1 font-mono text-xs text-muted">
-                  <SportShoe size={10} /> {fmtVal(entries[hovered].run[metric])}
+              <p className="font-mono text-sm md:text-base text-ink leading-none">{entries[hovered].tooltipLabel}</p>
+              <div className="flex items-center gap-3 mt-1.5">
+                <span className="flex items-center gap-1 font-mono text-xs md:text-sm text-muted">
+                  <SportShoe size={11} /> {fmtVal(entries[hovered].run[metric])}
                 </span>
                 <span className="text-muted/30 font-mono text-xs">·</span>
-                <span className="flex items-center gap-1 font-mono text-xs text-muted">
-                  <Bike size={10} /> {fmtVal(entries[hovered].ride[metric])}
+                <span className="flex items-center gap-1 font-mono text-xs md:text-sm text-muted">
+                  <Bike size={11} /> {fmtVal(entries[hovered].ride[metric])}
                 </span>
               </div>
             </>
           ) : (
-            <p className="font-mono text-xs text-muted/30">— hover to inspect</p>
+            <p className="font-mono text-xs md:text-sm text-muted/30">— hover to inspect</p>
           )}
         </div>
       </div>
@@ -168,7 +168,7 @@ function ProgressionChart({ entries, metric }: {
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="xMidYMid meet"
           className="w-full"
-          style={{ height: H * 1.2 }}
+          style={{ height: 'clamp(160px, 30vw, 280px)' }}
         >
           <defs>
             <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
@@ -297,16 +297,16 @@ function ProgressionChart({ entries, metric }: {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-1">
+      <div className="flex items-center gap-4 mt-2">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-px bg-ink/50" />
           <SportShoe size={11} className="text-muted/60" />
-          <span className="font-mono text-[10px] text-muted/60">Run</span>
+          <span className="font-mono text-[10px] md:text-xs text-muted/60">Run</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-px bg-ink/20" />
           <Bike size={11} className="text-muted/60" />
-          <span className="font-mono text-[10px] text-muted/60">Ride</span>
+          <span className="font-mono text-[10px] md:text-xs text-muted/60">Ride</span>
         </div>
       </div>
     </div>
@@ -368,19 +368,19 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
       {/* Summary */}
       <div className="grid grid-cols-2 border-b border-ink/10">
-        <div className="px-5 py-3 border-r border-ink/10">
+        <div className="px-4 md:px-5 py-3 border-r border-ink/10">
           <span className="font-mono text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2"><SportShoe size={13} /> Run</span>
-          <div className="flex gap-4 flex-wrap">
-            <span className="font-display text-sm text-ink">{fmtDist(totRun.distanceKm)} km</span>
+          <div className="flex gap-3 md:gap-4 flex-wrap">
+            <span className="font-display text-base md:text-lg text-ink">{fmtDist(totRun.distanceKm)} km</span>
             <span className="font-mono text-xs text-muted self-end">{fmtHours(totRun.timeHours)}</span>
             <span className="font-mono text-xs text-muted self-end">{fmtElev(totRun.elevGainM)}</span>
             <span className="font-mono text-xs text-muted self-end">{totRun.activities} runs</span>
           </div>
         </div>
-        <div className="px-5 py-3">
+        <div className="px-4 md:px-5 py-3">
           <span className="font-mono text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2"><Bike size={13} /> Ride</span>
-          <div className="flex gap-4 flex-wrap">
-            <span className="font-display text-sm text-ink">{fmtDist(totRide.distanceKm)} km</span>
+          <div className="flex gap-3 md:gap-4 flex-wrap">
+            <span className="font-display text-base md:text-lg text-ink">{fmtDist(totRide.distanceKm)} km</span>
             <span className="font-mono text-xs text-muted self-end">{fmtHours(totRide.timeHours)}</span>
             <span className="font-mono text-xs text-muted self-end">{fmtElev(totRide.elevGainM)}</span>
             <span className="font-mono text-xs text-muted self-end">{totRide.activities} rides</span>
