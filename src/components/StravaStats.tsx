@@ -9,9 +9,7 @@ const STRAVA_URL = 'https://www.strava.com/athletes/111442086'
 
 // ── Formatting helpers ────────────────────────────────────────────────────────
 function fmtDist(km: number) {
-  return km >= 1000
-    ? `${(km / 1000).toFixed(1)}k`
-    : `${km.toFixed(1)}`
+  return km.toFixed(1)
 }
 
 function fmtHours(h: number) {
@@ -22,7 +20,7 @@ function fmtHours(h: number) {
 }
 
 function fmtElev(m: number) {
-  return m >= 1000 ? `${(m / 1000).toFixed(1)}k m` : `${Math.round(m)} m`
+  return `${Math.round(m)} m`
 }
 
 function weekLabel(iso: string) {
@@ -91,10 +89,10 @@ function ProgressionChart({ entries, metric }: {
   const [hovered, setHovered] = useState<number | null>(null)
 
   const metricLabel: Record<typeof metric, string> = {
-    distanceKm: 'km',
-    timeHours: 'hrs',
-    elevGainM: 'm elev',
-    activities: 'acts',
+    distanceKm: 'km per period',
+    timeHours: 'time per period',
+    elevGainM: 'elevation per period (m)',
+    activities: 'activities per period',
   }
 
   // SVG coordinate space
@@ -132,7 +130,7 @@ function ProgressionChart({ entries, metric }: {
   return (
     <div className="px-5 py-5">
       <span className="font-mono text-xs text-muted/50 tracking-widest uppercase mb-3 block">
-        {metricLabel[metric]} per period
+        {metricLabel[metric]}
       </span>
 
       {/* SVG chart — everything lives inside here */}
@@ -157,6 +155,13 @@ function ProgressionChart({ entries, metric }: {
           {/* Y-axis grid lines + labels */}
           {yTicks.map(tick => {
             const y = yOf(tick)
+            const tickLabel = metric === 'timeHours'
+              ? fmtHours(tick)
+              : metric === 'elevGainM'
+              ? `${tick}m`
+              : metric === 'distanceKm'
+              ? `${tick}km`
+              : String(tick)
             return (
               <g key={tick}>
                 <line
@@ -171,7 +176,7 @@ function ProgressionChart({ entries, metric }: {
                   fillOpacity="0.35"
                   fontFamily="monospace"
                 >
-                  {tick}
+                  {tickLabel}
                 </text>
               </g>
             )
@@ -257,12 +262,18 @@ function ProgressionChart({ entries, metric }: {
             return (
               <g>
                 <rect x={ttX} y={ttY} width={ttW} height={ttH} fill="#1a1a1a" rx="1" />
-                <text x={ttX + 8} y={ttY + 13} fontSize="8.5" fill="white" fillOpacity="0.5" fontFamily="monospace">
-                  {entry.tooltipLabel}
-                </text>
-                <text x={ttX + 8} y={ttY + 29} fontSize="9" fill="white" fontFamily="monospace">
-                  ↑ {entry.run[metric].toFixed(metric === 'activities' ? 0 : 1)}  ⊙ {entry.ride[metric].toFixed(metric === 'activities' ? 0 : 1)}
-                </text>
+                <foreignObject x={ttX} y={ttY} width={ttW} height={ttH}>
+                  <div style={{ padding: '5px 8px', fontFamily: 'monospace', fontSize: 9, color: 'white', lineHeight: 1.4 }}>
+                    <div style={{ opacity: 0.5, fontSize: 8.5, marginBottom: 3 }}>{entry.tooltipLabel}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <PersonStanding size={9} />
+                      {metric === 'timeHours' ? fmtHours(entry.run[metric]) : metric === 'elevGainM' ? `${Math.round(entry.run[metric])}m` : metric === 'activities' ? entry.run[metric].toFixed(0) : `${entry.run[metric].toFixed(1)}km`}
+                      <span style={{ opacity: 0.3 }}>·</span>
+                      <Bike size={9} />
+                      {metric === 'timeHours' ? fmtHours(entry.ride[metric]) : metric === 'elevGainM' ? `${Math.round(entry.ride[metric])}m` : metric === 'activities' ? entry.ride[metric].toFixed(0) : `${entry.ride[metric].toFixed(1)}km`}
+                    </div>
+                  </div>
+                </foreignObject>
               </g>
             )
           })()}
