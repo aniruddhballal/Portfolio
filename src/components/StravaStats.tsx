@@ -373,20 +373,20 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       <div className="grid grid-cols-2 border-b border-ink/10">
         <div className="px-4 md:px-5 py-2.5 border-r border-ink/10">
           <span className="font-mono text-[10px] text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><SportShoe size={12} /> Run</span>
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <span className="font-display text-xl md:text-2xl text-ink">{fmtDist(totRun.distanceKm)} km</span>
-            <span className="font-mono text-sm text-muted">{fmtHours(totRun.timeHours)}</span>
-            <span className="font-mono text-sm text-muted">{fmtElev(totRun.elevGainM)}</span>
-            <span className="font-mono text-sm text-muted">{totRun.activities} runs</span>
+          <span className="font-display text-xl md:text-2xl text-ink block">{fmtDist(totRun.distanceKm)} km</span>
+          <div className="flex gap-2 flex-wrap mt-1">
+            <span className="font-mono text-xs text-muted">{fmtHours(totRun.timeHours)}</span>
+            <span className="font-mono text-xs text-muted">{fmtElev(totRun.elevGainM)}</span>
+            <span className="font-mono text-xs text-muted">{totRun.activities} runs</span>
           </div>
         </div>
         <div className="px-4 md:px-5 py-2.5">
           <span className="font-mono text-[10px] text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><Bike size={12} /> Ride</span>
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <span className="font-display text-xl md:text-2xl text-ink">{fmtDist(totRide.distanceKm)} km</span>
-            <span className="font-mono text-sm text-muted">{fmtHours(totRide.timeHours)}</span>
-            <span className="font-mono text-sm text-muted">{fmtElev(totRide.elevGainM)}</span>
-            <span className="font-mono text-sm text-muted">{totRide.activities} rides</span>
+          <span className="font-display text-xl md:text-2xl text-ink block">{fmtDist(totRide.distanceKm)} km</span>
+          <div className="flex gap-2 flex-wrap mt-1">
+            <span className="font-mono text-xs text-muted">{fmtHours(totRide.timeHours)}</span>
+            <span className="font-mono text-xs text-muted">{fmtElev(totRide.elevGainM)}</span>
+            <span className="font-mono text-xs text-muted">{totRide.activities} rides</span>
           </div>
         </div>
       </div>
