@@ -1,12 +1,12 @@
 {
-  "fetchedAt": "2026-05-29T06:55:36.890Z",
+  "fetchedAt": "2026-05-29T11:39:48.829Z",
   "run": {
     "allTime": {
       "distanceKm": 1533.81,
       "timeHours": 138.66,
       "elevGainM": 7667,
       "activities": 294,
-      "fetchedAt": "2026-05-29T06:55:36.890Z"
+      "fetchedAt": "2026-05-29T11:39:48.829Z"
     },
     "pbs": [
       {
@@ -87,7 +87,7 @@
       "timeHours": 221.97,
       "elevGainM": 15613,
       "activities": 151,
-      "fetchedAt": "2026-05-29T06:55:36.890Z"
+      "fetchedAt": "2026-05-29T11:39:48.829Z"
     },
     "pbs": [
       {
@@ -128,6 +128,1491 @@
     ]
   },
   "weekly": [
+    {
+      "weekStart": "2022-12-26",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2023-01-16",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 19.54,
+        "timeHours": 0.98,
+        "elevGainM": 75,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2023-03-13",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 63.48,
+        "timeHours": 115.86,
+        "elevGainM": 631,
+        "activities": 5
+      }
+    },
+    {
+      "weekStart": "2023-03-20",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 11.1,
+        "timeHours": 0.42,
+        "elevGainM": 105,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2023-03-27",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 5.17,
+        "timeHours": 0.18,
+        "elevGainM": 11,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2023-04-17",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 20.02,
+        "timeHours": 2.09,
+        "elevGainM": 266,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2023-05-07",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 111.78,
+        "timeHours": 8.25,
+        "elevGainM": 1407,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2023-05-15",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0.58,
+        "timeHours": 0.03,
+        "elevGainM": 38,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2023-05-29",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 13.72,
+        "timeHours": 0.73,
+        "elevGainM": 145,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2023-06-05",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 30.1,
+        "timeHours": 1.32,
+        "elevGainM": 242,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2023-06-12",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 38.12,
+        "timeHours": 1.59,
+        "elevGainM": 286,
+        "activities": 6
+      }
+    },
+    {
+      "weekStart": "2023-06-19",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 37.52,
+        "timeHours": 1.58,
+        "elevGainM": 241,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2023-07-03",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 93.03,
+        "timeHours": 4.08,
+        "elevGainM": 623,
+        "activities": 3
+      }
+    },
+    {
+      "weekStart": "2023-07-10",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 37.73,
+        "timeHours": 1.46,
+        "elevGainM": 190,
+        "activities": 3
+      }
+    },
+    {
+      "weekStart": "2023-08-07",
+      "run": {
+        "distanceKm": 31.34,
+        "timeHours": 2.82,
+        "elevGainM": 253,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 63.91,
+        "timeHours": 2.58,
+        "elevGainM": 435,
+        "activities": 4
+      }
+    },
+    {
+      "weekStart": "2023-08-14",
+      "run": {
+        "distanceKm": 10.3,
+        "timeHours": 0.8,
+        "elevGainM": 83,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 72.13,
+        "timeHours": 2.82,
+        "elevGainM": 360,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2023-10-30",
+      "run": {
+        "distanceKm": 15.84,
+        "timeHours": 1.51,
+        "elevGainM": 125,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0.58,
+        "timeHours": 0.03,
+        "elevGainM": 4,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2023-11-06",
+      "run": {
+        "distanceKm": 10.26,
+        "timeHours": 0.93,
+        "elevGainM": 76,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2023-11-20",
+      "run": {
+        "distanceKm": 19.22,
+        "timeHours": 2.17,
+        "elevGainM": 144,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-01-08",
+      "run": {
+        "distanceKm": 18.36,
+        "timeHours": 1.71,
+        "elevGainM": 114,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-01-15",
+      "run": {
+        "distanceKm": 21.18,
+        "timeHours": 2.02,
+        "elevGainM": 121,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-01-29",
+      "run": {
+        "distanceKm": 33.2,
+        "timeHours": 2.64,
+        "elevGainM": 328,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-02-05",
+      "run": {
+        "distanceKm": 10.34,
+        "timeHours": 0.79,
+        "elevGainM": 118,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-04-08",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 45.61,
+        "timeHours": 2.11,
+        "elevGainM": 280,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2024-04-15",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 56.24,
+        "timeHours": 2.81,
+        "elevGainM": 643,
+        "activities": 16
+      }
+    },
+    {
+      "weekStart": "2024-04-22",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 35.1,
+        "timeHours": 1.68,
+        "elevGainM": 238,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2024-04-29",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 138.69,
+        "timeHours": 7.96,
+        "elevGainM": 1038,
+        "activities": 10
+      }
+    },
+    {
+      "weekStart": "2024-07-22",
+      "run": {
+        "distanceKm": 24.11,
+        "timeHours": 2.58,
+        "elevGainM": 301,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-07-29",
+      "run": {
+        "distanceKm": 6.28,
+        "timeHours": 0.53,
+        "elevGainM": 27,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-08-05",
+      "run": {
+        "distanceKm": 8.24,
+        "timeHours": 0.8,
+        "elevGainM": 83,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-09-23",
+      "run": {
+        "distanceKm": 5.05,
+        "timeHours": 0.48,
+        "elevGainM": 0,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-09-30",
+      "run": {
+        "distanceKm": 5.79,
+        "timeHours": 0.43,
+        "elevGainM": 9,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-10-07",
+      "run": {
+        "distanceKm": 10.11,
+        "timeHours": 0.83,
+        "elevGainM": 54,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-10-14",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-10-28",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-11-04",
+      "run": {
+        "distanceKm": 10.15,
+        "timeHours": 1.14,
+        "elevGainM": 107,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-11-11",
+      "run": {
+        "distanceKm": 10.02,
+        "timeHours": 0.87,
+        "elevGainM": 0,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-12-02",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-12-09",
+      "run": {
+        "distanceKm": 20.48,
+        "timeHours": 1.77,
+        "elevGainM": 148,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-12-16",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-12-23",
+      "run": {
+        "distanceKm": 11.99,
+        "timeHours": 1.12,
+        "elevGainM": 91,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2024-12-30",
+      "run": {
+        "distanceKm": 12.37,
+        "timeHours": 1.22,
+        "elevGainM": 79,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-01-06",
+      "run": {
+        "distanceKm": 6.85,
+        "timeHours": 0.98,
+        "elevGainM": 83,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-01-20",
+      "run": {
+        "distanceKm": 2.74,
+        "timeHours": 0.21,
+        "elevGainM": 38,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-01-27",
+      "run": {
+        "distanceKm": 11.06,
+        "timeHours": 0.98,
+        "elevGainM": 94,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-02-03",
+      "run": {
+        "distanceKm": 7.74,
+        "timeHours": 0.63,
+        "elevGainM": 0,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-02-10",
+      "run": {
+        "distanceKm": 6.64,
+        "timeHours": 0.5,
+        "elevGainM": 0,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-02-17",
+      "run": {
+        "distanceKm": 0.45,
+        "timeHours": 0.02,
+        "elevGainM": 5,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-02-24",
+      "run": {
+        "distanceKm": 0.44,
+        "timeHours": 0.02,
+        "elevGainM": 5,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-03-03",
+      "run": {
+        "distanceKm": 5.81,
+        "timeHours": 0.38,
+        "elevGainM": 6,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-03-10",
+      "run": {
+        "distanceKm": 2.71,
+        "timeHours": 0.18,
+        "elevGainM": 0,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-03-17",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-03-24",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-04-07",
+      "run": {
+        "distanceKm": 15.01,
+        "timeHours": 1.26,
+        "elevGainM": 59,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-04-14",
+      "run": {
+        "distanceKm": 10.3,
+        "timeHours": 0.84,
+        "elevGainM": 3,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-04-20",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-04-21",
+      "run": {
+        "distanceKm": 14.89,
+        "timeHours": 1.29,
+        "elevGainM": 109,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-04-28",
+      "run": {
+        "distanceKm": 13.02,
+        "timeHours": 1.26,
+        "elevGainM": 0,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 19.25,
+        "timeHours": 0.8,
+        "elevGainM": 106,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2025-05-05",
+      "run": {
+        "distanceKm": 25.03,
+        "timeHours": 2.13,
+        "elevGainM": 11,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 59.28,
+        "timeHours": 2.44,
+        "elevGainM": 354,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2025-05-11",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-05-12",
+      "run": {
+        "distanceKm": 22.78,
+        "timeHours": 2.05,
+        "elevGainM": 199,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 88.05,
+        "timeHours": 4.68,
+        "elevGainM": 324,
+        "activities": 5
+      }
+    },
+    {
+      "weekStart": "2025-05-19",
+      "run": {
+        "distanceKm": 2.35,
+        "timeHours": 0.18,
+        "elevGainM": 23,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-05-26",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 18.44,
+        "timeHours": 0.76,
+        "elevGainM": 132,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2025-06-02",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 90.91,
+        "timeHours": 3.94,
+        "elevGainM": 622,
+        "activities": 6
+      }
+    },
+    {
+      "weekStart": "2025-06-09",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 99.7,
+        "timeHours": 4.24,
+        "elevGainM": 789,
+        "activities": 7
+      }
+    },
+    {
+      "weekStart": "2025-06-16",
+      "run": {
+        "distanceKm": 6.71,
+        "timeHours": 0.54,
+        "elevGainM": 55,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 5.79,
+        "timeHours": 0.32,
+        "elevGainM": 39,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2025-06-23",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 69.06,
+        "timeHours": 4.04,
+        "elevGainM": 483,
+        "activities": 8
+      }
+    },
+    {
+      "weekStart": "2025-06-30",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 189.14,
+        "timeHours": 7.14,
+        "elevGainM": 1325,
+        "activities": 7
+      }
+    },
+    {
+      "weekStart": "2025-07-07",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 202.29,
+        "timeHours": 11.99,
+        "elevGainM": 1398,
+        "activities": 8
+      }
+    },
+    {
+      "weekStart": "2025-07-14",
+      "run": {
+        "distanceKm": 1.94,
+        "timeHours": 0.14,
+        "elevGainM": 14,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 30.42,
+        "timeHours": 2.7,
+        "elevGainM": 195,
+        "activities": 4
+      }
+    },
+    {
+      "weekStart": "2025-07-21",
+      "run": {
+        "distanceKm": 53.43,
+        "timeHours": 4.7,
+        "elevGainM": 399,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-08-11",
+      "run": {
+        "distanceKm": 24.17,
+        "timeHours": 2.1,
+        "elevGainM": 183,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-08-18",
+      "run": {
+        "distanceKm": 42.35,
+        "timeHours": 3.66,
+        "elevGainM": 300,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-08-25",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 112.03,
+        "timeHours": 6.17,
+        "elevGainM": 920,
+        "activities": 4
+      }
+    },
+    {
+      "weekStart": "2025-09-01",
+      "run": {
+        "distanceKm": 5.41,
+        "timeHours": 0.4,
+        "elevGainM": 0,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-09-08",
+      "run": {
+        "distanceKm": 0.2,
+        "timeHours": 0.01,
+        "elevGainM": 0,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-09-15",
+      "run": {
+        "distanceKm": 0.93,
+        "timeHours": 0.07,
+        "elevGainM": 14,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-09-29",
+      "run": {
+        "distanceKm": 9.3,
+        "timeHours": 0.74,
+        "elevGainM": 46,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-10-06",
+      "run": {
+        "distanceKm": 16.51,
+        "timeHours": 1.55,
+        "elevGainM": 50,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-10-27",
+      "run": {
+        "distanceKm": 15.04,
+        "timeHours": 1.34,
+        "elevGainM": 57,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-11-03",
+      "run": {
+        "distanceKm": 53.8,
+        "timeHours": 4.98,
+        "elevGainM": 378,
+        "activities": 11
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-11-10",
+      "run": {
+        "distanceKm": 81.76,
+        "timeHours": 8.3,
+        "elevGainM": 384,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-11-17",
+      "run": {
+        "distanceKm": 23.3,
+        "timeHours": 2.31,
+        "elevGainM": 157,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-11-24",
+      "run": {
+        "distanceKm": 58.53,
+        "timeHours": 5.73,
+        "elevGainM": 478,
+        "activities": 13
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-12-01",
+      "run": {
+        "distanceKm": 6.2,
+        "timeHours": 0.5,
+        "elevGainM": 80,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-12-08",
+      "run": {
+        "distanceKm": 15.08,
+        "timeHours": 1.13,
+        "elevGainM": 98,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2025-12-15",
+      "run": {
+        "distanceKm": 13.23,
+        "timeHours": 1.1,
+        "elevGainM": 94,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 6.36,
+        "timeHours": 0.42,
+        "elevGainM": 58,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2025-12-22",
+      "run": {
+        "distanceKm": 16.02,
+        "timeHours": 1.46,
+        "elevGainM": 114,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 30.41,
+        "timeHours": 1.93,
+        "elevGainM": 247,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2025-12-29",
+      "run": {
+        "distanceKm": 24.52,
+        "timeHours": 2.05,
+        "elevGainM": 185,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 57.76,
+        "timeHours": 3.04,
+        "elevGainM": 379,
+        "activities": 5
+      }
+    },
+    {
+      "weekStart": "2026-01-05",
+      "run": {
+        "distanceKm": 5.21,
+        "timeHours": 0.64,
+        "elevGainM": 11,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 12.2,
+        "timeHours": 0.57,
+        "elevGainM": 62,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2026-01-12",
+      "run": {
+        "distanceKm": 12.46,
+        "timeHours": 1.03,
+        "elevGainM": 59,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-01-19",
+      "run": {
+        "distanceKm": 11.54,
+        "timeHours": 0.94,
+        "elevGainM": 25,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 24.39,
+        "timeHours": 1.13,
+        "elevGainM": 151,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2026-01-26",
+      "run": {
+        "distanceKm": 21.21,
+        "timeHours": 1.97,
+        "elevGainM": 59,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-02-01",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-02-02",
+      "run": {
+        "distanceKm": 9.35,
+        "timeHours": 0.91,
+        "elevGainM": 28,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-02-09",
+      "run": {
+        "distanceKm": 7.1,
+        "timeHours": 0.61,
+        "elevGainM": 19,
+        "activities": 2
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-02-16",
+      "run": {
+        "distanceKm": 3.15,
+        "timeHours": 0.33,
+        "elevGainM": 0,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-02-23",
+      "run": {
+        "distanceKm": 24.52,
+        "timeHours": 2.28,
+        "elevGainM": 66,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-03-02",
+      "run": {
+        "distanceKm": 19.14,
+        "timeHours": 1.73,
+        "elevGainM": 65,
+        "activities": 4
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
     {
       "weekStart": "2026-03-09",
       "run": {
@@ -310,6 +1795,406 @@
     }
   ],
   "monthly": [
+    {
+      "month": "2022-12",
+      "label": "Dec 2022",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2023-01",
+      "label": "Jan 2023",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 19.54,
+        "timeHours": 0.98,
+        "elevGainM": 75,
+        "activities": 2
+      }
+    },
+    {
+      "month": "2023-03",
+      "label": "Mar 2023",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 74.58,
+        "timeHours": 116.28,
+        "elevGainM": 736,
+        "activities": 7
+      }
+    },
+    {
+      "month": "2023-04",
+      "label": "Apr 2023",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 25.19,
+        "timeHours": 2.27,
+        "elevGainM": 277,
+        "activities": 2
+      }
+    },
+    {
+      "month": "2023-05",
+      "label": "May 2023",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 112.36,
+        "timeHours": 8.28,
+        "elevGainM": 1445,
+        "activities": 3
+      }
+    },
+    {
+      "month": "2023-06",
+      "label": "Jun 2023",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 119.46,
+        "timeHours": 5.22,
+        "elevGainM": 914,
+        "activities": 11
+      }
+    },
+    {
+      "month": "2023-07",
+      "label": "Jul 2023",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 130.75,
+        "timeHours": 5.54,
+        "elevGainM": 813,
+        "activities": 6
+      }
+    },
+    {
+      "month": "2023-08",
+      "label": "Aug 2023",
+      "run": {
+        "distanceKm": 41.64,
+        "timeHours": 3.62,
+        "elevGainM": 336,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 136.04,
+        "timeHours": 5.4,
+        "elevGainM": 795,
+        "activities": 5
+      }
+    },
+    {
+      "month": "2023-10",
+      "label": "Oct 2023",
+      "run": {
+        "distanceKm": 5.73,
+        "timeHours": 0.48,
+        "elevGainM": 42,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2023-11",
+      "label": "Nov 2023",
+      "run": {
+        "distanceKm": 39.59,
+        "timeHours": 4.13,
+        "elevGainM": 303,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0.58,
+        "timeHours": 0.03,
+        "elevGainM": 4,
+        "activities": 1
+      }
+    },
+    {
+      "month": "2024-01",
+      "label": "Jan 2024",
+      "run": {
+        "distanceKm": 49.38,
+        "timeHours": 4.41,
+        "elevGainM": 301,
+        "activities": 9
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-02",
+      "label": "Feb 2024",
+      "run": {
+        "distanceKm": 33.7,
+        "timeHours": 2.75,
+        "elevGainM": 380,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-04",
+      "label": "Apr 2024",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 177.34,
+        "timeHours": 9.04,
+        "elevGainM": 1510,
+        "activities": 27
+      }
+    },
+    {
+      "month": "2024-05",
+      "label": "May 2024",
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 98.3,
+        "timeHours": 5.52,
+        "elevGainM": 689,
+        "activities": 3
+      }
+    },
+    {
+      "month": "2024-07",
+      "label": "Jul 2024",
+      "run": {
+        "distanceKm": 27.65,
+        "timeHours": 2.93,
+        "elevGainM": 320,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-08",
+      "label": "Aug 2024",
+      "run": {
+        "distanceKm": 10.98,
+        "timeHours": 0.98,
+        "elevGainM": 91,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-09",
+      "label": "Sept 2024",
+      "run": {
+        "distanceKm": 5.05,
+        "timeHours": 0.48,
+        "elevGainM": 0,
+        "activities": 1
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-10",
+      "label": "Oct 2024",
+      "run": {
+        "distanceKm": 15.9,
+        "timeHours": 1.26,
+        "elevGainM": 63,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-11",
+      "label": "Nov 2024",
+      "run": {
+        "distanceKm": 20.17,
+        "timeHours": 2.01,
+        "elevGainM": 107,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2024-12",
+      "label": "Dec 2024",
+      "run": {
+        "distanceKm": 37.86,
+        "timeHours": 3.53,
+        "elevGainM": 278,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-01",
+      "label": "Jan 2025",
+      "run": {
+        "distanceKm": 17.61,
+        "timeHours": 1.84,
+        "elevGainM": 189,
+        "activities": 11
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-02",
+      "label": "Feb 2025",
+      "run": {
+        "distanceKm": 24.85,
+        "timeHours": 2.06,
+        "elevGainM": 71,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-03",
+      "label": "Mar 2025",
+      "run": {
+        "distanceKm": 8.96,
+        "timeHours": 0.58,
+        "elevGainM": 11,
+        "activities": 11
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-04",
+      "label": "Apr 2025",
+      "run": {
+        "distanceKm": 40.2,
+        "timeHours": 3.39,
+        "elevGainM": 171,
+        "activities": 12
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-05",
+      "label": "May 2025",
+      "run": {
+        "distanceKm": 63.18,
+        "timeHours": 5.62,
+        "elevGainM": 233,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 170.6,
+        "timeHours": 8.11,
+        "elevGainM": 804,
+        "activities": 9
+      }
+    },
     {
       "month": "2025-06",
       "label": "Jun 2025",
