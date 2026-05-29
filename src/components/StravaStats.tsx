@@ -255,7 +255,7 @@ function ProgressionChart({ entries, metric }: {
             const total = entry.run[metric] + entry.ride[metric]
             if (total === 0) return null
             const tx = xOf(hovered)
-            const ttW = 130
+            const ttW = 140
             const ttH = 42
             const ttX = tx + ttW > W - PAD.right ? tx - ttW - 6 : tx + 6
             const ttY = PAD.top
