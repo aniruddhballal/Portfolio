@@ -320,7 +320,18 @@ async function main() {
 
   // ── PBs ───────────────────────────────────────────────────────────────────
   console.log('🏅 Extracting PBs...')
-  const runPBs = extractRunPBs(activities)
+  console.log('🏅 Fetching run best efforts (detail pass)...')
+  const runActivities = activities.filter(a => a.type === 'Run')
+  const runsWithEfforts: StravaActivity[] = []
+  for (let i = 0; i < runActivities.length; i++) {
+    const act = runActivities[i]
+    process.stdout.write(`\r   ${i + 1}/${runActivities.length} runs fetched`)
+    const detail = await stravaGet<StravaActivity>(token, `/activities/${act.id}`)
+    runsWithEfforts.push(detail)
+    await new Promise(r => setTimeout(r, 1000)) // stay under rate limit
+  }
+  console.log()
+  const runPBs = extractRunPBs(runsWithEfforts)
   const ridePBs = extractRidePBs(activities)
 
   // ── Assemble output ───────────────────────────────────────────────────────
