@@ -122,20 +122,20 @@ function ProgressionBars({ entries, metric }: {
                 </div>
               )}
               {/* Ride bar */}
-              <div
-                className={`w-full transition-all duration-500 ease-out ${isHov ? 'bg-accent/60' : 'bg-ink/20'}`}
-                style={{
-                  height: entry.ride[metric] > 0 ? ridePx : 0,
-                  transitionDelay: `${i * 20}ms`,
-                }}
+              <motion.div
+                key={`ride-${i}-${metric}`}
+                className={`w-full transition-colors ${isHov ? 'bg-accent/60' : 'bg-ink/20'}`}
+                initial={{ height: 0 }}
+                animate={{ height: entry.ride[metric] > 0 ? ridePx : 0 }}
+                transition={{ duration: 0.5, delay: i * 0.02, ease: 'easeOut' }}
               />
               {/* Run bar */}
-              <div
-                className={`w-full transition-all duration-500 ease-out ${isHov ? 'bg-accent' : 'bg-ink/40'}`}
-                style={{
-                  height: entry.run[metric] > 0 ? runPx : 0,
-                  transitionDelay: `${i * 20 + 50}ms`,
-                }}
+              <motion.div
+                key={`run-${i}-${metric}`}
+                className={`w-full transition-colors ${isHov ? 'bg-accent' : 'bg-ink/40'}`}
+                initial={{ height: 0 }}
+                animate={{ height: entry.run[metric] > 0 ? runPx : 0 }}
+                transition={{ duration: 0.5, delay: i * 0.02 + 0.05, ease: 'easeOut' }}
               />
             </div>
           )
