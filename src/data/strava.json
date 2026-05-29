@@ -1,0 +1,583 @@
+{
+  "fetchedAt": "2026-05-29T06:55:36.890Z",
+  "run": {
+    "allTime": {
+      "distanceKm": 1533.81,
+      "timeHours": 138.66,
+      "elevGainM": 7667,
+      "activities": 294,
+      "fetchedAt": "2026-05-29T06:55:36.890Z"
+    },
+    "pbs": [
+      {
+        "label": "400m (2nd May 2025)",
+        "time": "0:52",
+        "date": "2025-05-02T13:42:37Z"
+      },
+      {
+        "label": "800m (15th May 2025)",
+        "time": "2:11",
+        "date": "2025-05-15T10:56:33Z"
+      },
+      {
+        "label": "1K (15th May 2025)",
+        "time": "2:53",
+        "date": "2025-05-15T10:56:33Z"
+      },
+      {
+        "label": "1 Mile (15th May 2025)",
+        "time": "5:15",
+        "date": "2025-05-15T10:56:33Z"
+      },
+      {
+        "label": "2 Mile (11th February 2024)",
+        "time": "13:13",
+        "date": "2024-02-11T01:15:54Z"
+      },
+      {
+        "label": "5K (1st December 2025)",
+        "time": "20:44",
+        "date": "2025-12-01T14:00:38Z"
+      },
+      {
+        "label": "10K (7th April 2026)",
+        "time": "46:02",
+        "date": "2026-04-07T01:18:02Z"
+      },
+      {
+        "label": "15K (9th April 2026)",
+        "time": "1:15:48",
+        "date": "2026-04-09T00:47:45Z"
+      },
+      {
+        "label": "10 Mile (26th January 2026)",
+        "time": "1:29:45",
+        "date": "2026-01-26T05:49:50Z"
+      },
+      {
+        "label": "20K (26th January 2026)",
+        "time": "1:51:51",
+        "date": "2026-01-26T05:49:50Z"
+      },
+      {
+        "label": "Half-Marathon (26th January 2026)",
+        "time": "1:57:42",
+        "date": "2026-01-26T05:49:50Z"
+      },
+      {
+        "label": "30K (15th November 2025)",
+        "time": "3:13:44",
+        "date": "2025-11-15T10:10:59Z"
+      },
+      {
+        "label": "Marathon (15th November 2025)",
+        "time": "4:32:14",
+        "date": "2025-11-15T10:10:59Z"
+      },
+      {
+        "label": "50K (15th November 2025)",
+        "time": "5:24:45",
+        "date": "2025-11-15T10:10:59Z"
+      }
+    ]
+  },
+  "ride": {
+    "allTime": {
+      "distanceKm": 2149.3,
+      "timeHours": 221.97,
+      "elevGainM": 15613,
+      "activities": 151,
+      "fetchedAt": "2026-05-29T06:55:36.890Z"
+    },
+    "pbs": [
+      {
+        "label": "5K (26th March 2023)",
+        "time": "8:15",
+        "date": "2023-03-26T09:20:34Z"
+      },
+      {
+        "label": "10K (29th April 2024)",
+        "time": "22:07",
+        "date": "2024-04-29T06:53:32Z"
+      },
+      {
+        "label": "20K (13th June 2025)",
+        "time": "39:26",
+        "date": "2025-06-13T01:25:15Z"
+      },
+      {
+        "label": "30K (8th July 2025)",
+        "time": "1:03:52",
+        "date": "2025-07-08T01:23:57Z"
+      },
+      {
+        "label": "40K (6th July 2025)",
+        "time": "1:25:10",
+        "date": "2025-07-06T01:57:31Z"
+      },
+      {
+        "label": "50K (9th July 2025)",
+        "time": "1:45:47",
+        "date": "2025-07-09T01:24:52Z"
+      },
+      {
+        "label": "75K (18th August 2023)",
+        "time": "2:55:51",
+        "date": "2023-08-18T00:07:55Z"
+      }
+    ]
+  },
+  "weekly": [
+    {
+      "weekStart": "2026-03-09",
+      "run": {
+        "distanceKm": 34.32,
+        "timeHours": 3.05,
+        "elevGainM": 91,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-03-16",
+      "run": {
+        "distanceKm": 46.15,
+        "timeHours": 4.22,
+        "elevGainM": 132,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 31.27,
+        "timeHours": 1.37,
+        "elevGainM": 278,
+        "activities": 1
+      }
+    },
+    {
+      "weekStart": "2026-03-23",
+      "run": {
+        "distanceKm": 45.99,
+        "timeHours": 4.19,
+        "elevGainM": 130,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-03-30",
+      "run": {
+        "distanceKm": 46.43,
+        "timeHours": 3.86,
+        "elevGainM": 104,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-04-06",
+      "run": {
+        "distanceKm": 57.25,
+        "timeHours": 4.83,
+        "elevGainM": 129,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-04-13",
+      "run": {
+        "distanceKm": 45.38,
+        "timeHours": 3.64,
+        "elevGainM": 105,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-04-20",
+      "run": {
+        "distanceKm": 5.21,
+        "timeHours": 0.39,
+        "elevGainM": 22,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 64.65,
+        "timeHours": 3.11,
+        "elevGainM": 320,
+        "activities": 8
+      }
+    },
+    {
+      "weekStart": "2026-04-27",
+      "run": {
+        "distanceKm": 63.64,
+        "timeHours": 5.33,
+        "elevGainM": 192,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 7.92,
+        "timeHours": 0.54,
+        "elevGainM": 46,
+        "activities": 2
+      }
+    },
+    {
+      "weekStart": "2026-05-04",
+      "run": {
+        "distanceKm": 46.62,
+        "timeHours": 5.24,
+        "elevGainM": 126,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "weekStart": "2026-05-11",
+      "run": {
+        "distanceKm": 41.58,
+        "timeHours": 4.02,
+        "elevGainM": 111,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 20.23,
+        "timeHours": 1.17,
+        "elevGainM": 58,
+        "activities": 3
+      }
+    },
+    {
+      "weekStart": "2026-05-18",
+      "run": {
+        "distanceKm": 46.18,
+        "timeHours": 4.08,
+        "elevGainM": 140,
+        "activities": 7
+      },
+      "ride": {
+        "distanceKm": 10.75,
+        "timeHours": 0.6,
+        "elevGainM": 39,
+        "activities": 3
+      }
+    },
+    {
+      "weekStart": "2026-05-25",
+      "run": {
+        "distanceKm": 30.5,
+        "timeHours": 2.49,
+        "elevGainM": 71,
+        "activities": 6
+      },
+      "ride": {
+        "distanceKm": 4.85,
+        "timeHours": 0.32,
+        "elevGainM": 30,
+        "activities": 1
+      }
+    }
+  ],
+  "monthly": [
+    {
+      "month": "2025-06",
+      "label": "Jun 2025",
+      "run": {
+        "distanceKm": 6.71,
+        "timeHours": 0.54,
+        "elevGainM": 55,
+        "activities": 3
+      },
+      "ride": {
+        "distanceKm": 302.06,
+        "timeHours": 13.95,
+        "elevGainM": 2204,
+        "activities": 24
+      }
+    },
+    {
+      "month": "2025-07",
+      "label": "Jul 2025",
+      "run": {
+        "distanceKm": 55.37,
+        "timeHours": 4.84,
+        "elevGainM": 413,
+        "activities": 9
+      },
+      "ride": {
+        "distanceKm": 399.67,
+        "timeHours": 20.99,
+        "elevGainM": 2759,
+        "activities": 18
+      }
+    },
+    {
+      "month": "2025-08",
+      "label": "Aug 2025",
+      "run": {
+        "distanceKm": 66.52,
+        "timeHours": 5.76,
+        "elevGainM": 483,
+        "activities": 9
+      },
+      "ride": {
+        "distanceKm": 112.03,
+        "timeHours": 6.17,
+        "elevGainM": 920,
+        "activities": 4
+      }
+    },
+    {
+      "month": "2025-09",
+      "label": "Sept 2025",
+      "run": {
+        "distanceKm": 6.54,
+        "timeHours": 0.48,
+        "elevGainM": 14,
+        "activities": 5
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-10",
+      "label": "Oct 2025",
+      "run": {
+        "distanceKm": 35.84,
+        "timeHours": 3.1,
+        "elevGainM": 153,
+        "activities": 9
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-11",
+      "label": "Nov 2025",
+      "run": {
+        "distanceKm": 222.4,
+        "timeHours": 21.85,
+        "elevGainM": 1397,
+        "activities": 38
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2025-12",
+      "label": "Dec 2025",
+      "run": {
+        "distanceKm": 65.54,
+        "timeHours": 5.49,
+        "elevGainM": 491,
+        "activities": 14
+      },
+      "ride": {
+        "distanceKm": 57.4,
+        "timeHours": 3.49,
+        "elevGainM": 420,
+        "activities": 6
+      }
+    },
+    {
+      "month": "2026-01",
+      "label": "Jan 2026",
+      "run": {
+        "distanceKm": 59.93,
+        "timeHours": 5.32,
+        "elevGainM": 234,
+        "activities": 9
+      },
+      "ride": {
+        "distanceKm": 73.72,
+        "timeHours": 3.6,
+        "elevGainM": 477,
+        "activities": 5
+      }
+    },
+    {
+      "month": "2026-02",
+      "label": "Feb 2026",
+      "run": {
+        "distanceKm": 34.11,
+        "timeHours": 3.1,
+        "elevGainM": 82,
+        "activities": 8
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "month": "2026-03",
+      "label": "Mar 2026",
+      "run": {
+        "distanceKm": 162.01,
+        "timeHours": 14.74,
+        "elevGainM": 464,
+        "activities": 25
+      },
+      "ride": {
+        "distanceKm": 31.27,
+        "timeHours": 1.37,
+        "elevGainM": 278,
+        "activities": 1
+      }
+    },
+    {
+      "month": "2026-04",
+      "label": "Apr 2026",
+      "run": {
+        "distanceKm": 170.72,
+        "timeHours": 14.04,
+        "elevGainM": 428,
+        "activities": 27
+      },
+      "ride": {
+        "distanceKm": 64.65,
+        "timeHours": 3.11,
+        "elevGainM": 320,
+        "activities": 8
+      }
+    },
+    {
+      "month": "2026-05",
+      "label": "May 2026",
+      "run": {
+        "distanceKm": 205.67,
+        "timeHours": 19.32,
+        "elevGainM": 557,
+        "activities": 29
+      },
+      "ride": {
+        "distanceKm": 43.75,
+        "timeHours": 2.63,
+        "elevGainM": 173,
+        "activities": 9
+      }
+    }
+  ],
+  "annual": [
+    {
+      "year": 2022,
+      "run": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      },
+      "ride": {
+        "distanceKm": 0,
+        "timeHours": 0,
+        "elevGainM": 0,
+        "activities": 0
+      }
+    },
+    {
+      "year": 2023,
+      "run": {
+        "distanceKm": 86.96,
+        "timeHours": 8.23,
+        "elevGainM": 681,
+        "activities": 11
+      },
+      "ride": {
+        "distanceKm": 618.51,
+        "timeHours": 144,
+        "elevGainM": 5059,
+        "activities": 37
+      }
+    },
+    {
+      "year": 2024,
+      "run": {
+        "distanceKm": 200.69,
+        "timeHours": 18.35,
+        "elevGainM": 1540,
+        "activities": 50
+      },
+      "ride": {
+        "distanceKm": 275.64,
+        "timeHours": 14.56,
+        "elevGainM": 2199,
+        "activities": 30
+      }
+    },
+    {
+      "year": 2025,
+      "run": {
+        "distanceKm": 613.72,
+        "timeHours": 55.55,
+        "elevGainM": 3681,
+        "activities": 135
+      },
+      "ride": {
+        "distanceKm": 1041.76,
+        "timeHours": 52.71,
+        "elevGainM": 7107,
+        "activities": 61
+      }
+    },
+    {
+      "year": 2026,
+      "run": {
+        "distanceKm": 632.44,
+        "timeHours": 56.52,
+        "elevGainM": 1765,
+        "activities": 98
+      },
+      "ride": {
+        "distanceKm": 213.39,
+        "timeHours": 10.71,
+        "elevGainM": 1248,
+        "activities": 23
+      }
+    }
+  ]
+}
