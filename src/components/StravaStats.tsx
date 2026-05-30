@@ -120,7 +120,8 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     const el = scrollRef.current
     if (!el) return
     const update = () => setContainerWidth(el.clientWidth)
-    update()
+    // rAF ensures the element is fully painted before measuring
+    requestAnimationFrame(update)
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => ro.disconnect()
@@ -156,6 +157,29 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
   // With exactly 12 visible columns, labels have consistent spacing.
   // Only skip alternates if columns are extremely narrow (e.g. mobile portrait with many entries).
   const labelStep = COL_W < 30 ? 2 : 1
+
+  // For weekly mode: only label at month boundaries (first week of each new month)
+  // For monthly: label every entry. For annual: label every entry.
+  function shouldShowXLabel(i: number): boolean {
+    if (isAnnual || mode === 'monthly') return i % labelStep === 0
+    if (mode === 'weekly' && entries[i].isoStart) {
+      // Show label if this is the first entry of a new month
+      const cur = new Date(entries[i].isoStart!)
+      if (i === 0) return true
+      const prev = new Date(entries[i - 1].isoStart!)
+      return cur.getMonth() !== prev.getMonth()
+    }
+    return i % labelStep === 0
+  }
+
+  // For weekly mode, show just "Mar", "Apr" etc at month boundaries
+  function xLabel(entry: BarEntry): string {
+    if (mode === 'weekly' && entry.isoStart) {
+      const d = new Date(entry.isoStart)
+      return d.toLocaleDateString('en-GB', { month: 'short' })
+    }
+    return entry.label
+  }
 
   // Derive which entries are visible in the current scroll window
   const visibleStart = Math.max(0, Math.floor((scrollLeft - PAD.left) / COL_W))
@@ -218,16 +242,17 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
           {metricLabel[metric]}
         </span>
         {hovered !== null && entries[hovered].run[metric] + entries[hovered].ride[metric] > 0 ? (
-          <div className="flex items-center gap-3 mt-0.5">
-            <span className="font-mono text-xs md:text-sm text-ink leading-none">{entries[hovered].tooltipLabel}</span>
-            <span className="text-muted/30 font-mono text-xs">·</span>
-            <span className="flex items-center gap-1 font-mono text-xs text-muted">
-              <SportShoe size={11} /> {fmtVal(entries[hovered].run[metric])}
-            </span>
-            <span className="text-muted/30 font-mono text-xs">·</span>
-            <span className="flex items-center gap-1 font-mono text-xs text-muted">
-              <Bike size={11} /> {fmtVal(entries[hovered].ride[metric])}
-            </span>
+          <div className="mt-0.5">
+            <span className="font-mono text-xs text-ink leading-none block truncate">{entries[hovered].tooltipLabel}</span>
+            <div className="flex items-center gap-2 mt-0.5 flex-nowrap">
+              <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
+                <SportShoe size={11} /> {fmtVal(entries[hovered].run[metric])}
+              </span>
+              <span className="text-muted/30 font-mono text-xs">·</span>
+              <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
+                <Bike size={11} /> {fmtVal(entries[hovered].ride[metric])}
+              </span>
+            </div>
           </div>
         ) : (
           <p className="font-mono text-[10px] text-muted/30 mt-0.5">
@@ -376,13 +401,11 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             />
           )}
 
-          {/* X-axis labels */}
+          {/* X-axis labels — month boundaries only for weekly, every entry for monthly/annual */}
           {entries.map((entry, i) => {
-            if (i % labelStep !== 0) return null
+            if (!shouldShowXLabel(i)) return null
             const x = xOf(i)
-            // Don't render labels that would be hidden behind the sticky Y-axis overlay
             if (x < PAD.left + 4) return null
-            // Don't render if near the right edge (avoids clipping)
             if (x > totalW - PAD.right - 2) return null
             return (
               <text
@@ -394,7 +417,7 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
                 fillOpacity="0.35"
                 fontFamily="monospace"
               >
-                {entry.label}
+                {xLabel(entry)}
               </text>
             )
           })}
@@ -507,14 +530,12 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   return (
     <div className="border border-ink/10 overflow-hidden">
-      <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-muted tracking-widest uppercase">{periodLabel}</span>
-          <span className="font-mono text-[10px] text-muted/40">
-            {rangeLabel()}
-          </span>
+      <div className="px-5 py-3 border-b border-ink/10 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-baseline gap-2 min-w-0">
+          <span className="font-mono text-xs text-muted tracking-widest uppercase shrink-0">{periodLabel}</span>
+          <span className="font-mono text-[10px] text-muted/40 truncate">{rangeLabel()}</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           {metrics.map(m => (
             <button
               key={m.key}
@@ -532,22 +553,22 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
       {/* Summary */}
       <div className="grid grid-cols-2 border-b border-ink/10">
-        <div className="px-4 md:px-5 py-2 border-r border-ink/10">
-          <span className="font-mono text-[10px] text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1"><SportShoe size={12} /> Run</span>
-          <span className="font-display text-lg md:text-xl text-ink block leading-none">{fmtDist(totRun.distanceKm)} km</span>
-          <div className="flex gap-2 flex-wrap mt-0.5">
-            <span className="font-mono text-[10px] text-muted">{fmtHours(totRun.timeHours)}</span>
-            <span className="font-mono text-[10px] text-muted">{fmtElev(totRun.elevGainM)}</span>
-            <span className="font-mono text-[10px] text-muted">{totRun.activities} runs</span>
+        <div className="px-4 md:px-5 py-2.5 border-r border-ink/10">
+          <span className="font-mono text-[10px] text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><SportShoe size={12} /> Run</span>
+          <span className="font-display text-xl md:text-2xl text-ink block">{fmtDist(totRun.distanceKm)} km</span>
+          <div className="flex gap-2 flex-wrap mt-1">
+            <span className="font-mono text-xs text-muted">{fmtHours(totRun.timeHours)}</span>
+            <span className="font-mono text-xs text-muted">{fmtElev(totRun.elevGainM)}</span>
+            <span className="font-mono text-xs text-muted">{totRun.activities} runs</span>
           </div>
         </div>
-        <div className="px-4 md:px-5 py-2">
-          <span className="font-mono text-[10px] text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1"><Bike size={12} /> Ride</span>
-          <span className="font-display text-lg md:text-xl text-ink block leading-none">{fmtDist(totRide.distanceKm)} km</span>
-          <div className="flex gap-2 flex-wrap mt-0.5">
-            <span className="font-mono text-[10px] text-muted">{fmtHours(totRide.timeHours)}</span>
-            <span className="font-mono text-[10px] text-muted">{fmtElev(totRide.elevGainM)}</span>
-            <span className="font-mono text-[10px] text-muted">{totRide.activities} rides</span>
+        <div className="px-4 md:px-5 py-2.5">
+          <span className="font-mono text-[10px] text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><Bike size={12} /> Ride</span>
+          <span className="font-display text-xl md:text-2xl text-ink block">{fmtDist(totRide.distanceKm)} km</span>
+          <div className="flex gap-2 flex-wrap mt-1">
+            <span className="font-mono text-xs text-muted">{fmtHours(totRide.timeHours)}</span>
+            <span className="font-mono text-xs text-muted">{fmtElev(totRide.elevGainM)}</span>
+            <span className="font-mono text-xs text-muted">{totRide.activities} rides</span>
           </div>
         </div>
       </div>
