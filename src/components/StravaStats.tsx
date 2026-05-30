@@ -195,12 +195,43 @@ function ProgressionChart({ entries, metric }: {
       </div>
 
       {/* Scrollable chart container */}
-      <div
-        ref={scrollRef}
-        className="overflow-x-auto overflow-y-hidden"
-        style={{ WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'], scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'], msOverflowStyle: 'none' }}
-        onMouseLeave={() => setHovered(null)}
-      >
+      <div className="relative" onMouseLeave={() => setHovered(null)}>
+        {/* Sticky Y-axis overlay — always visible regardless of scroll position */}
+        <svg
+          width={PAD.left}
+          height={H}
+          viewBox={`0 0 ${PAD.left} ${H}`}
+          style={{ position: 'absolute', left: 0, top: 0, zIndex: 1, pointerEvents: 'none' }}
+        >
+          {yTicks.map(tick => {
+            const y = yOf(tick)
+            const tickLabel = metric === 'timeHours'
+              ? fmtHours(tick)
+              : metric === 'elevGainM'
+              ? `${tick}m`
+              : metric === 'distanceKm'
+              ? `${tick}km`
+              : String(tick)
+            return (
+              <text
+                key={tick}
+                x={PAD.left - 6} y={y + 4}
+                textAnchor="end"
+                fontSize="10"
+                fill="#1a1a1a"
+                fillOpacity="0.35"
+                fontFamily="monospace"
+              >
+                {tickLabel}
+              </text>
+            )
+          })}
+        </svg>
+        <div
+          ref={scrollRef}
+          className="overflow-x-auto overflow-y-hidden"
+          style={{ WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'], scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'], msOverflowStyle: 'none' }}
+        >
         <svg
           width={totalW}
           height={H}
@@ -218,33 +249,15 @@ function ProgressionChart({ entries, metric }: {
             </linearGradient>
           </defs>
 
-          {/* Y-axis grid lines + labels */}
+          {/* Y-axis grid lines only — labels are in the sticky overlay above */}
           {yTicks.map(tick => {
             const y = yOf(tick)
-            const tickLabel = metric === 'timeHours'
-              ? fmtHours(tick)
-              : metric === 'elevGainM'
-              ? `${tick}m`
-              : metric === 'distanceKm'
-              ? `${tick}km`
-              : String(tick)
             return (
-              <g key={tick}>
-                <line
-                  x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
-                  stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
-                />
-                <text
-                  x={PAD.left - 6} y={y + 4}
-                  textAnchor="end"
-                  fontSize="10"
-                  fill="#1a1a1a"
-                  fillOpacity="0.35"
-                  fontFamily="monospace"
-                >
-                  {tickLabel}
-                </text>
-              </g>
+              <line
+                key={tick}
+                x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
+                stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
+              />
             )
           })}
 
@@ -325,7 +338,8 @@ function ProgressionChart({ entries, metric }: {
             />
           ))}
         </svg>
-      </div>
+        </div>{/* end scroll container */}
+      </div>{/* end relative wrapper */}
 
       {/* Legend */}
       <div className="flex items-center gap-4 mt-2">
