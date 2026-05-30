@@ -125,15 +125,20 @@ function ProgressionChart({ entries, metric, mode }: {
     return () => ro.disconnect()
   }, [])
 
-  // Scroll to the right (most recent) on mount and when entries change — skip for annual
+  // Scroll to the right (most recent) on mount and when entries/mode change — skip for annual
   useEffect(() => {
     if (isAnnual) return
     const el = scrollRef.current
-    if (el) {
+    if (!el) return
+    const scroll = () => {
       el.scrollLeft = el.scrollWidth
       setScrollLeft(el.scrollWidth)
     }
-  }, [entries.length, isAnnual])
+    scroll()
+    // Also defer to ensure DOM has fully rendered new entries
+    const t = setTimeout(scroll, 50)
+    return () => clearTimeout(t)
+  }, [entries.length, isAnnual, mode])
 
   const H = 200
   const PAD = { top: 16, bottom: 32, left: 42, right: 16 }
