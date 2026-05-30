@@ -126,20 +126,19 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     return () => ro.disconnect()
   }, [])
 
-  // Scroll to the right (most recent) on mount and when entries/mode change — skip for annual
+  // Scroll to the right (most recent) whenever mode, entries, or containerWidth changes — skip for annual
   useEffect(() => {
-    if (isAnnual) return
+    if (isAnnual || containerWidth === 0) return
     const el = scrollRef.current
     if (!el) return
     const scroll = () => {
       el.scrollLeft = el.scrollWidth
-      setScrollLeft(el.scrollWidth)
+      setScrollLeft(el.scrollLeft)
     }
     scroll()
-    // Also defer to ensure DOM has fully rendered new entries
     const t = setTimeout(scroll, 50)
     return () => clearTimeout(t)
-  }, [entries.length, isAnnual, mode])
+  }, [entries.length, isAnnual, mode, containerWidth])
 
   const H = 200
   const PAD = { top: 16, bottom: 32, left: 42, right: 16 }
@@ -165,8 +164,10 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
   const visibleEntries = entries.slice(visibleStart, visibleEnd + 1)
 
   useEffect(() => {
+    if (containerWidth === 0) return
+    if (visibleEnd < visibleStart) return
     onVisibleWindowChange?.({ start: visibleStart, end: visibleEnd })
-  }, [visibleStart, visibleEnd])
+  }, [visibleStart, visibleEnd, containerWidth])
 
   const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
@@ -433,16 +434,15 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const entries = allEntries
 
-  // Track which entries are currently visible in the chart scroll window
-  const [visibleWindow, setVisibleWindow] = useState<{ start: number; end: number }>({
-    start: Math.max(0, allEntries.length - 12),
-    end: allEntries.length - 1,
-  })
+  // Track which entries are currently visible in the chart scroll window.
+  // Default to last 12 (or all if fewer) — chart will update this once measured.
+  const defaultWindow = { start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 }
+  const [visibleWindow, setVisibleWindow] = useState<{ start: number; end: number }>(defaultWindow)
 
-  // Reset visible window to most recent when mode changes
+  // Reset to most recent window when mode changes (before chart has a chance to report)
   useEffect(() => {
     setVisibleWindow({ start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 })
-  }, [mode])
+  }, [mode, allEntries.length])
 
   const visibleEntries = mode === 'annual'
     ? entries
@@ -537,7 +537,9 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           entries={entries}
           metric={metric}
           mode={mode}
-          onVisibleWindowChange={setVisibleWindow}
+          onVisibleWindowChange={w => {
+            if (w.end >= w.start) setVisibleWindow(w)
+          }}
         />
       </div>
     </div>
