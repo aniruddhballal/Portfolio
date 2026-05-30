@@ -102,14 +102,17 @@ interface BarEntry {
   ride: PeriodStats
 }
 
-function ProgressionChart({ entries, metric }: {
+function ProgressionChart({ entries, metric, mode }: {
   entries: BarEntry[]
   metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
+  mode: ProgressionMode
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const isAnnual = mode === 'annual'
 
   // Track container width (on mount and on resize)
   useEffect(() => {
@@ -122,22 +125,28 @@ function ProgressionChart({ entries, metric }: {
     return () => ro.disconnect()
   }, [])
 
-  // Scroll to the right (most recent) on mount and when entries change
+  // Scroll to the right (most recent) on mount and when entries change — skip for annual
   useEffect(() => {
+    if (isAnnual) return
     const el = scrollRef.current
     if (el) {
       el.scrollLeft = el.scrollWidth
       setScrollLeft(el.scrollWidth)
     }
-  }, [entries.length])
+  }, [entries.length, isAnnual])
 
   const H = 200
   const PAD = { top: 16, bottom: 32, left: 42, right: 16 }
   const cH = H - PAD.top - PAD.bottom
 
-  // Fewer columns on narrow screens
-  const VISIBLE_COLS = containerWidth > 500 ? 12 : 8
-  const COL_W = containerWidth > 0 ? (containerWidth - PAD.left - PAD.right) / VISIBLE_COLS : 48
+  // Annual: fit all entries to full width, no scroll
+  // Weekly/monthly: show fixed window of cols, rest scrollable
+  const VISIBLE_COLS = isAnnual ? entries.length : Math.min(entries.length, containerWidth > 500 ? 12 : 8)
+  const COL_W = containerWidth > 0
+    ? isAnnual
+      ? (containerWidth - PAD.left - PAD.right) / entries.length
+      : Math.min(80, (containerWidth - PAD.left - PAD.right) / VISIBLE_COLS)
+    : 48
 
   const totalW = PAD.left + entries.length * COL_W + PAD.right
 
@@ -149,7 +158,7 @@ function ProgressionChart({ entries, metric }: {
   const visibleEnd   = Math.min(entries.length - 1, Math.ceil((scrollLeft + containerWidth - PAD.left) / COL_W))
   const visibleEntries = entries.slice(visibleStart, visibleEnd + 1)
 
-  const maxVal = Math.max(...visibleEntries.map(e => e.run[metric] + e.ride[metric]), 1)
+  const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
 
   // Spring-animate the scale so the chart eases when the window changes
@@ -494,7 +503,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       </div>
 
       <div className="relative">
-        <ProgressionChart entries={entries} metric={metric} />
+        <ProgressionChart entries={entries} metric={metric} mode={mode} />
       </div>
     </div>
   )
