@@ -469,7 +469,11 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
     activities: a.activities + e.ride.activities,
   }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
 
-  const periodLabel = mode === 'weekly' ? 'All weeks' : mode === 'monthly' ? 'All months' : 'All years'
+  const periodLabel = mode === 'annual'
+    ? 'All years'
+    : mode === 'weekly'
+    ? `${visibleEntries.length} week${visibleEntries.length !== 1 ? 's' : ''}`
+    : `${visibleEntries.length} month${visibleEntries.length !== 1 ? 's' : ''}`
 
   function rangeLabel() {
     const first = visibleEntries[0]
