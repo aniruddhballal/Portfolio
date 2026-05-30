@@ -135,11 +135,14 @@ function ProgressionChart({ entries, metric }: {
   const PAD = { top: 16, bottom: 32, left: 42, right: 16 }
   const cH = H - PAD.top - PAD.bottom
 
-  // Always show ~12 columns in the visible window, derived from actual container width
-  const VISIBLE_COLS = 12
+  // Fewer columns on narrow screens
+  const VISIBLE_COLS = containerWidth > 500 ? 12 : 8
   const COL_W = containerWidth > 0 ? (containerWidth - PAD.left - PAD.right) / VISIBLE_COLS : 48
 
   const totalW = PAD.left + entries.length * COL_W + PAD.right
+
+  // Skip labels when columns are too narrow to fit them without overlap
+  const labelStep = COL_W < 36 ? 3 : COL_W < 52 ? 2 : 1
 
   // Derive which entries are visible in the current scroll window
   const visibleStart = Math.max(0, Math.floor((scrollLeft - PAD.left) / COL_W))
@@ -189,9 +192,9 @@ function ProgressionChart({ entries, metric }: {
   }
 
   return (
-    <div className="px-4 md:px-5 py-3 md:py-4">
+    <div className="py-3 md:py-4">
       {/* Info bar */}
-      <div className="mb-2">
+      <div className="mb-2 px-4 md:px-5">
         <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
           {metricLabel[metric]}
         </span>
@@ -339,19 +342,22 @@ function ProgressionChart({ entries, metric }: {
           ))}
 
           {/* X-axis labels */}
-          {entries.map((entry, i) => (
-            <text
-              key={`xlabel-${i}`}
-              x={xOf(i)} y={H - 3}
-              textAnchor="middle"
-              fontSize="10"
-              fill="#1a1a1a"
-              fillOpacity="0.35"
-              fontFamily="monospace"
-            >
-              {entry.label}
-            </text>
-          ))}
+          {entries.map((entry, i) => {
+            if (i % labelStep !== 0) return null
+            return (
+              <text
+                key={`xlabel-${i}`}
+                x={xOf(i)} y={H - 3}
+                textAnchor="middle"
+                fontSize="10"
+                fill="#1a1a1a"
+                fillOpacity="0.35"
+                fontFamily="monospace"
+              >
+                {entry.label}
+              </text>
+            )
+          })}
 
           {/* Invisible hover targets */}
           {entries.map((_, i) => (
@@ -370,7 +376,7 @@ function ProgressionChart({ entries, metric }: {
       </div>{/* end relative wrapper */}
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-2">
+      <div className="flex items-center gap-4 mt-2 px-4 md:px-5">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-px bg-ink/50" />
           <SportShoe size={11} className="text-muted/60" />
