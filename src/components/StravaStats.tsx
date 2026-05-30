@@ -146,11 +146,11 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
 
   // Annual: fit all entries to full width, no scroll
   // Weekly/monthly: show fixed window of cols, rest scrollable
-  const VISIBLE_COLS = isAnnual ? entries.length : Math.min(entries.length, containerWidth > 500 ? 12 : 8)
+  const VISIBLE_COLS = isAnnual ? entries.length : Math.min(entries.length, 12)
   const COL_W = containerWidth > 0
     ? isAnnual
       ? (containerWidth - PAD.left - PAD.right) / entries.length
-      : Math.min(80, (containerWidth - PAD.left - PAD.right) / VISIBLE_COLS)
+      : (containerWidth - PAD.left - PAD.right) / VISIBLE_COLS
     : 48
 
   const totalW = PAD.left + entries.length * COL_W + PAD.right
