@@ -107,20 +107,19 @@ function ProgressionChart({ entries, metric }: {
   metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [containerWidth, setContainerWidth] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   // Scroll to the right (most recent) on mount and when entries change
   useEffect(() => {
     const el = scrollRef.current
-    if (el) el.scrollLeft = el.scrollWidth
+    if (el) {
+      el.scrollLeft = el.scrollWidth
+      setScrollLeft(el.scrollWidth)
+      setContainerWidth(el.clientWidth)
+    }
   }, [entries.length])
-
-  const metricLabel: Record<typeof metric, string> = {
-    distanceKm: 'km per period',
-    timeHours: 'time per period',
-    elevGainM: 'elevation per period (m)',
-    activities: 'activities per period',
-  }
 
   // Fixed column width per entry — feels like a calendar/timeline
   const COL_W = 48
@@ -130,9 +129,21 @@ function ProgressionChart({ entries, metric }: {
 
   const totalW = PAD.left + entries.length * COL_W + PAD.right
 
-  const maxVal = Math.max(...entries.map(e => e.run[metric] + e.ride[metric]), 1)
+  // Derive which entries are visible in the current scroll window
+  const visibleStart = Math.max(0, Math.floor((scrollLeft - PAD.left) / COL_W))
+  const visibleEnd   = Math.min(entries.length - 1, Math.ceil((scrollLeft + containerWidth - PAD.left) / COL_W))
+  const visibleEntries = entries.slice(visibleStart, visibleEnd + 1)
+
+  const maxVal = Math.max(...visibleEntries.map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
   const yTicks = [0, Math.round(niceMax / 2), niceMax]
+
+  const metricLabel: Record<typeof metric, string> = {
+    distanceKm: 'km per period',
+    timeHours: 'time per period',
+    elevGainM: 'elevation per period (m)',
+    activities: 'activities per period',
+  }
 
   const xOf = (i: number) => PAD.left + i * COL_W + COL_W / 2
   const yOf = (val: number) => PAD.top + cH - (val / niceMax) * cH
@@ -226,6 +237,7 @@ function ProgressionChart({ entries, metric }: {
           ref={scrollRef}
           className="overflow-x-auto overflow-y-hidden"
           style={{ WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'], scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'], msOverflowStyle: 'none' }}
+          onScroll={e => setScrollLeft((e.target as HTMLDivElement).scrollLeft)}
         >
         <svg
           width={totalW}
