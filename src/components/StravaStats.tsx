@@ -607,17 +607,17 @@ function AllTimeCards() {
 }
 
 // ── Root ──────────────────────────────────────────────────────────────────────
-type Tab = 'all-time' | 'weekly' | 'monthly' | 'annual'
+type Tab = 'overall' | 'weekly' | 'monthly' | 'annual'
 
 const TABS: { key: Tab; label: string }[] = [
-  { key: 'all-time', label: 'All-time' },
   { key: 'weekly', label: 'Weekly' },
   { key: 'monthly', label: 'Monthly' },
   { key: 'annual', label: 'Annual' },
+  { key: 'overall', label: 'Overall' },
 ]
 
 export default function StravaStats() {
-  const [tab, setTab] = useState<Tab>('all-time')
+  const [tab, setTab] = useState<Tab>('weekly')
 
   return (
     <div>
@@ -671,7 +671,7 @@ export default function StravaStats() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.2 }}
         >
-          {tab === 'all-time' && <AllTimeCards />}
+          {tab === 'overall' && <AllTimeCards />}
           {tab === 'weekly' && <ProgressionPanel mode="weekly" />}
           {tab === 'monthly' && <ProgressionPanel mode="monthly" />}
           {tab === 'annual' && <ProgressionPanel mode="annual" />}
