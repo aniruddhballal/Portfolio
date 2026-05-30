@@ -203,6 +203,8 @@ function ProgressionChart({ entries, metric }: {
           viewBox={`0 0 ${PAD.left} ${H}`}
           style={{ position: 'absolute', left: 0, top: 0, zIndex: 1, pointerEvents: 'none' }}
         >
+          {/* Background to mask scrolling chart content behind the labels */}
+          <rect x={0} y={0} width={PAD.left} height={H} fill="var(--color-paper, #f5f0e8)" />
           {yTicks.map(tick => {
             const y = yOf(tick)
             const tickLabel = metric === 'timeHours'
