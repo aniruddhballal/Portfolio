@@ -102,10 +102,11 @@ interface BarEntry {
   ride: PeriodStats
 }
 
-function ProgressionChart({ entries, metric, mode }: {
+function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
   entries: BarEntry[]
   metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
   mode: ProgressionMode
+  onVisibleWindowChange?: (w: { start: number; end: number }) => void
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
@@ -160,8 +161,12 @@ function ProgressionChart({ entries, metric, mode }: {
 
   // Derive which entries are visible in the current scroll window
   const visibleStart = Math.max(0, Math.floor((scrollLeft - PAD.left) / COL_W))
-  const visibleEnd   = Math.min(entries.length - 1, Math.ceil((scrollLeft + containerWidth - PAD.left) / COL_W))
+  const visibleEnd = Math.min(entries.length - 1, Math.ceil((scrollLeft + containerWidth - PAD.left) / COL_W))
   const visibleEntries = entries.slice(visibleStart, visibleEnd + 1)
+
+  useEffect(() => {
+    onVisibleWindowChange?.({ start: visibleStart, end: visibleEnd })
+  }, [visibleStart, visibleEnd])
 
   const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
@@ -185,7 +190,7 @@ function ProgressionChart({ entries, metric, mode }: {
   const xOf = (i: number) => PAD.left + i * COL_W + COL_W / 2
   const yOf = (val: number) => PAD.top + cH - (val / renderMax) * cH
 
-  const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
+  const runPoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
   const ridePoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.ride[metric]) }))
 
   const toPolyline = (pts: { x: number; y: number }[]) =>
@@ -252,10 +257,10 @@ function ProgressionChart({ entries, metric, mode }: {
             const tickLabel = metric === 'timeHours'
               ? fmtHours(roundedTick)
               : metric === 'elevGainM'
-              ? `${roundedTick}m`
-              : metric === 'distanceKm'
-              ? `${roundedTick}km`
-              : String(roundedTick)
+                ? `${roundedTick}m`
+                : metric === 'distanceKm'
+                  ? `${roundedTick}km`
+                  : String(roundedTick)
             return (
               <text
                 key={ti}
@@ -277,115 +282,115 @@ function ProgressionChart({ entries, metric, mode }: {
           style={{ WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'], scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'], msOverflowStyle: 'none' }}
           onScroll={e => setScrollLeft((e.target as HTMLDivElement).scrollLeft)}
         >
-        <svg
-          width={totalW}
-          height={H}
-          viewBox={`0 0 ${totalW} ${H}`}
-          style={{ display: 'block', minWidth: totalW }}
-        >
-          <defs>
-            <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
-              <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
-            </linearGradient>
-            <linearGradient id="rideGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.06" />
-              <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
-            </linearGradient>
-          </defs>
+          <svg
+            width={totalW}
+            height={H}
+            viewBox={`0 0 ${totalW} ${H}`}
+            style={{ display: 'block', minWidth: totalW }}
+          >
+            <defs>
+              <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
+                <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
+              </linearGradient>
+              <linearGradient id="rideGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.06" />
+                <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
+              </linearGradient>
+            </defs>
 
-          {/* Y-axis grid lines only — labels are in the sticky overlay above */}
-          {yTicks.map((tick, ti) => {
-            const y = yOf(tick)
-            return (
+            {/* Y-axis grid lines only — labels are in the sticky overlay above */}
+            {yTicks.map((tick, ti) => {
+              const y = yOf(tick)
+              return (
+                <line
+                  key={ti}
+                  x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
+                  stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
+                />
+              )
+            })}
+
+            {/* Ride area + line */}
+            <path d={toArea(ridePoints)} fill="url(#rideGrad)" />
+            <polyline
+              points={toPolyline(ridePoints)}
+              fill="none" stroke="#1a1a1a" strokeOpacity="0.22" strokeWidth="1.5"
+            />
+
+            {/* Run area + line */}
+            <path d={toArea(runPoints)} fill="url(#runGrad)" />
+            <polyline
+              points={toPolyline(runPoints)}
+              fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
+            />
+
+            {/* Hover vertical line */}
+            {hovered !== null && (
               <line
-                key={ti}
-                x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
-                stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
+                x1={xOf(hovered)} y1={PAD.top}
+                x2={xOf(hovered)} y2={PAD.top + cH}
+                stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
               />
-            )
-          })}
+            )}
 
-          {/* Ride area + line */}
-          <path d={toArea(ridePoints)} fill="url(#rideGrad)" />
-          <polyline
-            points={toPolyline(ridePoints)}
-            fill="none" stroke="#1a1a1a" strokeOpacity="0.22" strokeWidth="1.5"
-          />
+            {/* Ride dots */}
+            {ridePoints.map((p, i) => (
+              <circle
+                key={`ride-${i}`}
+                cx={p.x} cy={p.y}
+                r={hovered === i ? 4 : 3}
+                fill={hovered === i ? '#1a1a1a' : 'transparent'}
+                fillOpacity={hovered === i ? 0.15 : 0}
+                stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.5 : 0.25}
+                strokeWidth="1.5"
+              />
+            ))}
 
-          {/* Run area + line */}
-          <path d={toArea(runPoints)} fill="url(#runGrad)" />
-          <polyline
-            points={toPolyline(runPoints)}
-            fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
-          />
+            {/* Run dots */}
+            {runPoints.map((p, i) => (
+              <circle
+                key={`run-${i}`}
+                cx={p.x} cy={p.y}
+                r={hovered === i ? 4 : 3}
+                fill={hovered === i ? '#1a1a1a' : 'transparent'}
+                fillOpacity={hovered === i ? 0.3 : 0}
+                stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.9 : 0.5}
+                strokeWidth="1.5"
+              />
+            ))}
 
-          {/* Hover vertical line */}
-          {hovered !== null && (
-            <line
-              x1={xOf(hovered)} y1={PAD.top}
-              x2={xOf(hovered)} y2={PAD.top + cH}
-              stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
-            />
-          )}
+            {/* X-axis labels */}
+            {entries.map((entry, i) => {
+              if (i % labelStep !== 0) return null
+              return (
+                <text
+                  key={`xlabel-${i}`}
+                  x={xOf(i)} y={H - 3}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fill="#1a1a1a"
+                  fillOpacity="0.35"
+                  fontFamily="monospace"
+                >
+                  {entry.label}
+                </text>
+              )
+            })}
 
-          {/* Ride dots */}
-          {ridePoints.map((p, i) => (
-            <circle
-              key={`ride-${i}`}
-              cx={p.x} cy={p.y}
-              r={hovered === i ? 4 : 3}
-              fill={hovered === i ? '#1a1a1a' : 'transparent'}
-              fillOpacity={hovered === i ? 0.15 : 0}
-              stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.5 : 0.25}
-              strokeWidth="1.5"
-            />
-          ))}
-
-          {/* Run dots */}
-          {runPoints.map((p, i) => (
-            <circle
-              key={`run-${i}`}
-              cx={p.x} cy={p.y}
-              r={hovered === i ? 4 : 3}
-              fill={hovered === i ? '#1a1a1a' : 'transparent'}
-              fillOpacity={hovered === i ? 0.3 : 0}
-              stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.9 : 0.5}
-              strokeWidth="1.5"
-            />
-          ))}
-
-          {/* X-axis labels */}
-          {entries.map((entry, i) => {
-            if (i % labelStep !== 0) return null
-            return (
-              <text
-                key={`xlabel-${i}`}
-                x={xOf(i)} y={H - 3}
-                textAnchor="middle"
-                fontSize="10"
-                fill="#1a1a1a"
-                fillOpacity="0.35"
-                fontFamily="monospace"
-              >
-                {entry.label}
-              </text>
-            )
-          })}
-
-          {/* Invisible hover targets */}
-          {entries.map((_, i) => (
-            <rect
-              key={`hit-${i}`}
-              x={xOf(i) - COL_W / 2} y={0}
-              width={COL_W} height={H}
-              fill="transparent"
-              style={{ cursor: 'default' }}
-              onMouseEnter={() => setHovered(i)}
-              onTouchStart={() => setHovered(i)}
-            />
-          ))}
-        </svg>
+            {/* Invisible hover targets */}
+            {entries.map((_, i) => (
+              <rect
+                key={`hit-${i}`}
+                x={xOf(i) - COL_W / 2} y={0}
+                width={COL_W} height={H}
+                fill="transparent"
+                style={{ cursor: 'default' }}
+                onMouseEnter={() => setHovered(i)}
+                onTouchStart={() => setHovered(i)}
+              />
+            ))}
+          </svg>
         </div>{/* end scroll container */}
       </div>{/* end relative wrapper */}
 
@@ -412,21 +417,36 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const allEntries: BarEntry[] = mode === 'weekly'
     ? (data.weekly as WeeklyEntry[]).map(w => ({
-        label: weekLabelAxis(w.weekStart),
-        tooltipLabel: weekRangeLabel(w.weekStart),
-        isoStart: w.weekStart,
-        run: w.run, ride: w.ride,
-      }))
+      label: weekLabelAxis(w.weekStart),
+      tooltipLabel: weekRangeLabel(w.weekStart),
+      isoStart: w.weekStart,
+      run: w.run, ride: w.ride,
+    }))
     : mode === 'monthly'
       ? (data.monthly as MonthlyEntry[]).map(m => ({
-          label: monthLabelAxis(m.month + '-01'),
-          tooltipLabel: m.label,
-          isoStart: m.month + '-01',
-          run: m.run, ride: m.ride,
-        }))
+        label: monthLabelAxis(m.month + '-01'),
+        tooltipLabel: m.label,
+        isoStart: m.month + '-01',
+        run: m.run, ride: m.ride,
+      }))
       : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
 
   const entries = allEntries
+
+  // Track which entries are currently visible in the chart scroll window
+  const [visibleWindow, setVisibleWindow] = useState<{ start: number; end: number }>({
+    start: Math.max(0, allEntries.length - 12),
+    end: allEntries.length - 1,
+  })
+
+  // Reset visible window to most recent when mode changes
+  useEffect(() => {
+    setVisibleWindow({ start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 })
+  }, [mode])
+
+  const visibleEntries = mode === 'annual'
+    ? entries
+    : entries.slice(visibleWindow.start, visibleWindow.end + 1)
 
   const metrics: { key: typeof metric; label: string }[] = [
     { key: 'distanceKm', label: 'Distance' },
@@ -435,14 +455,14 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
     { key: 'activities', label: 'Activities' },
   ]
 
-  const totRun = entries.reduce((a, e) => ({
+  const totRun = visibleEntries.reduce((a, e) => ({
     distanceKm: a.distanceKm + e.run.distanceKm,
     timeHours: a.timeHours + e.run.timeHours,
     elevGainM: a.elevGainM + e.run.elevGainM,
     activities: a.activities + e.run.activities,
   }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
 
-  const totRide = entries.reduce((a, e) => ({
+  const totRide = visibleEntries.reduce((a, e) => ({
     distanceKm: a.distanceKm + e.ride.distanceKm,
     timeHours: a.timeHours + e.ride.timeHours,
     elevGainM: a.elevGainM + e.ride.elevGainM,
@@ -452,8 +472,9 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const periodLabel = mode === 'weekly' ? 'All weeks' : mode === 'monthly' ? 'All months' : 'All years'
 
   function rangeLabel() {
-    const first = entries[0]
-    const last = entries[entries.length - 1]
+    const first = visibleEntries[0]
+    const last = visibleEntries[visibleEntries.length - 1]
+    if (!first || !last) return ''
     if (mode === 'weekly' && first.isoStart && last.isoStart) {
       return `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
     }
@@ -475,8 +496,8 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
               key={m.key}
               onClick={() => setMetric(m.key)}
               className={`font-mono text-[10px] px-2 py-1 border transition-colors ${metric === m.key
-                  ? 'border-accent text-accent'
-                  : 'border-ink/10 text-muted hover:border-ink/30'
+                ? 'border-accent text-accent'
+                : 'border-ink/10 text-muted hover:border-ink/30'
                 }`}
             >
               {m.label}
@@ -508,7 +529,12 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
       </div>
 
       <div className="relative">
-        <ProgressionChart entries={entries} metric={metric} mode={mode} />
+        <ProgressionChart
+          entries={entries}
+          metric={metric}
+          mode={mode}
+          onVisibleWindowChange={setVisibleWindow}
+        />
       </div>
     </div>
   )
@@ -615,8 +641,8 @@ export default function StravaStats() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`relative font-mono text-xs px-4 py-2.5 transition-colors ${tab === t.key
-                ? 'text-accent bg-ink/[0.03]'
-                : 'text-muted hover:text-ink'
+              ? 'text-accent bg-ink/[0.03]'
+              : 'text-muted hover:text-ink'
               }`}
           >
             {tab === t.key && (
