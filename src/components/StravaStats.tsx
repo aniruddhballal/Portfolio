@@ -111,21 +111,33 @@ function ProgressionChart({ entries, metric }: {
   const [containerWidth, setContainerWidth] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Track container width (on mount and on resize)
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const update = () => setContainerWidth(el.clientWidth)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   // Scroll to the right (most recent) on mount and when entries change
   useEffect(() => {
     const el = scrollRef.current
     if (el) {
       el.scrollLeft = el.scrollWidth
       setScrollLeft(el.scrollWidth)
-      setContainerWidth(el.clientWidth)
     }
   }, [entries.length])
 
-  // Fixed column width per entry — feels like a calendar/timeline
-  const COL_W = 48
   const H = 200
   const PAD = { top: 16, bottom: 32, left: 42, right: 16 }
   const cH = H - PAD.top - PAD.bottom
+
+  // Always show ~12 columns in the visible window, derived from actual container width
+  const VISIBLE_COLS = 12
+  const COL_W = containerWidth > 0 ? (containerWidth - PAD.left - PAD.right) / VISIBLE_COLS : 48
 
   const totalW = PAD.left + entries.length * COL_W + PAD.right
 
