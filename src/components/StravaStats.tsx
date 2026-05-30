@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useSpring } from 'framer-motion'
 import { SportShoe, Bike } from 'lucide-react'
 import stravaData from '../data/strava.json'
 import type { StravaData, PeriodStats, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../data/strava-types'
@@ -136,7 +136,15 @@ function ProgressionChart({ entries, metric }: {
 
   const maxVal = Math.max(...visibleEntries.map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
-  const yTicks = [0, Math.round(niceMax / 2), niceMax]
+
+  // Spring-animate the scale so the chart eases when the window changes
+  const animatedMax = useSpring(niceMax, { stiffness: 60, damping: 18, mass: 1 })
+  useEffect(() => { animatedMax.set(niceMax) }, [niceMax])
+
+  const [renderMax, setRenderMax] = useState(niceMax)
+  useEffect(() => animatedMax.on('change', v => setRenderMax(v)), [animatedMax])
+
+  const yTicks = [0, Math.round(renderMax / 2), renderMax]
 
   const metricLabel: Record<typeof metric, string> = {
     distanceKm: 'km per period',
@@ -146,7 +154,7 @@ function ProgressionChart({ entries, metric }: {
   }
 
   const xOf = (i: number) => PAD.left + i * COL_W + COL_W / 2
-  const yOf = (val: number) => PAD.top + cH - (val / niceMax) * cH
+  const yOf = (val: number) => PAD.top + cH - (val / renderMax) * cH
 
   const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
   const ridePoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.ride[metric]) }))
@@ -209,18 +217,19 @@ function ProgressionChart({ entries, metric }: {
         >
           {/* Background to mask scrolling chart content behind the labels */}
           <rect x={0} y={0} width={PAD.left} height={H} fill="#EDE9E1" />
-          {yTicks.map(tick => {
+          {yTicks.map((tick, ti) => {
             const y = yOf(tick)
+            const roundedTick = Math.round(tick)
             const tickLabel = metric === 'timeHours'
-              ? fmtHours(tick)
+              ? fmtHours(roundedTick)
               : metric === 'elevGainM'
-              ? `${tick}m`
+              ? `${roundedTick}m`
               : metric === 'distanceKm'
-              ? `${tick}km`
-              : String(tick)
+              ? `${roundedTick}km`
+              : String(roundedTick)
             return (
               <text
-                key={tick}
+                key={ti}
                 x={PAD.left - 6} y={y + 4}
                 textAnchor="end"
                 fontSize="10"
@@ -257,11 +266,11 @@ function ProgressionChart({ entries, metric }: {
           </defs>
 
           {/* Y-axis grid lines only — labels are in the sticky overlay above */}
-          {yTicks.map(tick => {
+          {yTicks.map((tick, ti) => {
             const y = yOf(tick)
             return (
               <line
-                key={tick}
+                key={ti}
                 x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
                 stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
               />
