@@ -158,16 +158,23 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
   // Only skip alternates if columns are extremely narrow (e.g. mobile portrait with many entries).
   const labelStep = COL_W < 30 ? 2 : 1
 
-  // For weekly mode: only label at month boundaries (first week of each new month)
+  // For weekly mode: only label at month boundaries, with a minimum pixel gap to prevent collisions
   // For monthly: label every entry. For annual: label every entry.
+  const MIN_LABEL_GAP = 36 // px — roughly the width of a 3-char month label + breathing room
+  const xLabelPositions: number[] = [] // track rendered x positions for gap check
+
   function shouldShowXLabel(i: number): boolean {
     if (isAnnual || mode === 'monthly') return i % labelStep === 0
     if (mode === 'weekly' && entries[i].isoStart) {
-      // Show label if this is the first entry of a new month
       const cur = new Date(entries[i].isoStart!)
-      if (i === 0) return true
-      const prev = new Date(entries[i - 1].isoStart!)
-      return cur.getMonth() !== prev.getMonth()
+      const isMonthBoundary = i === 0 || new Date(entries[i - 1].isoStart!).getMonth() !== cur.getMonth()
+      if (!isMonthBoundary) return false
+      // Check pixel gap from last rendered label
+      const x = xOf(i)
+      const lastX = xLabelPositions[xLabelPositions.length - 1]
+      if (lastX !== undefined && x - lastX < MIN_LABEL_GAP) return false
+      xLabelPositions.push(x)
+      return true
     }
     return i % labelStep === 0
   }
@@ -530,19 +537,19 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   return (
     <div className="border border-ink/10 overflow-hidden">
-      <div className="px-5 py-3 border-b border-ink/10 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-baseline gap-2 min-w-0">
+      <div className="px-5 py-3 border-b border-ink/10 flex flex-col gap-2">
+        <div className="flex items-baseline justify-between gap-4">
           <span className="font-mono text-xs text-muted tracking-widest uppercase shrink-0">{periodLabel}</span>
-          <span className="font-mono text-[10px] text-muted/40 truncate">{rangeLabel()}</span>
+          <span className="font-mono text-[10px] text-muted/40 text-right">{rangeLabel()}</span>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-1">
           {metrics.map(m => (
             <button
               key={m.key}
               onClick={() => setMetric(m.key)}
-              className={`font-mono text-[10px] uppercase tracking-widest transition-colors pb-0.5 ${metric === m.key
-                  ? 'text-accent border-b border-accent'
-                  : 'text-muted/50 hover:text-muted border-b border-transparent'
+              className={`font-mono text-[10px] px-2 py-1 border transition-colors ${metric === m.key
+                  ? 'border-accent text-accent'
+                  : 'border-ink/10 text-muted hover:border-ink/30'
                 }`}
             >
               {m.label}
