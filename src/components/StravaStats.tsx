@@ -26,9 +26,6 @@ function fmtElev(m: number) {
 // X-axis label: "Jan 25" at year boundary, else "9 Mar"
 function weekLabelAxis(iso: string) {
   const d = new Date(iso)
-  if (d.getMonth() === 0) {
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })
-  }
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
@@ -54,13 +51,9 @@ function weekEndLabel(iso: string) {
   return end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// Monthly x-axis: "Jan 25" at boundary, else "Feb"
+// Monthly x-axis: always just "Jan", "Feb" etc.
 function monthLabelAxis(iso: string) {
-  const d = new Date(iso)
-  if (d.getMonth() === 0) {
-    return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })
-  }
-  return d.toLocaleDateString('en-GB', { month: 'short' })
+  return new Date(iso).toLocaleDateString('en-GB', { month: 'short' })
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
