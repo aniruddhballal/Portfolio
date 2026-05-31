@@ -214,12 +214,13 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     onVisibleWindowChange?.({ start: visibleStart, end: visibleEnd })
   }, [visibleStart, visibleEnd, containerWidth])
 
-  // Deselect if selected column scrolls out of visible window
+  // Deselect if selected column scrolls out of visible window — only once we have a measured width
   useEffect(() => {
+    if (containerWidth === 0) return
     if (selected !== null && (selected < visibleStart || selected > visibleEnd)) {
       setSelected(null)
     }
-  }, [visibleStart, visibleEnd])
+  }, [visibleStart, visibleEnd, containerWidth])
 
   const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
@@ -255,8 +256,9 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
-  // Active index: previewed (hover) takes priority over selected (clicked)
-  const activeIdx = previewed ?? selected
+  // Info bar always shows selected. Chart highlight follows previewed (hover) if active, else selected.
+  const displayIdx = selected  // what the info bar shows — never changes on hover
+  const activeIdx = previewed ?? selected  // what the chart dot/line highlights
 
   function fmtVal(val: number) {
     if (metric === 'timeHours') return fmtHours(val)
@@ -272,21 +274,18 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
         <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
           {metricLabel[metric]}
         </span>
-        {activeIdx !== null && entries[activeIdx] ? (
+        {displayIdx !== null && entries[displayIdx] ? (
           <div className="mt-0.5">
             <span className="font-mono text-xs md:text-sm text-ink leading-none block truncate">
-              {entries[activeIdx].tooltipLabel}
-              {previewed === null && selected !== null && (
-                <span className="text-muted/30 ml-1.5 text-[10px]">selected</span>
-              )}
+              {entries[displayIdx].tooltipLabel}
             </span>
             <div className="flex items-center gap-2 mt-0.5 flex-nowrap">
               <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                <SportShoe size={11} /> {fmtVal(entries[activeIdx].run[metric])}
+                <SportShoe size={11} /> {fmtVal(entries[displayIdx].run[metric])}
               </span>
               <span className="text-muted/30 font-mono text-xs">·</span>
               <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                <Bike size={11} /> {fmtVal(entries[activeIdx].ride[metric])}
+                <Bike size={11} /> {fmtVal(entries[displayIdx].ride[metric])}
               </span>
             </div>
           </div>
