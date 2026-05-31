@@ -258,9 +258,8 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
-  // Info bar always shows selected. Chart highlight follows previewed (hover) if active, else selected.
-  const displayIdx = selected  // what the info bar shows — never changes on hover
-  const activeIdx = previewed ?? selected  // what the chart dot/line highlights
+  // displayIdx: what the info bar shows — always selected, never changes on hover
+  const displayIdx = selected
 
   function fmtVal(val: number) {
     if (metric === 'timeHours') return fmtHours(val)
@@ -398,46 +397,46 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             />
           )}
 
-          {/* Hover vertical line — rendered before dots so dots sit on top */}
-          {activeIdx !== null && (
+          {/* Dashed vertical line — always on selected column */}
+          {selected !== null && (
             <line
-              x1={xOf(activeIdx)} y1={PAD.top}
-              x2={xOf(activeIdx)} y2={PAD.top + cH}
+              x1={xOf(selected)} y1={PAD.top}
+              x2={xOf(selected)} y2={PAD.top + cH}
               stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
             />
           )}
 
-          {/* Ride dots */}
+          {/* Ride dots — slightly enlarge on hover as clickable affordance */}
           {ridePoints.map((p, i) => (
             <circle
               key={`ride-${i}`}
               cx={p.x} cy={p.y}
-              r={activeIdx === i ? 4 : 3}
-              fill={activeIdx === i ? '#1a1a1a' : 'transparent'}
-              fillOpacity={activeIdx === i ? 0.15 : 0}
-              stroke="#1a1a1a" strokeOpacity={activeIdx === i ? 0.5 : 0.25}
+              r={selected === i ? 4 : previewed === i ? 3.5 : 3}
+              fill={selected === i ? '#1a1a1a' : 'transparent'}
+              fillOpacity={selected === i ? 0.15 : 0}
+              stroke="#1a1a1a" strokeOpacity={selected === i ? 0.5 : 0.25}
               strokeWidth="1.5"
             />
           ))}
 
-          {/* Run dots (non-active) */}
+          {/* Run dots (non-selected) — enlarge slightly on hover */}
           {runPoints.map((p, i) => (
-            i === activeIdx ? null :
+            i === selected ? null :
             <circle
               key={`run-${i}`}
               cx={p.x} cy={p.y}
-              r={3}
+              r={previewed === i ? 3.5 : 3}
               fill="transparent"
-              stroke="#1a1a1a" strokeOpacity={0.5}
+              stroke="#1a1a1a" strokeOpacity={previewed === i ? 0.7 : 0.5}
               strokeWidth="1.5"
             />
           ))}
 
-          {/* Active run dot — rendered last so it sits above everything */}
-          {activeIdx !== null && runPoints[activeIdx] && (
+          {/* Selected run dot — always on selected column, rendered last */}
+          {selected !== null && runPoints[selected] && (
             <circle
-              cx={xOf(activeIdx)} cy={runPoints[activeIdx].y}
-              r={previewed !== null ? 5 : 4}
+              cx={xOf(selected)} cy={runPoints[selected].y}
+              r={4}
               fill="#c0392b"
               fillOpacity={0.9}
               stroke="#fff"
