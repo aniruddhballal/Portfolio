@@ -108,7 +108,8 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
   mode: ProgressionMode
   onVisibleWindowChange?: (w: { start: number; end: number }) => void
 }) {
-  const [hovered, setHovered] = useState<number | null>(null)
+  const [selected, setSelected] = useState<number | null>(entries.length - 1)
+  const [previewed, setPreviewed] = useState<number | null>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -127,7 +128,13 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     return () => ro.disconnect()
   }, [])
 
-  // Scroll to the right (most recent) whenever mode, entries, or containerWidth changes — skip for annual
+  // Reset selection to most recent when entries change (mode switch)
+  useEffect(() => {
+    setSelected(entries.length - 1)
+    setPreviewed(null)
+  }, [entries.length, mode])
+
+  // Scroll to the right (most recent) whenever mode, entries, or containerWidth changes
   useEffect(() => {
     if (isAnnual || containerWidth === 0) return
     const el = scrollRef.current
@@ -207,6 +214,13 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     onVisibleWindowChange?.({ start: visibleStart, end: visibleEnd })
   }, [visibleStart, visibleEnd, containerWidth])
 
+  // Deselect if selected column scrolls out of visible window
+  useEffect(() => {
+    if (selected !== null && (selected < visibleStart || selected > visibleEnd)) {
+      setSelected(null)
+    }
+  }, [visibleStart, visibleEnd])
+
   const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => e.run[metric] + e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
 
@@ -241,6 +255,9 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
+  // Active index: previewed (hover) takes priority over selected (clicked)
+  const activeIdx = previewed ?? selected
+
   function fmtVal(val: number) {
     if (metric === 'timeHours') return fmtHours(val)
     if (metric === 'elevGainM') return `${Math.round(val)} m`
@@ -250,33 +267,36 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
 
   return (
     <div className="py-3 md:py-4">
-      {/* Info bar — fixed height so hover state doesn't cause layout shift */}
+      {/* Info bar — fixed height, always shows data for activeIdx */}
       <div className="mb-1 px-4 md:px-5 h-12 md:h-14 flex flex-col justify-center overflow-hidden">
         <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
           {metricLabel[metric]}
         </span>
-        {hovered !== null && entries[hovered] ? (
+        {activeIdx !== null && entries[activeIdx] ? (
           <div className="mt-0.5">
-            <span className="font-mono text-xs md:text-sm text-ink leading-none block truncate">{entries[hovered].tooltipLabel}</span>
+            <span className="font-mono text-xs md:text-sm text-ink leading-none block truncate">
+              {entries[activeIdx].tooltipLabel}
+              {previewed === null && selected !== null && (
+                <span className="text-muted/30 ml-1.5 text-[10px]">selected</span>
+              )}
+            </span>
             <div className="flex items-center gap-2 mt-0.5 flex-nowrap">
               <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                <SportShoe size={11} /> {fmtVal(entries[hovered].run[metric])}
+                <SportShoe size={11} /> {fmtVal(entries[activeIdx].run[metric])}
               </span>
               <span className="text-muted/30 font-mono text-xs">·</span>
               <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                <Bike size={11} /> {fmtVal(entries[hovered].ride[metric])}
+                <Bike size={11} /> {fmtVal(entries[activeIdx].ride[metric])}
               </span>
             </div>
           </div>
         ) : (
-          <p className="font-mono text-[10px] text-muted/30 mt-0.5">
-            {typeof window !== 'undefined' && 'ontouchstart' in window ? 'tap to inspect' : 'hover to inspect'}
-          </p>
+          <p className="font-mono text-[10px] text-muted/30 mt-0.5">scroll to a period and tap</p>
         )}
       </div>
 
       {/* Scrollable chart container */}
-      <div className="relative" onMouseLeave={() => setHovered(null)}>
+      <div className="relative" onMouseLeave={() => setPreviewed(null)}>
         {/* Scroll affordance — left fade when not scrolled to start */}
         {!isAnnual && scrollLeft > 8 && (
           <div
@@ -367,11 +387,21 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
           />
 
+          {/* Selected column background highlight */}
+          {selected !== null && (
+            <rect
+              x={xOf(selected) - COL_W / 2} y={PAD.top}
+              width={COL_W} height={cH}
+              fill="#1a1a1a" fillOpacity="0.04"
+              rx="2"
+            />
+          )}
+
           {/* Hover vertical line — rendered before dots so dots sit on top */}
-          {hovered !== null && (
+          {activeIdx !== null && (
             <line
-              x1={xOf(hovered)} y1={PAD.top}
-              x2={xOf(hovered)} y2={PAD.top + cH}
+              x1={xOf(activeIdx)} y1={PAD.top}
+              x2={xOf(activeIdx)} y2={PAD.top + cH}
               stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
             />
           )}
@@ -381,33 +411,32 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             <circle
               key={`ride-${i}`}
               cx={p.x} cy={p.y}
-              r={hovered === i ? 4 : 3}
-              fill={hovered === i ? '#1a1a1a' : 'transparent'}
-              fillOpacity={hovered === i ? 0.15 : 0}
-              stroke="#1a1a1a" strokeOpacity={hovered === i ? 0.5 : 0.25}
+              r={activeIdx === i ? 4 : 3}
+              fill={activeIdx === i ? '#1a1a1a' : 'transparent'}
+              fillOpacity={activeIdx === i ? 0.15 : 0}
+              stroke="#1a1a1a" strokeOpacity={activeIdx === i ? 0.5 : 0.25}
               strokeWidth="1.5"
             />
           ))}
 
-          {/* Run dots (non-hovered) */}
+          {/* Run dots (non-active) */}
           {runPoints.map((p, i) => (
-            i === hovered ? null :
+            i === activeIdx ? null :
             <circle
               key={`run-${i}`}
               cx={p.x} cy={p.y}
               r={3}
               fill="transparent"
-              fillOpacity={0}
               stroke="#1a1a1a" strokeOpacity={0.5}
               strokeWidth="1.5"
             />
           ))}
 
-          {/* Hovered run dot — rendered last so it sits above the dashed line */}
-          {hovered !== null && runPoints[hovered] && (
+          {/* Active run dot — rendered last so it sits above everything */}
+          {activeIdx !== null && runPoints[activeIdx] && (
             <circle
-              cx={xOf(hovered)} cy={runPoints[hovered].y}
-              r={5}
+              cx={xOf(activeIdx)} cy={runPoints[activeIdx].y}
+              r={previewed !== null ? 5 : 4}
               fill="#c0392b"
               fillOpacity={0.9}
               stroke="#fff"
@@ -436,20 +465,22 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             )
           })}
 
-          {/* Invisible hover targets */}
+          {/* Invisible hit targets — full column height for easy tap */}
           {entries.map((_, i) => (
             <rect
               key={`hit-${i}`}
               x={xOf(i) - COL_W / 2} y={0}
               width={COL_W} height={H}
               fill="transparent"
-              style={{ cursor: 'default' }}
-              onMouseEnter={() => setHovered(i)}
-              onTouchStart={() => setHovered(i)}
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={() => setPreviewed(i)}
+              onMouseLeave={() => setPreviewed(null)}
+              onClick={() => setSelected(prev => prev === i ? null : i)}
+              onTouchStart={(e) => { e.preventDefault(); setSelected(i) }}
             />
           ))}
         </svg>
-        </div>{/* end scroll container */}
+        </div>{/* end scrollRef */}
       </div>{/* end relative wrapper */}
 
       {/* Legend */}
