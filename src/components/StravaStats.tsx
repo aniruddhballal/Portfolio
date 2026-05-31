@@ -214,11 +214,13 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     onVisibleWindowChange?.({ start: visibleStart, end: visibleEnd })
   }, [visibleStart, visibleEnd, containerWidth])
 
-  // Deselect if selected column scrolls out of visible window — only once we have a measured width
+  // When selected scrolls out of the visible window, snap to the rightmost visible entry.
+  // This also handles the initial load: once containerWidth is measured and visibleEnd is known,
+  // if the default selected (entries.length - 1) is out of range it snaps to visibleEnd.
   useEffect(() => {
     if (containerWidth === 0) return
-    if (selected !== null && (selected < visibleStart || selected > visibleEnd)) {
-      setSelected(null)
+    if (selected === null || selected < visibleStart || selected > visibleEnd) {
+      setSelected(visibleEnd)
     }
   }, [visibleStart, visibleEnd, containerWidth])
 
@@ -290,7 +292,7 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             </div>
           </div>
         ) : (
-          <p className="font-mono text-[10px] text-muted/30 mt-0.5">scroll to a period and tap</p>
+          <p className="font-mono text-[10px] text-muted/30 mt-0.5">—</p>
         )}
       </div>
 
