@@ -476,7 +476,6 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
               onMouseEnter={() => setPreviewed(i)}
               onMouseLeave={() => setPreviewed(null)}
               onClick={() => setSelected(prev => prev === i ? null : i)}
-              onTouchStart={(e) => { e.preventDefault(); setSelected(i) }}
             />
           ))}
         </svg>
