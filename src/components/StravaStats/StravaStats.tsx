@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import stravaData from '../../data/strava.json'
 import type { StravaData } from '../../data/strava-types'
-import AllTimeCards from './AllTimeCards'
+import AllTimeCards from './AllTimeCards/AllTimeCards'
 import ProgressionPanel from './ProgressionPanel'
 
 const data = stravaData as StravaData
@@ -47,9 +47,8 @@ export default function StravaStats() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`relative font-mono text-xs px-4 py-2.5 transition-colors ${
-              tab === t.key ? 'text-accent bg-ink/[0.03]' : 'text-muted hover:text-ink'
-            }`}
+            className={`relative font-mono text-xs px-4 py-2.5 transition-colors ${tab === t.key ? 'text-accent bg-ink/[0.03]' : 'text-muted hover:text-ink'
+              }`}
           >
             {tab === t.key && (
               <motion.div

@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
-import stravaData from '../../data/strava.json'
-import type { StravaData } from '../../data/strava-types'
+import stravaData from '../../../data/strava.json'
+import type { StravaData } from '../../../data/strava-types'
 import StatCell from './StatCell'
 import PBList from './PBList'
-import { fmtDist, fmtHours, fmtElev } from './utils/strava-utils'
+import { fmtDist, fmtHours, fmtElev } from '../utils/strava-utils'
 
 const data = stravaData as StravaData
 

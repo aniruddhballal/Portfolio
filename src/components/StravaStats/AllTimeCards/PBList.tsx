@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import type { StravaData } from '../../data/strava-types'
+import type { StravaData } from '../../../data/strava-types'
 
 interface PBListProps {
   pbs: StravaData['run']['pbs']
