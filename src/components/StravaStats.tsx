@@ -104,7 +104,7 @@ interface BarEntry {
 
 function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange }: {
   entries: BarEntry[]
-  metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
+  metric: 'distanceKm'
   mode: ProgressionMode
   sport: 'run' | 'ride'
   onVisibleWindowChange?: (w: { start: number; end: number }) => void
@@ -237,13 +237,6 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
 
   const yTicks = [0, Math.round(renderMax / 2), renderMax]
 
-  const metricLabel: Record<typeof metric, string> = {
-    distanceKm: 'km per period',
-    timeHours: 'time per period',
-    elevGainM: 'elevation per period (m)',
-    activities: 'activities per period',
-  }
-
   const yOf = (val: number) => PAD.top + cH - (val / renderMax) * cH
 
   const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
@@ -262,35 +255,23 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
   // displayIdx: what the info bar shows — always selected, never changes on hover
   const displayIdx = selected
 
-  function fmtVal(val: number) {
-    if (metric === 'timeHours') return fmtHours(val)
-    if (metric === 'elevGainM') return `${Math.round(val)} m`
-    if (metric === 'activities') return val.toFixed(0)
-    return `${val.toFixed(1)} km`
-  }
-
   return (
     <div className="py-3 md:py-4">
-      {/* Info bar — fixed height, always shows data for activeIdx */}
+      {/* Info bar */}
       <div className="mb-1 px-4 md:px-5 h-12 md:h-14 flex flex-col justify-center overflow-hidden">
         <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
-          {metricLabel[metric]}
+          km per period
         </span>
         {displayIdx !== null && entries[displayIdx] ? (
           <div className="mt-0.5">
             <span className="font-mono text-xs md:text-sm text-ink leading-none block truncate">
               {entries[displayIdx].tooltipLabel}
             </span>
-            <div className="flex items-center gap-2 mt-0.5 flex-nowrap">
-              {sport === 'run' ? (
-                <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                  <SportShoe size={11} /> {fmtVal(entries[displayIdx].run[metric])}
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                  <Bike size={11} /> {fmtVal(entries[displayIdx].ride[metric])}
-                </span>
-              )}
+            <div className="flex items-center gap-1 mt-0.5">
+              {sport === 'run'
+                ? <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap"><SportShoe size={11} /> {fmtDist(entries[displayIdx].run.distanceKm)} km</span>
+                : <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap"><Bike size={11} /> {fmtDist(entries[displayIdx].ride.distanceKm)} km</span>
+              }
             </div>
           </div>
         ) : (
@@ -318,14 +299,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
           <rect x={0} y={0} width={PAD.left} height={H} fill="#EDE9E1" />
           {yTicks.map((tick, ti) => {
             const y = yOf(tick)
-            const roundedTick = Math.round(tick)
-            const tickLabel = metric === 'timeHours'
-              ? fmtHours(roundedTick)
-              : metric === 'elevGainM'
-              ? `${roundedTick}m`
-              : metric === 'distanceKm'
-              ? `${roundedTick}km`
-              : String(roundedTick)
+            const tickLabel = `${Math.round(tick)}km`
             return (
               <text
                 key={ti}
@@ -477,7 +451,6 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
 
 // ── Progression panel ─────────────────────────────────────────────────────────
 function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
-  const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
   const [sport, setSport] = useState<'run' | 'ride'>('run')
 
   const allEntries: BarEntry[] = mode === 'weekly'
@@ -512,26 +485,15 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
     ? entries
     : entries.slice(visibleWindow.start, visibleWindow.end + 1)
 
-  const metrics: { key: typeof metric; label: string }[] = [
-    { key: 'distanceKm', label: 'Distance' },
-    { key: 'timeHours', label: 'Time' },
-    { key: 'elevGainM', label: 'Elevation' },
-    { key: 'activities', label: 'Activities' },
-  ]
-
   const totRun = visibleEntries.reduce((a, e) => ({
     distanceKm: a.distanceKm + e.run.distanceKm,
-    timeHours: a.timeHours + e.run.timeHours,
-    elevGainM: a.elevGainM + e.run.elevGainM,
     activities: a.activities + e.run.activities,
-  }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
+  }), { distanceKm: 0, activities: 0 })
 
   const totRide = visibleEntries.reduce((a, e) => ({
     distanceKm: a.distanceKm + e.ride.distanceKm,
-    timeHours: a.timeHours + e.ride.timeHours,
-    elevGainM: a.elevGainM + e.ride.elevGainM,
     activities: a.activities + e.ride.activities,
-  }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
+  }), { distanceKm: 0, activities: 0 })
 
   function rangeLabel() {
     const first = visibleEntries[0]
@@ -545,38 +507,22 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   return (
     <div className="border border-ink/10 overflow-hidden">
-      <div className="px-5 py-3 border-b border-ink/10 flex flex-col gap-2">
-        <div className="flex items-baseline justify-between gap-4">
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => setSport('run')}
-              className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors flex items-center gap-1 ${sport === 'run' ? 'border-ink/40 text-ink' : 'border-ink/10 text-muted hover:border-ink/30'}`}
-            >
-              <SportShoe size={10} /> Run
-            </button>
-            <button
-              onClick={() => setSport('ride')}
-              className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors flex items-center gap-1 ${sport === 'ride' ? 'border-ink/40 text-ink' : 'border-ink/10 text-muted hover:border-ink/30'}`}
-            >
-              <Bike size={10} /> Ride
-            </button>
-          </div>
-          <span className="font-mono text-[10px] md:text-xs text-muted/40 text-right">{rangeLabel()}</span>
+      <div className="px-5 py-3 border-b border-ink/10 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={() => setSport('run')}
+            className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors flex items-center gap-1 ${sport === 'run' ? 'border-ink/40 text-ink' : 'border-ink/10 text-muted hover:border-ink/30'}`}
+          >
+            <SportShoe size={10} /> Run
+          </button>
+          <button
+            onClick={() => setSport('ride')}
+            className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors flex items-center gap-1 ${sport === 'ride' ? 'border-ink/40 text-ink' : 'border-ink/10 text-muted hover:border-ink/30'}`}
+          >
+            <Bike size={10} /> Ride
+          </button>
         </div>
-        <div className="flex items-center gap-1">
-          {metrics.map(m => (
-            <button
-              key={m.key}
-              onClick={() => setMetric(m.key)}
-              className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors ${metric === m.key
-                  ? 'border-accent text-accent'
-                  : 'border-ink/10 text-muted hover:border-ink/30'
-                }`}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        <span className="font-mono text-[10px] md:text-xs text-muted/40 text-right">{rangeLabel()}</span>
       </div>
 
       {/* Summary */}
@@ -584,27 +530,19 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
         <div className="px-4 md:px-6 py-2.5 md:py-4 border-r border-ink/10">
           <span className="font-mono text-[10px] md:text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><SportShoe size={12} /> Run</span>
           <span className="font-display text-xl md:text-3xl text-ink block">{fmtDist(totRun.distanceKm)} km</span>
-          <div className="flex gap-2 flex-wrap mt-1">
-            <span className="font-mono text-xs md:text-sm text-muted">{fmtHours(totRun.timeHours)}</span>
-            <span className="font-mono text-xs md:text-sm text-muted">{fmtElev(totRun.elevGainM)}</span>
-            <span className="font-mono text-xs md:text-sm text-muted">{totRun.activities} runs</span>
-          </div>
+          <span className="font-mono text-xs md:text-sm text-muted mt-1 block">{totRun.activities} runs</span>
         </div>
         <div className="px-4 md:px-6 py-2.5 md:py-4">
           <span className="font-mono text-[10px] md:text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><Bike size={12} /> Ride</span>
           <span className="font-display text-xl md:text-3xl text-ink block">{fmtDist(totRide.distanceKm)} km</span>
-          <div className="flex gap-2 flex-wrap mt-1">
-            <span className="font-mono text-xs md:text-sm text-muted">{fmtHours(totRide.timeHours)}</span>
-            <span className="font-mono text-xs md:text-sm text-muted">{fmtElev(totRide.elevGainM)}</span>
-            <span className="font-mono text-xs md:text-sm text-muted">{totRide.activities} rides</span>
-          </div>
+          <span className="font-mono text-xs md:text-sm text-muted mt-1 block">{totRide.activities} rides</span>
         </div>
       </div>
 
       <div className="relative">
         <ProgressionChart
           entries={entries}
-          metric={metric}
+          metric="distanceKm"
           mode={mode}
           sport={sport}
           onVisibleWindowChange={w => {
