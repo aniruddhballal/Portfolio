@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { SportShoe, Bike } from 'lucide-react'
 import stravaData from '../../data/strava.json'
 import type { StravaData, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../../data/strava-types'
-import type { BarEntry, ProgressionMode } from './progression-types'
+import type { BarEntry, ProgressionMode } from './types/progression-types'
 import ProgressionChart from './ProgressionChart'
 import { fmtDist, weekLabelAxis, weekRangeLabel, weekStartLabel, weekEndLabel, monthLabelAxis } from './utils/strava-utils'
 

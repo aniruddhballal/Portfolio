@@ -1,4 +1,4 @@
-import type { PeriodStats } from '../../../data/strava-types'
+import type { PeriodStats } from '../../../../data/strava-types'
 
 export type ProgressionMode = 'weekly' | 'monthly' | 'annual'
 

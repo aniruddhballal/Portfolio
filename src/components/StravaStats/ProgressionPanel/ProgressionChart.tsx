@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSpring } from 'framer-motion'
-import type { BarEntry, ProgressionMode } from './progression-types'
+import type { BarEntry, ProgressionMode } from './types/progression-types'
 
 interface ProgressionChartProps {
   entries: BarEntry[]
