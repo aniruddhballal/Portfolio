@@ -4,7 +4,7 @@ import stravaData from '../../data/strava.json'
 import type { StravaData, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../../data/strava-types'
 import type { BarEntry, ProgressionMode } from './progression-types'
 import ProgressionChart from './ProgressionChart'
-import { fmtDist, weekLabelAxis, weekRangeLabel, weekStartLabel, weekEndLabel, monthLabelAxis } from './strava-utils'
+import { fmtDist, weekLabelAxis, weekRangeLabel, weekStartLabel, weekEndLabel, monthLabelAxis } from './utils/strava-utils'
 
 const data = stravaData as StravaData
 
