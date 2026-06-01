@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import stravaData from '../../data/strava.json'
 import type { StravaData } from '../../data/strava-types'
 import AllTimeCards from './AllTimeCards/AllTimeCards'
-import ProgressionPanel from './ProgressionPanel'
+import ProgressionPanel from './ProgressionPanel/ProgressionPanel'
 
 const data = stravaData as StravaData
 const STRAVA_URL = 'https://www.strava.com/athletes/111442086'
