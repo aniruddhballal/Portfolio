@@ -102,7 +102,7 @@ interface BarEntry {
   ride: PeriodStats
 }
 
-function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange, selectedIdx, onSelectedChange }: {
+function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange, selectedIdx, onSelectedChange, onRangeChange }: {
   entries: BarEntry[]
   metric: 'distanceKm'
   mode: ProgressionMode
@@ -110,6 +110,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   onVisibleWindowChange?: (w: { start: number; end: number }) => void
   selectedIdx?: number | null
   onSelectedChange?: (i: number | null) => void
+  onRangeChange?: (r: { start: number; end: number } | null) => void
 }) {
   const [selected, setSelected] = useState<number | null>(selectedIdx ?? entries.length - 1)
   const setSelectedBoth = (fn: (prev: number | null) => number | null) => {
@@ -118,6 +119,17 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
       onSelectedChange?.(next)
       return next
     })
+  }
+
+  // Drag-to-select (desktop only)
+  const [dragStart, setDragStart] = useState<number | null>(null)
+  const [dragEnd, setDragEnd] = useState<number | null>(null)
+  const isDragging = dragStart !== null
+  const didDragRef = useRef(false)
+
+  const colIndexFromSvgX = (svgX: number) => {
+    const i = Math.floor((svgX - PAD.left) / COL_W)
+    return Math.max(0, Math.min(entries.length - 1, i))
   }
   const [previewed, setPreviewed] = useState<number | null>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
@@ -269,6 +281,9 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
+  // displayIdx: what the info bar shows — always selected, never changes on hover
+  const displayIdx = selected
+
   return (
     <div className="py-3 md:py-4">
       {/* Scrollable chart container */}
@@ -343,8 +358,26 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
           />
 
-          {/* Selected column background highlight */}
-          {selected !== null && (
+          {/* Drag range highlight — shown while dragging or when range is committed */}
+          {(() => {
+            const ds = dragStart !== null ? dragStart : null
+            const de = dragEnd !== null ? dragEnd : null
+            if (ds === null || de === null) return null
+            const lo = Math.min(ds, de)
+            const hi = Math.max(ds, de)
+            return (
+              <rect
+                x={xOf(lo) - COL_W / 2} y={PAD.top}
+                width={xOf(hi) - xOf(lo) + COL_W} height={cH}
+                fill="#1a1a1a" fillOpacity="0.06"
+                rx="2"
+                style={{ pointerEvents: 'none' }}
+              />
+            )
+          })()}
+
+          {/* Selected column background highlight (single-bar mode only) */}
+          {dragStart === null && selected !== null && (
             <rect
               x={xOf(selected) - COL_W / 2} y={PAD.top}
               width={COL_W} height={cH}
@@ -353,8 +386,8 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             />
           )}
 
-          {/* Dashed vertical line — always on selected column */}
-          {selected !== null && (
+          {/* Dashed vertical line — single-bar mode only */}
+          {dragStart === null && selected !== null && (
             <line
               x1={xOf(selected)} y1={PAD.top}
               x2={xOf(selected)} y2={PAD.top + cH}
@@ -362,21 +395,27 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             />
           )}
 
-          {/* Active sport dots — slightly enlarge on hover as clickable affordance */}
-          {activePoints.map((p, i) => (
-            i === selected ? null :
-            <circle
-              key={`dot-${i}`}
-              cx={p.x} cy={p.y}
-              r={previewed === i ? 3.5 : 3}
-              fill="transparent"
-              stroke="#1a1a1a" strokeOpacity={previewed === i ? 0.7 : 0.5}
-              strokeWidth="1.5"
-            />
-          ))}
+          {/* Active sport dots */}
+          {activePoints.map((p, i) => {
+            const ds = dragStart !== null ? dragStart : null
+            const de = dragEnd !== null ? dragEnd : null
+            const inRange = ds !== null && de !== null && i >= Math.min(ds, de) && i <= Math.max(ds, de)
+            const isSelected = dragStart === null && i === selected
+            if (isSelected) return null
+            return (
+              <circle
+                key={`dot-${i}`}
+                cx={p.x} cy={p.y}
+                r={inRange ? 3.5 : previewed === i ? 3.5 : 3}
+                fill="transparent"
+                stroke="#1a1a1a" strokeOpacity={inRange ? 0.7 : previewed === i ? 0.7 : 0.5}
+                strokeWidth="1.5"
+              />
+            )
+          })}
 
-          {/* Selected dot — rendered last so it sits above everything */}
-          {selected !== null && activePoints[selected] && (
+          {/* Selected dot — single-bar mode, rendered last */}
+          {dragStart === null && selected !== null && activePoints[selected] && (
             <circle
               cx={xOf(selected)} cy={activePoints[selected].y}
               r={4}
@@ -386,6 +425,22 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
               strokeWidth="1.5"
             />
           )}
+
+          {/* Drag-range endpoint dots */}
+          {dragStart !== null && dragEnd !== null && (() => {
+            const lo = Math.min(dragStart, dragEnd)
+            const hi = Math.max(dragStart, dragEnd)
+            return [lo, hi].map((idx, k) => (
+              <circle
+                key={`drag-dot-${k}`}
+                cx={xOf(idx)} cy={activePoints[idx]?.y ?? yOf(0)}
+                r={4}
+                fill="#c0392b" fillOpacity={0.9}
+                stroke="#fff" strokeWidth="1.5"
+                style={{ pointerEvents: 'none' }}
+              />
+            ))
+          })()}
 
           {/* X-axis labels — month boundaries only for weekly, every entry for monthly/annual */}
           {entries.map((entry, i) => {
@@ -408,8 +463,75 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             )
           })}
 
-          {/* Invisible hit targets — full column height for easy tap */}
-          {entries.map((_, i) => (
+          {/* Hit targets — pointer events for hover, click, and drag */}
+          {!isMobile && (
+            <rect
+              x={PAD.left} y={0} width={totalW - PAD.left - PAD.right} height={H}
+              fill="transparent"
+              style={{ cursor: isDragging ? 'col-resize' : 'crosshair' }}
+              onMouseDown={e => {
+                const svgX = e.nativeEvent.offsetX
+                const idx = colIndexFromSvgX(svgX)
+                didDragRef.current = false
+                setDragStart(idx)
+                setDragEnd(idx)
+              }}
+              onMouseMove={e => {
+                const svgX = e.nativeEvent.offsetX
+                const idx = colIndexFromSvgX(svgX)
+                setPreviewed(idx)
+                if (isDragging) {
+                  if (dragStart !== null && idx !== dragStart) didDragRef.current = true
+                  setDragEnd(idx)
+                }
+              }}
+              onMouseLeave={() => {
+                setPreviewed(null)
+                if (isDragging) {
+                  if (dragStart !== null && dragEnd !== null) {
+                    const lo = Math.min(dragStart, dragEnd)
+                    const hi = Math.max(dragStart, dragEnd)
+                    if (lo === hi) {
+                      setSelectedBoth(() => lo)
+                      onRangeChange?.(null)
+                    } else {
+                      onRangeChange?.({ start: lo, end: hi })
+                      setSelectedBoth(() => null)
+                    }
+                  }
+                  setDragStart(null)
+                  setDragEnd(null)
+                }
+              }}
+              onMouseUp={e => {
+                const svgX = e.nativeEvent.offsetX
+                const endIdx = colIndexFromSvgX(svgX)
+                if (dragStart !== null) {
+                  const lo = Math.min(dragStart, endIdx)
+                  const hi = Math.max(dragStart, endIdx)
+                  if (didDragRef.current && lo !== hi) {
+                    // committed drag range
+                    onRangeChange?.({ start: lo, end: hi })
+                    setSelectedBoth(() => null)
+                  } else {
+                    // plain click
+                    setSelectedBoth(() => lo)
+                    onRangeChange?.(null)
+                  }
+                }
+                setDragStart(null)
+                setDragEnd(null)
+                // reset on next tick so the synthetic onClick that follows is suppressed
+                setTimeout(() => { didDragRef.current = false }, 0)
+              }}
+              onClick={e => {
+                // suppress click if this was actually a drag release
+                if (didDragRef.current) { e.stopPropagation(); return }
+              }}
+            />
+          )}
+          {/* Mobile: keep original tap hit targets */}
+          {isMobile && entries.map((_, i) => (
             <rect
               key={`hit-${i}`}
               x={xOf(i) - COL_W / 2} y={0}
@@ -418,7 +540,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
               style={{ cursor: 'pointer' }}
               onMouseEnter={() => setPreviewed(i)}
               onMouseLeave={() => setPreviewed(null)}
-              onClick={() => setSelectedBoth(prev => prev === i ? null : i)}
+              onClick={() => { setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
             />
           ))}
         </svg>
@@ -456,11 +578,13 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const defaultWindow = { start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 }
   const [visibleWindow, setVisibleWindow] = useState<{ start: number; end: number }>(defaultWindow)
   const [selectedIdx, setSelectedIdx] = useState<number | null>(allEntries.length - 1)
+  const [selectedRange, setSelectedRange] = useState<{ start: number; end: number } | null>(null)
 
   // Reset to most recent window when mode changes (before chart has a chance to report)
   useEffect(() => {
     setVisibleWindow({ start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 })
     setSelectedIdx(allEntries.length - 1)
+    setSelectedRange(null)
   }, [mode, allEntries.length])
 
   const visibleEntries = mode === 'annual'
@@ -524,9 +648,28 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           )}
         </div>
 
-        {/* Right: selected period detail */}
+        {/* Right: selected period / range detail */}
         <div className="border-l border-ink/10 px-4 md:px-6 py-3 md:py-5 text-right min-w-[140px] md:min-w-[180px] flex flex-col justify-center">
-          {selectedIdx !== null && entries[selectedIdx] ? (
+          {selectedRange ? (() => {
+            const rangeEntries = entries.slice(selectedRange.start, selectedRange.end + 1)
+            const tot = rangeEntries.reduce((a, e) => ({
+              distanceKm: a.distanceKm + (sport === 'run' ? e.run.distanceKm : e.ride.distanceKm),
+              activities: a.activities + (sport === 'run' ? e.run.activities : e.ride.activities),
+            }), { distanceKm: 0, activities: 0 })
+            const first = rangeEntries[0]
+            const last = rangeEntries[rangeEntries.length - 1]
+            const label = mode === 'weekly' && first?.isoStart && last?.isoStart
+              ? `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
+              : `${first?.tooltipLabel} – ${last?.tooltipLabel}`
+            return (
+              <>
+                <span className="font-mono text-[10px] md:text-xs text-muted/40 uppercase tracking-widest block mb-1.5">Range</span>
+                <span className="font-mono text-xs md:text-sm text-ink/70 block leading-snug">{label}</span>
+                <span className="font-display text-xl md:text-2xl text-ink mt-1 block leading-none">{fmtDist(tot.distanceKm)} km</span>
+                <span className="font-mono text-xs text-muted mt-0.5 block">{tot.activities} {sport === 'run' ? 'runs' : 'rides'}</span>
+              </>
+            )
+          })() : selectedIdx !== null && entries[selectedIdx] ? (
             <>
               <span className="font-mono text-[10px] md:text-xs text-muted/40 uppercase tracking-widest block mb-1.5">Selected</span>
               <span className="font-mono text-xs md:text-sm text-ink/70 block leading-snug">
@@ -549,7 +692,8 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           mode={mode}
           sport={sport}
           selectedIdx={selectedIdx}
-          onSelectedChange={setSelectedIdx}
+          onSelectedChange={i => { setSelectedIdx(i); setSelectedRange(null) }}
+          onRangeChange={r => { setSelectedRange(r); if (r) setSelectedIdx(null) }}
           onVisibleWindowChange={w => {
             if (w.end >= w.start) setVisibleWindow(w)
           }}
