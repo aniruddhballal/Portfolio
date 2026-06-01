@@ -128,6 +128,9 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   const didDragRef = useRef(false)
   const dragStartRef = useRef<number | null>(null)
   const dragEndRef = useRef<number | null>(null)
+  // True once a range has been committed; prevents the snap-back effect from
+  // firing onSelectedChange (which would clear selectedRange in the parent)
+  const rangeActiveRef = useRef(false)
   const svgRef = useRef<SVGSVGElement>(null)
   const layoutRef = useRef({ padLeft: 60, colW: 48, entriesLen: 0 })
   // Keep callbacks in a ref so window listeners always call the latest version
@@ -161,9 +164,13 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
       const lo = Math.min(dragStartRef.current, endIdx)
       const hi = Math.max(dragStartRef.current, endIdx)
       if (didDragRef.current && lo !== hi) {
+        // Committed range: tell the parent, then set selected to null WITHOUT
+        // calling onSelectedChange (which would clear selectedRange in the parent).
+        rangeActiveRef.current = true
         onRangeChangeRef.current?.({ start: lo, end: hi })
-        setSelectedBothRef.current(() => null)
+        setSelected(null)
       } else {
+        rangeActiveRef.current = false
         setSelectedBothRef.current(() => lo)
         onRangeChangeRef.current?.(null)
       }
@@ -178,6 +185,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
       if (e.button !== 0) return
       const idx = getCol(e.clientX)
       didDragRef.current = false
+      rangeActiveRef.current = false
       dragStartRef.current = idx
       dragEndRef.current = idx
       setDragStart(idx)
@@ -228,6 +236,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
 
   // Reset selection to most recent when entries change (mode switch)
   useEffect(() => {
+    rangeActiveRef.current = false
     setSelectedBoth(() => entries.length - 1)
     setPreviewed(null)
   }, [entries.length, mode])
@@ -323,10 +332,10 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   }, [visibleStart, visibleEnd, containerWidth])
 
   // When selected scrolls out of the visible window, snap to the rightmost visible entry.
-  // This also handles the initial load: once containerWidth is measured and visibleEnd is known,
-  // if the default selected (entries.length - 1) is out of range it snaps to visibleEnd.
+  // Skip when a committed drag range is active — selected is intentionally null then.
   useEffect(() => {
     if (containerWidth === 0) return
+    if (rangeActiveRef.current) return
     if (selected === null || selected < visibleStart || selected > visibleEnd) {
       setSelectedBoth(() => visibleEnd)
     }
@@ -549,7 +558,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
               style={{ cursor: 'pointer' }}
               onMouseEnter={() => setPreviewed(i)}
               onMouseLeave={() => setPreviewed(null)}
-              onClick={() => { setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
+              onClick={() => { rangeActiveRef.current = false; setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
             />
           ))}
         </svg>
