@@ -102,10 +102,11 @@ interface BarEntry {
   ride: PeriodStats
 }
 
-function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
+function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange }: {
   entries: BarEntry[]
   metric: 'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'
   mode: ProgressionMode
+  sport: 'run' | 'ride'
   onVisibleWindowChange?: (w: { start: number; end: number }) => void
 }) {
   const [selected, setSelected] = useState<number | null>(entries.length - 1)
@@ -224,7 +225,7 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
     }
   }, [visibleStart, visibleEnd, containerWidth])
 
-  const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => e.run[metric] + e.ride[metric]), 1)
+  const maxVal = Math.max(...(isAnnual ? entries : visibleEntries).map(e => sport === 'run' ? e.run[metric] : e.ride[metric]), 1)
   const niceMax = Math.ceil(maxVal / 10) * 10
 
   // Spring-animate the scale so the chart eases when the window changes
@@ -247,7 +248,7 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
 
   const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
   const ridePoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.ride[metric]) }))
-
+  const activePoints = sport === 'run' ? runPoints : ridePoints
   const toPolyline = (pts: { x: number; y: number }[]) =>
     pts.map(p => `${p.x},${p.y}`).join(' ')
 
@@ -281,13 +282,15 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
               {entries[displayIdx].tooltipLabel}
             </span>
             <div className="flex items-center gap-2 mt-0.5 flex-nowrap">
-              <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                <SportShoe size={11} /> {fmtVal(entries[displayIdx].run[metric])}
-              </span>
-              <span className="text-muted/30 font-mono text-xs">·</span>
-              <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
-                <Bike size={11} /> {fmtVal(entries[displayIdx].ride[metric])}
-              </span>
+              {sport === 'run' ? (
+                <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
+                  <SportShoe size={11} /> {fmtVal(entries[displayIdx].run[metric])}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap">
+                  <Bike size={11} /> {fmtVal(entries[displayIdx].ride[metric])}
+                </span>
+              )}
             </div>
           </div>
         ) : (
@@ -351,12 +354,8 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
           style={{ display: 'block', minWidth: totalW }}
         >
           <defs>
-            <linearGradient id="runGrad" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="sportGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
-              <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
-            </linearGradient>
-            <linearGradient id="rideGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.06" />
               <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
             </linearGradient>
           </defs>
@@ -373,17 +372,10 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             )
           })}
 
-          {/* Ride area + line */}
-          <path d={toArea(ridePoints)} fill="url(#rideGrad)" />
+          {/* Active sport area + line */}
+          <path d={toArea(activePoints)} fill="url(#sportGrad)" />
           <polyline
-            points={toPolyline(ridePoints)}
-            fill="none" stroke="#1a1a1a" strokeOpacity="0.22" strokeWidth="1.5"
-          />
-
-          {/* Run area + line */}
-          <path d={toArea(runPoints)} fill="url(#runGrad)" />
-          <polyline
-            points={toPolyline(runPoints)}
+            points={toPolyline(activePoints)}
             fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
           />
 
@@ -406,24 +398,11 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             />
           )}
 
-          {/* Ride dots — slightly enlarge on hover as clickable affordance */}
-          {ridePoints.map((p, i) => (
-            <circle
-              key={`ride-${i}`}
-              cx={p.x} cy={p.y}
-              r={selected === i ? 4 : previewed === i ? 3.5 : 3}
-              fill={selected === i ? '#1a1a1a' : 'transparent'}
-              fillOpacity={selected === i ? 0.15 : 0}
-              stroke="#1a1a1a" strokeOpacity={selected === i ? 0.5 : 0.25}
-              strokeWidth="1.5"
-            />
-          ))}
-
-          {/* Run dots (non-selected) — enlarge slightly on hover */}
-          {runPoints.map((p, i) => (
+          {/* Active sport dots — slightly enlarge on hover as clickable affordance */}
+          {activePoints.map((p, i) => (
             i === selected ? null :
             <circle
-              key={`run-${i}`}
+              key={`dot-${i}`}
               cx={p.x} cy={p.y}
               r={previewed === i ? 3.5 : 3}
               fill="transparent"
@@ -432,10 +411,10 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
             />
           ))}
 
-          {/* Selected run dot — always on selected column, rendered last */}
-          {selected !== null && runPoints[selected] && (
+          {/* Selected dot — rendered last so it sits above everything */}
+          {selected !== null && activePoints[selected] && (
             <circle
-              cx={xOf(selected)} cy={runPoints[selected].y}
+              cx={xOf(selected)} cy={activePoints[selected].y}
               r={4}
               fill="#c0392b"
               fillOpacity={0.9}
@@ -486,13 +465,10 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
       <div className="flex items-center gap-4 mt-2 px-4 md:px-5">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-px bg-ink/50" />
-          <SportShoe size={11} className="text-muted/60" />
-          <span className="font-mono text-[10px] md:text-xs text-muted/60">Run</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-4 h-px bg-ink/20" />
-          <Bike size={11} className="text-muted/60" />
-          <span className="font-mono text-[10px] md:text-xs text-muted/60">Ride</span>
+          {sport === 'run'
+            ? <><SportShoe size={11} className="text-muted/60" /><span className="font-mono text-[10px] md:text-xs text-muted/60">Run</span></>
+            : <><Bike size={11} className="text-muted/60" /><span className="font-mono text-[10px] md:text-xs text-muted/60">Ride</span></>
+          }
         </div>
       </div>
     </div>
@@ -502,6 +478,7 @@ function ProgressionChart({ entries, metric, mode, onVisibleWindowChange }: {
 // ── Progression panel ─────────────────────────────────────────────────────────
 function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   const [metric, setMetric] = useState<'distanceKm' | 'timeHours' | 'elevGainM' | 'activities'>('distanceKm')
+  const [sport, setSport] = useState<'run' | 'ride'>('run')
 
   const allEntries: BarEntry[] = mode === 'weekly'
     ? (data.weekly as WeeklyEntry[]).map(w => ({
@@ -556,12 +533,6 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
     activities: a.activities + e.ride.activities,
   }), { distanceKm: 0, timeHours: 0, elevGainM: 0, activities: 0 })
 
-  const periodLabel = mode === 'annual'
-    ? 'All years'
-    : mode === 'weekly'
-    ? `${visibleEntries.length} week${visibleEntries.length !== 1 ? 's' : ''}`
-    : `${visibleEntries.length} month${visibleEntries.length !== 1 ? 's' : ''}`
-
   function rangeLabel() {
     const first = visibleEntries[0]
     const last = visibleEntries[visibleEntries.length - 1]
@@ -576,7 +547,20 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
     <div className="border border-ink/10 overflow-hidden">
       <div className="px-5 py-3 border-b border-ink/10 flex flex-col gap-2">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="font-mono text-xs md:text-sm text-muted tracking-widest uppercase shrink-0">{periodLabel}</span>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => setSport('run')}
+              className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors flex items-center gap-1 ${sport === 'run' ? 'border-ink/40 text-ink' : 'border-ink/10 text-muted hover:border-ink/30'}`}
+            >
+              <SportShoe size={10} /> Run
+            </button>
+            <button
+              onClick={() => setSport('ride')}
+              className={`font-mono text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border transition-colors flex items-center gap-1 ${sport === 'ride' ? 'border-ink/40 text-ink' : 'border-ink/10 text-muted hover:border-ink/30'}`}
+            >
+              <Bike size={10} /> Ride
+            </button>
+          </div>
           <span className="font-mono text-[10px] md:text-xs text-muted/40 text-right">{rangeLabel()}</span>
         </div>
         <div className="flex items-center gap-1">
@@ -622,6 +606,7 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           entries={entries}
           metric={metric}
           mode={mode}
+          sport={sport}
           onVisibleWindowChange={w => {
             if (w.end >= w.start) setVisibleWindow(w)
           }}
