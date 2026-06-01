@@ -161,7 +161,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   // Use containerWidth to infer mobile vs desktop
   const isMobile = containerWidth > 0 && containerWidth < 640
   const H = containerWidth > 0 ? (isMobile ? 240 : 280) : 240
-  const PAD = { top: 20, bottom: 36, left: isMobile ? 42 : 52, right: 16 }
+  const PAD = { top: 20, bottom: 36, left: isMobile ? 52 : 60, right: 16 }
   const cH = H - PAD.top - PAD.bottom
 
   // Annual: fit all entries. Weekly/monthly: 12 on mobile, 16 on desktop
@@ -276,8 +276,8 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
         {/* Scroll affordance — left fade when not scrolled to start */}
         {!isAnnual && scrollLeft > 8 && (
           <div
-            className="absolute left-[42px] top-0 bottom-0 w-6 pointer-events-none z-10"
-            style={{ background: 'linear-gradient(to right, #EDE9E1cc, transparent)' }}
+            className="absolute top-0 bottom-0 w-6 pointer-events-none z-10"
+            style={{ left: PAD.left, background: 'linear-gradient(to right, #EDE9E1cc, transparent)' }}
           />
         )}
         {/* Sticky Y-axis overlay — always visible regardless of scroll position */}
@@ -287,7 +287,6 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
           viewBox={`0 0 ${PAD.left} ${H}`}
           style={{ position: 'absolute', left: 0, top: 0, zIndex: 1, pointerEvents: 'none' }}
         >
-          {/* Background to mask scrolling chart content behind the labels */}
           <rect x={0} y={0} width={PAD.left} height={H} fill="#EDE9E1" />
           {yTicks.map((tick, ti) => {
             const y = yOf(tick)
@@ -299,7 +298,6 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
                 textAnchor="end"
                 fontSize={isMobile ? 10 : 11}
                 fill="#1a1a1a"
-                fillOpacity="0.35"
                 fontFamily="monospace"
               >
                 {tickLabel}
