@@ -668,38 +668,33 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
         {/* Right: selected period / range detail */}
         <div className="border-l border-ink/10 px-4 md:px-6 py-3 md:py-5 text-right min-w-[140px] md:min-w-[180px] flex flex-col justify-center">
-          {selectedRange ? (() => {
-            const rangeEntries = entries.slice(selectedRange.start, selectedRange.end + 1)
-            const tot = rangeEntries.reduce((a, e) => ({
+          {(() => {
+            const selEntries = selectedRange
+              ? entries.slice(selectedRange.start, selectedRange.end + 1)
+              : selectedIdx !== null && entries[selectedIdx]
+                ? [entries[selectedIdx]]
+                : null
+            if (!selEntries) return <span className="font-mono text-xs text-muted/30">—</span>
+            const tot = selEntries.reduce((a, e) => ({
               distanceKm: a.distanceKm + (sport === 'run' ? e.run.distanceKm : e.ride.distanceKm),
               activities: a.activities + (sport === 'run' ? e.run.activities : e.ride.activities),
             }), { distanceKm: 0, activities: 0 })
-            const first = rangeEntries[0]
-            const last = rangeEntries[rangeEntries.length - 1]
-            const label = mode === 'weekly' && first?.isoStart && last?.isoStart
-              ? `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
-              : `${first?.tooltipLabel} – ${last?.tooltipLabel}`
+            const first = selEntries[0]
+            const last = selEntries[selEntries.length - 1]
+            const label = selEntries.length > 1
+              ? mode === 'weekly' && first?.isoStart && last?.isoStart
+                ? `${weekStartLabel(first.isoStart)} – ${weekEndLabel(last.isoStart)}`
+                : `${first?.tooltipLabel} – ${last?.tooltipLabel}`
+              : first?.tooltipLabel
             return (
               <>
-                <span className="font-mono text-[10px] md:text-xs text-muted/40 uppercase tracking-widest block mb-1.5">Range</span>
+                <span className="font-mono text-[10px] md:text-xs text-muted/40 uppercase tracking-widest block mb-1.5">Selected</span>
                 <span className="font-mono text-xs md:text-sm text-ink/70 block leading-snug">{label}</span>
                 <span className="font-display text-xl md:text-2xl text-ink mt-1 block leading-none">{fmtDist(tot.distanceKm)} km</span>
                 <span className="font-mono text-xs text-muted mt-0.5 block">{tot.activities} {sport === 'run' ? 'runs' : 'rides'}</span>
               </>
             )
-          })() : selectedIdx !== null && entries[selectedIdx] ? (
-            <>
-              <span className="font-mono text-[10px] md:text-xs text-muted/40 uppercase tracking-widest block mb-1.5">Selected</span>
-              <span className="font-mono text-xs md:text-sm text-ink/70 block leading-snug">
-                {entries[selectedIdx].tooltipLabel}
-              </span>
-              <span className="font-display text-xl md:text-2xl text-ink mt-1 block leading-none">
-                {fmtDist(sport === 'run' ? entries[selectedIdx].run.distanceKm : entries[selectedIdx].ride.distanceKm)} km
-              </span>
-            </>
-          ) : (
-            <span className="font-mono text-xs text-muted/30">—</span>
-          )}
+          })()}
         </div>
       </div>
 
