@@ -102,14 +102,23 @@ interface BarEntry {
   ride: PeriodStats
 }
 
-function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange }: {
+function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange, selectedIdx, onSelectedChange }: {
   entries: BarEntry[]
   metric: 'distanceKm'
   mode: ProgressionMode
   sport: 'run' | 'ride'
   onVisibleWindowChange?: (w: { start: number; end: number }) => void
+  selectedIdx?: number | null
+  onSelectedChange?: (i: number | null) => void
 }) {
-  const [selected, setSelected] = useState<number | null>(entries.length - 1)
+  const [selected, setSelected] = useState<number | null>(selectedIdx ?? entries.length - 1)
+  const setSelectedBoth = (fn: (prev: number | null) => number | null) => {
+    setSelected(prev => {
+      const next = fn(prev)
+      onSelectedChange?.(next)
+      return next
+    })
+  }
   const [previewed, setPreviewed] = useState<number | null>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -131,7 +140,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
 
   // Reset selection to most recent when entries change (mode switch)
   useEffect(() => {
-    setSelected(entries.length - 1)
+    setSelectedBoth(() => entries.length - 1)
     setPreviewed(null)
   }, [entries.length, mode])
 
@@ -221,7 +230,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
   useEffect(() => {
     if (containerWidth === 0) return
     if (selected === null || selected < visibleStart || selected > visibleEnd) {
-      setSelected(visibleEnd)
+      setSelectedBoth(() => visibleEnd)
     }
   }, [visibleStart, visibleEnd, containerWidth])
 
@@ -252,33 +261,8 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
-  // displayIdx: what the info bar shows — always selected, never changes on hover
-  const displayIdx = selected
-
   return (
     <div className="py-3 md:py-4">
-      {/* Info bar */}
-      <div className="mb-1 px-4 md:px-5 h-12 md:h-14 flex flex-col justify-center overflow-hidden">
-        <span className="font-mono text-[10px] md:text-xs text-muted/50 tracking-widest uppercase">
-          km per period
-        </span>
-        {displayIdx !== null && entries[displayIdx] ? (
-          <div className="mt-0.5">
-            <span className="font-mono text-xs md:text-sm text-ink leading-none block truncate">
-              {entries[displayIdx].tooltipLabel}
-            </span>
-            <div className="flex items-center gap-1 mt-0.5">
-              {sport === 'run'
-                ? <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap"><SportShoe size={11} /> {fmtDist(entries[displayIdx].run.distanceKm)} km</span>
-                : <span className="flex items-center gap-1 font-mono text-xs text-muted whitespace-nowrap"><Bike size={11} /> {fmtDist(entries[displayIdx].ride.distanceKm)} km</span>
-              }
-            </div>
-          </div>
-        ) : (
-          <p className="font-mono text-[10px] text-muted/30 mt-0.5">—</p>
-        )}
-      </div>
-
       {/* Scrollable chart container */}
       <div className="relative" onMouseLeave={() => setPreviewed(null)}>
         {/* Scroll affordance — left fade when not scrolled to start */}
@@ -428,23 +412,13 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange 
               style={{ cursor: 'pointer' }}
               onMouseEnter={() => setPreviewed(i)}
               onMouseLeave={() => setPreviewed(null)}
-              onClick={() => setSelected(prev => prev === i ? null : i)}
+              onClick={() => setSelectedBoth(prev => prev === i ? null : i)}
             />
           ))}
         </svg>
         </div>{/* end scrollRef */}
       </div>{/* end relative wrapper */}
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mt-2 px-4 md:px-5">
-        <div className="flex items-center gap-1.5">
-          <div className="w-4 h-px bg-ink/50" />
-          {sport === 'run'
-            ? <><SportShoe size={11} className="text-muted/60" /><span className="font-mono text-[10px] md:text-xs text-muted/60">Run</span></>
-            : <><Bike size={11} className="text-muted/60" /><span className="font-mono text-[10px] md:text-xs text-muted/60">Ride</span></>
-          }
-        </div>
-      </div>
     </div>
   )
 }
@@ -475,10 +449,12 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
   // Default to last 12 (or all if fewer) — chart will update this once measured.
   const defaultWindow = { start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 }
   const [visibleWindow, setVisibleWindow] = useState<{ start: number; end: number }>(defaultWindow)
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(allEntries.length - 1)
 
   // Reset to most recent window when mode changes (before chart has a chance to report)
   useEffect(() => {
     setVisibleWindow({ start: Math.max(0, allEntries.length - 12), end: allEntries.length - 1 })
+    setSelectedIdx(allEntries.length - 1)
   }, [mode, allEntries.length])
 
   const visibleEntries = mode === 'annual'
@@ -522,20 +498,41 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
             <Bike size={10} /> Ride
           </button>
         </div>
-        <span className="font-mono text-[10px] md:text-xs text-muted/40 text-right">{rangeLabel()}</span>
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 border-b border-ink/10">
-        <div className="px-4 md:px-6 py-2.5 md:py-4 border-r border-ink/10">
-          <span className="font-mono text-[10px] md:text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><SportShoe size={12} /> Run</span>
-          <span className="font-display text-xl md:text-3xl text-ink block">{fmtDist(totRun.distanceKm)} km</span>
-          <span className="font-mono text-xs md:text-sm text-muted mt-1 block">{totRun.activities} runs</span>
+      <div className="flex items-stretch border-b border-ink/10">
+        {/* Left: active sport totals */}
+        <div className="flex-1 px-4 md:px-6 py-3 md:py-5">
+          <span className="font-mono text-[10px] md:text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-2">
+            {sport === 'run' ? <><SportShoe size={12} /> Run</> : <><Bike size={12} /> Ride</>}
+          </span>
+          <span className="font-display text-2xl md:text-4xl text-ink block leading-none">
+            {fmtDist(sport === 'run' ? totRun.distanceKm : totRide.distanceKm)} km
+          </span>
+          <span className="font-mono text-xs md:text-sm text-muted mt-1.5 block">
+            {sport === 'run' ? `${totRun.activities} runs` : `${totRide.activities} rides`}
+          </span>
+          {rangeLabel() && (
+            <span className="font-mono text-[10px] md:text-xs text-muted/40 mt-2 block">{rangeLabel()}</span>
+          )}
         </div>
-        <div className="px-4 md:px-6 py-2.5 md:py-4">
-          <span className="font-mono text-[10px] md:text-xs text-muted/50 uppercase tracking-widest flex items-center gap-1.5 mb-1.5"><Bike size={12} /> Ride</span>
-          <span className="font-display text-xl md:text-3xl text-ink block">{fmtDist(totRide.distanceKm)} km</span>
-          <span className="font-mono text-xs md:text-sm text-muted mt-1 block">{totRide.activities} rides</span>
+
+        {/* Right: selected period detail */}
+        <div className="border-l border-ink/10 px-4 md:px-6 py-3 md:py-5 text-right min-w-[140px] md:min-w-[180px] flex flex-col justify-center">
+          {selectedIdx !== null && entries[selectedIdx] ? (
+            <>
+              <span className="font-mono text-[10px] md:text-xs text-muted/40 uppercase tracking-widest block mb-1.5">Selected</span>
+              <span className="font-mono text-xs md:text-sm text-ink/70 block leading-snug">
+                {entries[selectedIdx].tooltipLabel}
+              </span>
+              <span className="font-display text-xl md:text-2xl text-ink mt-1 block leading-none">
+                {fmtDist(sport === 'run' ? entries[selectedIdx].run.distanceKm : entries[selectedIdx].ride.distanceKm)} km
+              </span>
+            </>
+          ) : (
+            <span className="font-mono text-xs text-muted/30">—</span>
+          )}
         </div>
       </div>
 
@@ -545,6 +542,8 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
           metric="distanceKm"
           mode={mode}
           sport={sport}
+          selectedIdx={selectedIdx}
+          onSelectedChange={setSelectedIdx}
           onVisibleWindowChange={w => {
             if (w.end >= w.start) setVisibleWindow(w)
           }}
