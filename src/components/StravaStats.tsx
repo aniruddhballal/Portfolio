@@ -126,15 +126,91 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   const [dragEnd, setDragEnd] = useState<number | null>(null)
   const isDragging = dragStart !== null
   const didDragRef = useRef(false)
+  const dragStartRef = useRef<number | null>(null)
+  const dragEndRef = useRef<number | null>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
+  const layoutRef = useRef({ padLeft: 60, colW: 48, entriesLen: 0 })
+  // Keep callbacks in a ref so window listeners always call the latest version
+  const onRangeChangeRef = useRef(onRangeChange)
+  const setSelectedBothRef = useRef(setSelectedBoth)
+  useEffect(() => { onRangeChangeRef.current = onRangeChange }, [onRangeChange])
+  useEffect(() => { setSelectedBothRef.current = setSelectedBoth })
 
-  const colIndexFromSvgX = (svgX: number) => {
-    const i = Math.floor((svgX - PAD.left) / COL_W)
-    return Math.max(0, Math.min(entries.length - 1, i))
-  }
   const [previewed, setPreviewed] = useState<number | null>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [containerWidth, setContainerWidth] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const isMobile = containerWidth > 0 && containerWidth < 640
+
+  useEffect(() => {
+    if (isMobile) return
+    const svg = svgRef.current
+    if (!svg) return
+
+    const getCol = (clientX: number) => {
+      const { padLeft, colW, entriesLen } = layoutRef.current
+      const rect = svg.getBoundingClientRect()
+      const svgX = clientX - rect.left
+      const i = Math.floor((svgX - padLeft) / colW)
+      return Math.max(0, Math.min(entriesLen - 1, i))
+    }
+
+    const commitDrag = () => {
+      if (dragStartRef.current === null) return
+      const endIdx = dragEndRef.current ?? dragStartRef.current
+      const lo = Math.min(dragStartRef.current, endIdx)
+      const hi = Math.max(dragStartRef.current, endIdx)
+      if (didDragRef.current && lo !== hi) {
+        onRangeChangeRef.current?.({ start: lo, end: hi })
+        setSelectedBothRef.current(() => null)
+      } else {
+        setSelectedBothRef.current(() => lo)
+        onRangeChangeRef.current?.(null)
+      }
+      dragStartRef.current = null
+      dragEndRef.current = null
+      didDragRef.current = false
+      setDragStart(null)
+      setDragEnd(null)
+    }
+
+    const onDown = (e: MouseEvent) => {
+      if (e.button !== 0) return
+      const idx = getCol(e.clientX)
+      didDragRef.current = false
+      dragStartRef.current = idx
+      dragEndRef.current = idx
+      setDragStart(idx)
+      setDragEnd(idx)
+      e.preventDefault()
+    }
+
+    const onMove = (e: MouseEvent) => {
+      const idx = getCol(e.clientX)
+      setPreviewed(idx)
+      if (dragStartRef.current !== null) {
+        if (idx !== dragStartRef.current) didDragRef.current = true
+        dragEndRef.current = idx
+        setDragEnd(idx)
+      }
+    }
+
+    const onLeave = () => setPreviewed(null)
+
+    // Listen for mouseup on window so releasing outside the SVG still commits
+    const onWindowUp = () => commitDrag()
+
+    svg.addEventListener('mousedown', onDown)
+    svg.addEventListener('mousemove', onMove)
+    svg.addEventListener('mouseleave', onLeave)
+    window.addEventListener('mouseup', onWindowUp)
+    return () => {
+      svg.removeEventListener('mousedown', onDown)
+      svg.removeEventListener('mousemove', onMove)
+      svg.removeEventListener('mouseleave', onLeave)
+      window.removeEventListener('mouseup', onWindowUp)
+    }
+  }, [isMobile])
 
   const isAnnual = mode === 'annual'
 
@@ -171,7 +247,6 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   }, [entries.length, isAnnual, mode, containerWidth])
 
   // Use containerWidth to infer mobile vs desktop
-  const isMobile = containerWidth > 0 && containerWidth < 640
   const H = containerWidth > 0 ? (isMobile ? 240 : 280) : 240
   const PAD = { top: 20, bottom: 36, left: isMobile ? 52 : 60, right: 16 }
   const cH = H - PAD.top - PAD.bottom
@@ -183,6 +258,9 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
     : 48
 
   const totalW = PAD.left + entries.length * COL_W + PAD.right
+
+  // Keep layoutRef fresh so native drag handlers always use current geometry
+  layoutRef.current = { padLeft: PAD.left, colW: COL_W, entriesLen: entries.length }
 
   // Declared early — needed by xLabelIndices IIFE below
   const xOf = (i: number) => PAD.left + i * COL_W + COL_W / 2
@@ -281,9 +359,6 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
       ` L ${pts[pts.length - 1].x},${base} Z`
   }
 
-  // displayIdx: what the info bar shows — always selected, never changes on hover
-  const displayIdx = selected
-
   return (
     <div className="py-3 md:py-4">
       {/* Scrollable chart container */}
@@ -327,10 +402,11 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
           onScroll={e => setScrollLeft((e.target as HTMLDivElement).scrollLeft)}
         >
         <svg
+          ref={svgRef}
           width={totalW}
           height={H}
           viewBox={`0 0 ${totalW} ${H}`}
-          style={{ display: 'block', minWidth: totalW }}
+          style={{ display: 'block', minWidth: totalW, cursor: isMobile ? 'pointer' : isDragging ? 'col-resize' : 'crosshair' }}
         >
           <defs>
             <linearGradient id="sportGrad" x1="0" y1="0" x2="0" y2="1">
@@ -463,74 +539,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             )
           })}
 
-          {/* Hit targets — pointer events for hover, click, and drag */}
-          {!isMobile && (
-            <rect
-              x={PAD.left} y={0} width={totalW - PAD.left - PAD.right} height={H}
-              fill="transparent"
-              style={{ cursor: isDragging ? 'col-resize' : 'crosshair' }}
-              onMouseDown={e => {
-                const svgX = e.nativeEvent.offsetX
-                const idx = colIndexFromSvgX(svgX)
-                didDragRef.current = false
-                setDragStart(idx)
-                setDragEnd(idx)
-              }}
-              onMouseMove={e => {
-                const svgX = e.nativeEvent.offsetX
-                const idx = colIndexFromSvgX(svgX)
-                setPreviewed(idx)
-                if (isDragging) {
-                  if (dragStart !== null && idx !== dragStart) didDragRef.current = true
-                  setDragEnd(idx)
-                }
-              }}
-              onMouseLeave={() => {
-                setPreviewed(null)
-                if (isDragging) {
-                  if (dragStart !== null && dragEnd !== null) {
-                    const lo = Math.min(dragStart, dragEnd)
-                    const hi = Math.max(dragStart, dragEnd)
-                    if (lo === hi) {
-                      setSelectedBoth(() => lo)
-                      onRangeChange?.(null)
-                    } else {
-                      onRangeChange?.({ start: lo, end: hi })
-                      setSelectedBoth(() => null)
-                    }
-                  }
-                  setDragStart(null)
-                  setDragEnd(null)
-                }
-              }}
-              onMouseUp={e => {
-                const svgX = e.nativeEvent.offsetX
-                const endIdx = colIndexFromSvgX(svgX)
-                if (dragStart !== null) {
-                  const lo = Math.min(dragStart, endIdx)
-                  const hi = Math.max(dragStart, endIdx)
-                  if (didDragRef.current && lo !== hi) {
-                    // committed drag range
-                    onRangeChange?.({ start: lo, end: hi })
-                    setSelectedBoth(() => null)
-                  } else {
-                    // plain click
-                    setSelectedBoth(() => lo)
-                    onRangeChange?.(null)
-                  }
-                }
-                setDragStart(null)
-                setDragEnd(null)
-                // reset on next tick so the synthetic onClick that follows is suppressed
-                setTimeout(() => { didDragRef.current = false }, 0)
-              }}
-              onClick={e => {
-                // suppress click if this was actually a drag release
-                if (didDragRef.current) { e.stopPropagation(); return }
-              }}
-            />
-          )}
-          {/* Mobile: keep original tap hit targets */}
+          {/* Mobile: tap hit targets */}
           {isMobile && entries.map((_, i) => (
             <rect
               key={`hit-${i}`}
