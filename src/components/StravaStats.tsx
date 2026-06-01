@@ -124,6 +124,8 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   // Drag-to-select (desktop only)
   const [dragStart, setDragStart] = useState<number | null>(null)
   const [dragEnd, setDragEnd] = useState<number | null>(null)
+  // Persists the lo/hi of the last committed drag so the highlight stays visible after mouseup
+  const [committedRange, setCommittedRange] = useState<{ lo: number; hi: number } | null>(null)
   const isDragging = dragStart !== null
   const didDragRef = useRef(false)
   const dragStartRef = useRef<number | null>(null)
@@ -169,8 +171,10 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
         rangeActiveRef.current = true
         onRangeChangeRef.current?.({ start: lo, end: hi })
         setSelected(null)
+        setCommittedRange({ lo, hi })
       } else {
         rangeActiveRef.current = false
+        setCommittedRange(null)
         setSelectedBothRef.current(() => lo)
         onRangeChangeRef.current?.(null)
       }
@@ -186,6 +190,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
       const idx = getCol(e.clientX)
       didDragRef.current = false
       rangeActiveRef.current = false
+      setCommittedRange(null)
       dragStartRef.current = idx
       dragEndRef.current = idx
       setDragStart(idx)
@@ -237,6 +242,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   // Reset selection to most recent when entries change (mode switch)
   useEffect(() => {
     rangeActiveRef.current = false
+    setCommittedRange(null)
     setSelectedBoth(() => entries.length - 1)
     setPreviewed(null)
   }, [entries.length, mode])
@@ -443,13 +449,15 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
           />
 
-          {/* Drag range highlight — shown while dragging or when range is committed */}
+          {/* Drag range highlight — shown while dragging OR when a range is committed */}
           {(() => {
-            const ds = dragStart !== null ? dragStart : null
-            const de = dragEnd !== null ? dragEnd : null
-            if (ds === null || de === null) return null
-            const lo = Math.min(ds, de)
-            const hi = Math.max(ds, de)
+            const lo = dragStart !== null && dragEnd !== null
+              ? Math.min(dragStart, dragEnd)
+              : committedRange?.lo ?? null
+            const hi = dragStart !== null && dragEnd !== null
+              ? Math.max(dragStart, dragEnd)
+              : committedRange?.hi ?? null
+            if (lo === null || hi === null) return null
             return (
               <rect
                 x={xOf(lo) - COL_W / 2} y={PAD.top}
@@ -462,7 +470,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
           })()}
 
           {/* Selected column background highlight (single-bar mode only) */}
-          {dragStart === null && selected !== null && (
+          {dragStart === null && committedRange === null && selected !== null && (
             <rect
               x={xOf(selected) - COL_W / 2} y={PAD.top}
               width={COL_W} height={cH}
@@ -472,7 +480,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
           )}
 
           {/* Dashed vertical line — single-bar mode only */}
-          {dragStart === null && selected !== null && (
+          {dragStart === null && committedRange === null && selected !== null && (
             <line
               x1={xOf(selected)} y1={PAD.top}
               x2={xOf(selected)} y2={PAD.top + cH}
@@ -482,10 +490,14 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
 
           {/* Active sport dots */}
           {activePoints.map((p, i) => {
-            const ds = dragStart !== null ? dragStart : null
-            const de = dragEnd !== null ? dragEnd : null
-            const inRange = ds !== null && de !== null && i >= Math.min(ds, de) && i <= Math.max(ds, de)
-            const isSelected = dragStart === null && i === selected
+            const activeLo = dragStart !== null && dragEnd !== null
+              ? Math.min(dragStart, dragEnd)
+              : committedRange?.lo ?? null
+            const activeHi = dragStart !== null && dragEnd !== null
+              ? Math.max(dragStart, dragEnd)
+              : committedRange?.hi ?? null
+            const inRange = activeLo !== null && activeHi !== null && i >= activeLo && i <= activeHi
+            const isSelected = dragStart === null && committedRange === null && i === selected
             if (isSelected) return null
             return (
               <circle
@@ -500,7 +512,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
           })}
 
           {/* Selected dot — single-bar mode, rendered last */}
-          {dragStart === null && selected !== null && activePoints[selected] && (
+          {dragStart === null && committedRange === null && selected !== null && activePoints[selected] && (
             <circle
               cx={xOf(selected)} cy={activePoints[selected].y}
               r={4}
@@ -511,10 +523,15 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
             />
           )}
 
-          {/* Drag-range endpoint dots */}
-          {dragStart !== null && dragEnd !== null && (() => {
-            const lo = Math.min(dragStart, dragEnd)
-            const hi = Math.max(dragStart, dragEnd)
+          {/* Range endpoint dots — shown while dragging OR when committed */}
+          {(() => {
+            const lo = dragStart !== null && dragEnd !== null
+              ? Math.min(dragStart, dragEnd)
+              : committedRange?.lo ?? null
+            const hi = dragStart !== null && dragEnd !== null
+              ? Math.max(dragStart, dragEnd)
+              : committedRange?.hi ?? null
+            if (lo === null || hi === null) return null
             return [lo, hi].map((idx, k) => (
               <circle
                 key={`drag-dot-${k}`}
@@ -558,7 +575,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
               style={{ cursor: 'pointer' }}
               onMouseEnter={() => setPreviewed(i)}
               onMouseLeave={() => setPreviewed(null)}
-              onClick={() => { rangeActiveRef.current = false; setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
+              onClick={() => { rangeActiveRef.current = false; setCommittedRange(null); setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
             />
           ))}
         </svg>
