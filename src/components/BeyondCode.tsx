@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { creativeItems } from '../data/creative'
 import type { CreativeItem } from '../data/creative'
 import CreativeModal from './CreativeModal'
-import StravaStats from './StravaStats'
+import StravaStats from './StravaStats/StravaStats'
 
 export default function BeyondCode() {
   const ref = useRef<HTMLElement>(null)
@@ -14,7 +14,7 @@ export default function BeyondCode() {
   })
   const headingX = useTransform(scrollYProgress, [0, 1], ['-3%', '3%'])
 
-  const poems    = creativeItems.filter(i => i.type === 'poem')
+  const poems = creativeItems.filter(i => i.type === 'poem')
   const articles = creativeItems.filter(i => i.type === 'article')
   const sketches = creativeItems.filter(i => i.type === 'sketch')
 
@@ -159,7 +159,7 @@ export default function BeyondCode() {
                       // Graceful fallback if image not found
                       const t = e.currentTarget
                       t.style.display = 'none'
-                      ;(t.nextElementSibling as HTMLElement)?.classList.remove('hidden')
+                        ; (t.nextElementSibling as HTMLElement)?.classList.remove('hidden')
                     }}
                   />
                   {/* Placeholder shown if image missing */}

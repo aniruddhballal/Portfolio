@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence, useSpring } from 'framer-motion'
 import { SportShoe, Bike } from 'lucide-react'
-import stravaData from '../data/strava.json'
-import type { StravaData, PeriodStats, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../data/strava-types'
+import stravaData from '../../data/strava.json'
+import type { StravaData, PeriodStats, WeeklyEntry, MonthlyEntry, AnnualEntry } from '../../data/strava-types'
 
 const data = stravaData as StravaData
 const STRAVA_URL = 'https://www.strava.com/athletes/111442086'
@@ -328,7 +328,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
   // => i > (scrollLeft) / COL_W - 0.5   →  ceil((scrollLeft) / COL_W)
   // => i < (scrollLeft + containerWidth - PAD.left) / COL_W - 0.5
   const visibleStart = Math.max(0, Math.ceil(scrollLeft / COL_W))
-  const visibleEnd   = Math.min(entries.length - 1, Math.floor((scrollLeft + containerWidth - PAD.left) / COL_W - 0.5))
+  const visibleEnd = Math.min(entries.length - 1, Math.floor((scrollLeft + containerWidth - PAD.left) / COL_W - 0.5))
   const visibleEntries = entries.slice(visibleStart, visibleEnd + 1)
 
   useEffect(() => {
@@ -361,7 +361,7 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
 
   const yOf = (val: number) => PAD.top + cH - (val / renderMax) * cH
 
-  const runPoints  = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
+  const runPoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.run[metric]) }))
   const ridePoints = entries.map((e, i) => ({ x: xOf(i), y: yOf(e.ride[metric]) }))
   const activePoints = sport === 'run' ? runPoints : ridePoints
   const toPolyline = (pts: { x: number; y: number }[]) =>
@@ -416,169 +416,169 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
           style={{ WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'], scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'], msOverflowStyle: 'none' }}
           onScroll={e => setScrollLeft((e.target as HTMLDivElement).scrollLeft)}
         >
-        <svg
-          ref={svgRef}
-          width={totalW}
-          height={H}
-          viewBox={`0 0 ${totalW} ${H}`}
-          style={{ display: 'block', minWidth: totalW, cursor: isMobile ? 'pointer' : isDragging ? 'col-resize' : 'crosshair' }}
-        >
-          <defs>
-            <linearGradient id="sportGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
-              <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
-            </linearGradient>
-          </defs>
+          <svg
+            ref={svgRef}
+            width={totalW}
+            height={H}
+            viewBox={`0 0 ${totalW} ${H}`}
+            style={{ display: 'block', minWidth: totalW, cursor: isMobile ? 'pointer' : isDragging ? 'col-resize' : 'crosshair' }}
+          >
+            <defs>
+              <linearGradient id="sportGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
+                <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
+              </linearGradient>
+            </defs>
 
-          {/* Y-axis grid lines only — labels are in the sticky overlay above */}
-          {yTicks.map((tick, ti) => {
-            const y = yOf(tick)
-            return (
-              <line
-                key={ti}
-                x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
-                stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
-              />
-            )
-          })}
+            {/* Y-axis grid lines only — labels are in the sticky overlay above */}
+            {yTicks.map((tick, ti) => {
+              const y = yOf(tick)
+              return (
+                <line
+                  key={ti}
+                  x1={PAD.left} y1={y} x2={totalW - PAD.right} y2={y}
+                  stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
+                />
+              )
+            })}
 
-          {/* Active sport area + line */}
-          <path d={toArea(activePoints)} fill="url(#sportGrad)" />
-          <polyline
-            points={toPolyline(activePoints)}
-            fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
-          />
+            {/* Active sport area + line */}
+            <path d={toArea(activePoints)} fill="url(#sportGrad)" />
+            <polyline
+              points={toPolyline(activePoints)}
+              fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
+            />
 
-          {/* Drag range highlight — shown while dragging OR when a range is committed */}
-          {(() => {
-            const lo = dragStart !== null && dragEnd !== null
-              ? Math.min(dragStart, dragEnd)
-              : committedRange?.lo ?? null
-            const hi = dragStart !== null && dragEnd !== null
-              ? Math.max(dragStart, dragEnd)
-              : committedRange?.hi ?? null
-            if (lo === null || hi === null) return null
-            return (
+            {/* Drag range highlight — shown while dragging OR when a range is committed */}
+            {(() => {
+              const lo = dragStart !== null && dragEnd !== null
+                ? Math.min(dragStart, dragEnd)
+                : committedRange?.lo ?? null
+              const hi = dragStart !== null && dragEnd !== null
+                ? Math.max(dragStart, dragEnd)
+                : committedRange?.hi ?? null
+              if (lo === null || hi === null) return null
+              return (
+                <rect
+                  x={xOf(lo) - COL_W / 2} y={PAD.top}
+                  width={xOf(hi) - xOf(lo) + COL_W} height={cH}
+                  fill="#1a1a1a" fillOpacity="0.06"
+                  rx="2"
+                  style={{ pointerEvents: 'none' }}
+                />
+              )
+            })()}
+
+            {/* Selected column background highlight (single-bar mode only) */}
+            {dragStart === null && committedRange === null && selected !== null && (
               <rect
-                x={xOf(lo) - COL_W / 2} y={PAD.top}
-                width={xOf(hi) - xOf(lo) + COL_W} height={cH}
-                fill="#1a1a1a" fillOpacity="0.06"
+                x={xOf(selected) - COL_W / 2} y={PAD.top}
+                width={COL_W} height={cH}
+                fill="#1a1a1a" fillOpacity="0.04"
                 rx="2"
-                style={{ pointerEvents: 'none' }}
               />
-            )
-          })()}
+            )}
 
-          {/* Selected column background highlight (single-bar mode only) */}
-          {dragStart === null && committedRange === null && selected !== null && (
-            <rect
-              x={xOf(selected) - COL_W / 2} y={PAD.top}
-              width={COL_W} height={cH}
-              fill="#1a1a1a" fillOpacity="0.04"
-              rx="2"
-            />
-          )}
+            {/* Dashed vertical line — single-bar mode only */}
+            {dragStart === null && committedRange === null && selected !== null && (
+              <line
+                x1={xOf(selected)} y1={PAD.top}
+                x2={xOf(selected)} y2={PAD.top + cH}
+                stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
+              />
+            )}
 
-          {/* Dashed vertical line — single-bar mode only */}
-          {dragStart === null && committedRange === null && selected !== null && (
-            <line
-              x1={xOf(selected)} y1={PAD.top}
-              x2={xOf(selected)} y2={PAD.top + cH}
-              stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
-            />
-          )}
+            {/* Active sport dots */}
+            {activePoints.map((p, i) => {
+              const activeLo = dragStart !== null && dragEnd !== null
+                ? Math.min(dragStart, dragEnd)
+                : committedRange?.lo ?? null
+              const activeHi = dragStart !== null && dragEnd !== null
+                ? Math.max(dragStart, dragEnd)
+                : committedRange?.hi ?? null
+              const inRange = activeLo !== null && activeHi !== null && i >= activeLo && i <= activeHi
+              const isSelected = dragStart === null && committedRange === null && i === selected
+              if (isSelected) return null
+              return (
+                <circle
+                  key={`dot-${i}`}
+                  cx={p.x} cy={p.y}
+                  r={inRange ? 3.5 : previewed === i ? 3.5 : 3}
+                  fill="transparent"
+                  stroke="#1a1a1a" strokeOpacity={inRange ? 0.7 : previewed === i ? 0.7 : 0.5}
+                  strokeWidth="1.5"
+                />
+              )
+            })}
 
-          {/* Active sport dots */}
-          {activePoints.map((p, i) => {
-            const activeLo = dragStart !== null && dragEnd !== null
-              ? Math.min(dragStart, dragEnd)
-              : committedRange?.lo ?? null
-            const activeHi = dragStart !== null && dragEnd !== null
-              ? Math.max(dragStart, dragEnd)
-              : committedRange?.hi ?? null
-            const inRange = activeLo !== null && activeHi !== null && i >= activeLo && i <= activeHi
-            const isSelected = dragStart === null && committedRange === null && i === selected
-            if (isSelected) return null
-            return (
+            {/* Selected dot — single-bar mode, rendered last */}
+            {dragStart === null && committedRange === null && selected !== null && activePoints[selected] && (
               <circle
-                key={`dot-${i}`}
-                cx={p.x} cy={p.y}
-                r={inRange ? 3.5 : previewed === i ? 3.5 : 3}
-                fill="transparent"
-                stroke="#1a1a1a" strokeOpacity={inRange ? 0.7 : previewed === i ? 0.7 : 0.5}
+                cx={xOf(selected)} cy={activePoints[selected].y}
+                r={4}
+                fill="#c0392b"
+                fillOpacity={0.9}
+                stroke="#fff"
                 strokeWidth="1.5"
               />
-            )
-          })}
+            )}
 
-          {/* Selected dot — single-bar mode, rendered last */}
-          {dragStart === null && committedRange === null && selected !== null && activePoints[selected] && (
-            <circle
-              cx={xOf(selected)} cy={activePoints[selected].y}
-              r={4}
-              fill="#c0392b"
-              fillOpacity={0.9}
-              stroke="#fff"
-              strokeWidth="1.5"
-            />
-          )}
+            {/* Range endpoint dots — shown while dragging OR when committed */}
+            {(() => {
+              const lo = dragStart !== null && dragEnd !== null
+                ? Math.min(dragStart, dragEnd)
+                : committedRange?.lo ?? null
+              const hi = dragStart !== null && dragEnd !== null
+                ? Math.max(dragStart, dragEnd)
+                : committedRange?.hi ?? null
+              if (lo === null || hi === null) return null
+              return [lo, hi].map((idx, k) => (
+                <circle
+                  key={`drag-dot-${k}`}
+                  cx={xOf(idx)} cy={activePoints[idx]?.y ?? yOf(0)}
+                  r={4}
+                  fill="#c0392b" fillOpacity={0.9}
+                  stroke="#fff" strokeWidth="1.5"
+                  style={{ pointerEvents: 'none' }}
+                />
+              ))
+            })()}
 
-          {/* Range endpoint dots — shown while dragging OR when committed */}
-          {(() => {
-            const lo = dragStart !== null && dragEnd !== null
-              ? Math.min(dragStart, dragEnd)
-              : committedRange?.lo ?? null
-            const hi = dragStart !== null && dragEnd !== null
-              ? Math.max(dragStart, dragEnd)
-              : committedRange?.hi ?? null
-            if (lo === null || hi === null) return null
-            return [lo, hi].map((idx, k) => (
-              <circle
-                key={`drag-dot-${k}`}
-                cx={xOf(idx)} cy={activePoints[idx]?.y ?? yOf(0)}
-                r={4}
-                fill="#c0392b" fillOpacity={0.9}
-                stroke="#fff" strokeWidth="1.5"
-                style={{ pointerEvents: 'none' }}
+            {/* X-axis labels — month boundaries only for weekly, every entry for monthly/annual */}
+            {entries.map((entry, i) => {
+              if (!xLabelIndices.has(i)) return null
+              const x = xOf(i)
+              if (x < PAD.left + 4) return null
+              if (x > totalW - PAD.right - 2) return null
+              return (
+                <text
+                  key={`xlabel-${i}`}
+                  x={x} y={H - 3}
+                  textAnchor="middle"
+                  fontSize={isMobile ? 10 : 11}
+                  fill="#1a1a1a"
+                  fillOpacity="0.35"
+                  fontFamily="monospace"
+                >
+                  {xLabel(entry)}
+                </text>
+              )
+            })}
+
+            {/* Mobile: tap hit targets */}
+            {isMobile && entries.map((_, i) => (
+              <rect
+                key={`hit-${i}`}
+                x={xOf(i) - COL_W / 2} y={0}
+                width={COL_W} height={H}
+                fill="transparent"
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={() => setPreviewed(i)}
+                onMouseLeave={() => setPreviewed(null)}
+                onClick={() => { rangeActiveRef.current = false; setCommittedRange(null); setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
               />
-            ))
-          })()}
-
-          {/* X-axis labels — month boundaries only for weekly, every entry for monthly/annual */}
-          {entries.map((entry, i) => {
-            if (!xLabelIndices.has(i)) return null
-            const x = xOf(i)
-            if (x < PAD.left + 4) return null
-            if (x > totalW - PAD.right - 2) return null
-            return (
-              <text
-                key={`xlabel-${i}`}
-                x={x} y={H - 3}
-                textAnchor="middle"
-                fontSize={isMobile ? 10 : 11}
-                fill="#1a1a1a"
-                fillOpacity="0.35"
-                fontFamily="monospace"
-              >
-                {xLabel(entry)}
-              </text>
-            )
-          })}
-
-          {/* Mobile: tap hit targets */}
-          {isMobile && entries.map((_, i) => (
-            <rect
-              key={`hit-${i}`}
-              x={xOf(i) - COL_W / 2} y={0}
-              width={COL_W} height={H}
-              fill="transparent"
-              style={{ cursor: 'pointer' }}
-              onMouseEnter={() => setPreviewed(i)}
-              onMouseLeave={() => setPreviewed(null)}
-              onClick={() => { rangeActiveRef.current = false; setCommittedRange(null); setSelectedBoth(prev => prev === i ? null : i); onRangeChange?.(null) }}
-            />
-          ))}
-        </svg>
+            ))}
+          </svg>
         </div>{/* end scrollRef */}
       </div>{/* end relative wrapper */}
 
@@ -592,18 +592,18 @@ function ProgressionPanel({ mode }: { mode: ProgressionMode }) {
 
   const allEntries: BarEntry[] = mode === 'weekly'
     ? (data.weekly as WeeklyEntry[]).map(w => ({
-        label: weekLabelAxis(w.weekStart),
-        tooltipLabel: weekRangeLabel(w.weekStart),
-        isoStart: w.weekStart,
-        run: w.run, ride: w.ride,
-      }))
+      label: weekLabelAxis(w.weekStart),
+      tooltipLabel: weekRangeLabel(w.weekStart),
+      isoStart: w.weekStart,
+      run: w.run, ride: w.ride,
+    }))
     : mode === 'monthly'
       ? (data.monthly as MonthlyEntry[]).map(m => ({
-          label: monthLabelAxis(m.month + '-01'),
-          tooltipLabel: m.label,
-          isoStart: m.month + '-01',
-          run: m.run, ride: m.ride,
-        }))
+        label: monthLabelAxis(m.month + '-01'),
+        tooltipLabel: m.label,
+        isoStart: m.month + '-01',
+        run: m.run, ride: m.ride,
+      }))
       : (data.annual as AnnualEntry[]).map(a => ({ label: String(a.year), tooltipLabel: String(a.year), run: a.run, ride: a.ride }))
 
   const entries = allEntries
@@ -834,8 +834,8 @@ export default function StravaStats() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`relative font-mono text-xs px-4 py-2.5 transition-colors ${tab === t.key
-                ? 'text-accent bg-ink/[0.03]'
-                : 'text-muted hover:text-ink'
+              ? 'text-accent bg-ink/[0.03]'
+              : 'text-muted hover:text-ink'
               }`}
           >
             {tab === t.key && (
