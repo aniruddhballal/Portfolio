@@ -213,9 +213,17 @@ function ProgressionChart({ entries, metric, mode, sport, onVisibleWindowChange,
     return entry.label
   }
 
-  // Derive which entries are visible in the current scroll window
-  const visibleStart = Math.max(0, Math.floor((scrollLeft - PAD.left) / COL_W))
-  const visibleEnd   = Math.min(entries.length - 1, Math.floor((scrollLeft + containerWidth - PAD.left) / COL_W))
+  // Derive which entries are visible in the current scroll window.
+  // The sticky y-axis overlay covers PAD.left px on the left of the viewport,
+  // so the effective visible region for column centres is:
+  //   left edge:  scrollLeft + PAD.left
+  //   right edge: scrollLeft + containerWidth
+  // centreX of column i in SVG coords = PAD.left + i * COL_W + COL_W/2
+  // visible when: scrollLeft + PAD.left < centreX < scrollLeft + containerWidth
+  // => i > (scrollLeft) / COL_W - 0.5   →  ceil((scrollLeft) / COL_W)
+  // => i < (scrollLeft + containerWidth - PAD.left) / COL_W - 0.5
+  const visibleStart = Math.max(0, Math.ceil(scrollLeft / COL_W))
+  const visibleEnd   = Math.min(entries.length - 1, Math.floor((scrollLeft + containerWidth - PAD.left) / COL_W - 0.5))
   const visibleEntries = entries.slice(visibleStart, visibleEnd + 1)
 
   useEffect(() => {
