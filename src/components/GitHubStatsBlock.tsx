@@ -227,10 +227,14 @@ function ContributionGrid({
 
       {/* Grid: week columns only */}
       <div className="flex" style={{ gap }}>
-          {weeks.map((week, wi) => (
+          {weeks.map((week, wi) => {
+            const todayIso = new Date().toISOString().slice(0, 10)
+            const allFuture = week.every(c => !c.inYear || c.date > todayIso)
+            if (allFuture) return null
+            return (
             <div key={wi} className="flex flex-col" style={{ gap }}>
               {week.map((cell, di) => {
-                const today    = new Date().toISOString().slice(0, 10)
+                const today    = todayIso
                 const isFuture = cell.inYear && cell.date > today
                 const isToday  = cell.date === today
                 const level    = cell.inYear && !isFuture && cell.count >= 0 ? countToLevel(cell.count) : -1
@@ -270,7 +274,7 @@ function ContributionGrid({
                 )
               })}
             </div>
-          ))}
+          )})}
         </div>
 
       {/* Tooltip — flips below the cell if near the top to avoid clipping */}
