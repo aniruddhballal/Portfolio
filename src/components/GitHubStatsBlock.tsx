@@ -150,15 +150,15 @@ function buildYearGrid(year: number, commitsByDate: Record<string, number>) {
     weeks.push(week)
   }
 
-  // Month label positions: first week where that month appears in-year
+  // Month label positions: place only at weeks containing the 1st of that month,
+  // skipping padding weeks — prevents Dec/Jan collision at year boundaries.
   const monthLabels: { month: number; weekIdx: number }[] = []
   const seen = new Set<number>()
   weeks.forEach((week, wi) => {
-    week.forEach(cell => {
-      if (!cell.inYear) return
-      const m = new Date(cell.date).getMonth()
-      if (!seen.has(m)) { seen.add(m); monthLabels.push({ month: m, weekIdx: wi }) }
-    })
+    const monthStart = week.find(c => c.inYear && new Date(c.date).getDate() === 1)
+    if (!monthStart) return
+    const m = new Date(monthStart.date).getMonth()
+    if (!seen.has(m)) { seen.add(m); monthLabels.push({ month: m, weekIdx: wi }) }
   })
 
   return { weeks, monthLabels }
@@ -211,30 +211,42 @@ function ContributionGrid({
     <div ref={containerRef} className="w-full select-none">
       {/* Month labels row */}
       <div className="relative mb-1" style={{ marginLeft: LABEL_W, height: 14 }}>
-        {monthLabels.map(({ month, weekIdx }) => (
-          <span
-            key={month}
-            className="absolute font-mono text-[9px] text-muted/50 leading-none"
-            style={{ left: weekIdx * (cellSize + gap), top: 0 }}
-          >
-            {MONTHS[month]}
-          </span>
-        ))}
+        {monthLabels.map(({ month, weekIdx }) => {
+          // Hide labels for months that are entirely in the future
+          const today = new Date()
+          const labelYear = year
+          const labelMonth = month
+          if (labelYear > today.getFullYear()) return null
+          if (labelYear === today.getFullYear() && labelMonth > today.getMonth()) return null
+          return (
+            <span
+              key={month}
+              className="absolute font-mono text-[9px] text-muted/50 leading-none"
+              style={{ left: weekIdx * (cellSize + gap), top: 0 }}
+            >
+              {MONTHS[month]}
+            </span>
+          )
+        })}
       </div>
 
       {/* Grid: day labels + week columns */}
       <div className="flex gap-0" style={{ width: '100%' }}>
-        {/* Day labels */}
+        {/* Day labels — M W F S = Mon Wed Fri Sat; Sun row left blank */}
         <div className="flex flex-col" style={{ width: LABEL_W, gap }}>
-          {DAYS.map((d, i) => (
-            <div
-              key={d}
-              className="font-mono text-[9px] text-muted/40 leading-none flex items-center"
-              style={{ height: cellSize, marginBottom: i < 6 ? gap : 0 }}
-            >
-              {i % 2 === 0 ? d.slice(0, 1) : ''}
-            </div>
-          ))}
+          {DAYS.map((d, i) => {
+            // Mon=0,Tue=1,Wed=2,Thu=3,Fri=4,Sat=5,Sun=6
+            const label = i === 0 ? 'M' : i === 2 ? 'W' : i === 4 ? 'F' : i === 5 ? 'S' : ''
+            return (
+              <div
+                key={d}
+                className="font-mono text-[9px] text-muted/40 leading-none flex items-center"
+                style={{ height: cellSize, marginBottom: i < 6 ? gap : 0 }}
+              >
+                {label}
+              </div>
+            )
+          })}
         </div>
 
         {/* Weeks */}
@@ -242,25 +254,32 @@ function ContributionGrid({
           {weeks.map((week, wi) => (
             <div key={wi} className="flex flex-col" style={{ gap }}>
               {week.map((cell, di) => {
-                const level   = cell.inYear && cell.count >= 0 ? countToLevel(cell.count) : -1
-                const isEmpty = level === -1 || !cell.inYear
+                const today    = new Date().toISOString().slice(0, 10)
+                const isFuture = cell.inYear && cell.date > today
+                const isToday  = cell.date === today
+                const level    = cell.inYear && !isFuture && cell.count >= 0 ? countToLevel(cell.count) : -1
+                const isEmpty  = level === -1
 
                 return (
                   <div
                     key={di}
                     style={{
-                      width:  cellSize,
-                      height: cellSize,
+                      width:        cellSize,
+                      height:       cellSize,
                       borderRadius: 2,
-                      backgroundColor: isEmpty
-                        ? 'rgba(26,26,26,0.04)'
-                        : `rgba(26,26,26,${LEVEL_OPACITY[level as 0|1|2|3|4]})`,
-                      cursor: cell.inYear && cell.count > 0 ? 'crosshair' : 'default',
+                      backgroundColor: isFuture
+                        ? 'transparent'
+                        : isEmpty
+                          ? 'rgba(26,26,26,0.05)'
+                          : `rgba(26,26,26,${LEVEL_OPACITY[level as 0|1|2|3|4]})`,
+                      outline: isToday ? '1.5px solid rgba(192,57,43,0.5)' : 'none',
+                      outlineOffset: '-1px',
+                      cursor:    cell.inYear && !isFuture ? 'crosshair' : 'default',
                       flexShrink: 0,
                       transition: 'background-color 0.15s',
                     }}
                     onMouseEnter={e => {
-                      if (!cell.inYear) return
+                      if (!cell.inYear || isFuture) return
                       const rect = (e.target as HTMLElement).getBoundingClientRect()
                       const parentRect = containerRef.current!.getBoundingClientRect()
                       setTooltip({
@@ -389,8 +408,8 @@ export default function GitHubStatsBlock() {
               { n: stats.stars.toString(),              l: 'Stars'   },
               { n: `${stats.longestStreak}mo`,          l: 'Streak'  },
             ].map((s, i) => (
-              <div key={i} className={`px-4 py-4 ${i < 3 ? 'border-r border-ink/10' : ''}`}>
-                <p className="font-display text-2xl text-ink leading-none">{s.n}</p>
+              <div key={i} className={`px-4 py-3 ${i < 3 ? 'border-r border-ink/10' : ''}`}>
+                <p className="font-display text-xl md:text-2xl text-ink leading-none">{s.n}</p>
                 <p className="font-mono text-[10px] text-muted/50 mt-1 uppercase tracking-widest">{s.l}</p>
               </div>
             ))}
