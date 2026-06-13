@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const GITHUB_USERNAME = import.meta.env.VITE_GITHUB_USERNAME as string
@@ -182,7 +182,9 @@ function ContributionGrid({
 }) {
   const { weeks, monthLabels } = buildYearGrid(year, commitsByDate)
   const [tooltip, setTooltip]  = useState<{ date: string; count: number; x: number; y: number } | null>(null)
+  const [tooltipShift, setTooltipShift] = useState(0)
   const containerRef           = useRef<HTMLDivElement>(null)
+  const tooltipRef             = useRef<HTMLDivElement>(null)
 
   // Responsive cell size
   const [cellSize, setCellSize] = useState(11)
@@ -201,6 +203,36 @@ function ContributionGrid({
     ro.observe(el)
     return () => ro.disconnect()
   }, [weeks.length])
+
+  // Keep the tooltip from overflowing the card's visible (overflow-hidden) edges
+  useLayoutEffect(() => {
+    if (!tooltip || !tooltipRef.current) {
+      setTooltipShift(0)
+      return
+    }
+    const ttEl = tooltipRef.current
+    const offsetParent = (ttEl.offsetParent as HTMLElement | null) ?? containerRef.current
+    if (!offsetParent) { setTooltipShift(0); return }
+
+    // The clipping boundary is the nearest ancestor that hides overflow
+    const card = ttEl.closest('.overflow-hidden') as HTMLElement | null
+    const bound = (card ?? offsetParent).getBoundingClientRect()
+
+    const parentRect = offsetParent.getBoundingClientRect()
+    const width  = ttEl.offsetWidth
+    const centerX = parentRect.left + tooltip.x   // viewport-space center of the (unshifted) tooltip
+    const half    = width / 2
+    const pad     = 6
+
+    let shift = 0
+    const overflowRight = (centerX + half) - (bound.right - pad)
+    const overflowLeft  = (bound.left + pad) - (centerX - half)
+
+    if (overflowRight > 0) shift = -overflowRight
+    if (overflowLeft > 0)  shift = overflowLeft
+
+    setTooltipShift(shift)
+  }, [tooltip])
 
   return (
     <div ref={containerRef} className="w-full select-none">
@@ -280,24 +312,29 @@ function ContributionGrid({
       {/* Tooltip — flips below the cell if near the top to avoid clipping */}
       <AnimatePresence>
         {tooltip && (
-          <motion.div
+          <div
             key={tooltip.date}
-            initial={{ opacity: 0, y: 3 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            className="absolute z-20 pointer-events-none bg-ink text-paper font-mono text-[9px] px-2 py-1 whitespace-nowrap"
+            ref={tooltipRef}
+            className="absolute z-20 pointer-events-none"
             style={{
               left:      tooltip.x,
               top:       tooltip.y < 32 ? tooltip.y + cellSize + 6 : tooltip.y - 28,
-              transform: 'translateX(-50%)',
+              transform: `translateX(calc(-50% + ${tooltipShift}px))`,
             }}
           >
-            {tooltip.count === 0
-              ? `No commits · ${tooltip.date}`
-              : `${tooltip.count} commit${tooltip.count !== 1 ? 's' : ''} · ${tooltip.date}`
-            }
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+              className="bg-ink text-paper font-mono text-[9px] px-2 py-1 whitespace-nowrap"
+            >
+              {tooltip.count === 0
+                ? `No commits · ${tooltip.date}`
+                : `${tooltip.count} commit${tooltip.count !== 1 ? 's' : ''} · ${tooltip.date}`
+              }
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
