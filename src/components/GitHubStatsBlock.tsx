@@ -60,7 +60,7 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
         let repoCommits: any[] = []
         while (true) {
           const res = await fetch(
-            `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=100&page=${commitPage}&author=${GITHUB_USERNAME}`,
+            `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=100&page=${commitPage}`,
             { headers }
           )
           if (res.status === 409 || res.status === 404) break
