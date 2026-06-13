@@ -111,7 +111,6 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
 
 // ─── Contribution heatmap ─────────────────────────────────────────────────────
 
-const DAYS   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
 
 /** Build the week-column grid for a given year, Sunday-anchored like GitHub */
@@ -193,9 +192,7 @@ function ContributionGrid({
     const el = containerRef.current
     if (!el) return
     const update = () => {
-      // available width = container width minus day-label column (28px)
-      const avail = el.clientWidth - 28
-      // 53 weeks max + gaps
+      const avail = el.clientWidth
       const size  = Math.max(8, Math.min(12, Math.floor((avail - (weeks.length - 1) * gap) / weeks.length)))
       setCellSize(size)
     }
@@ -205,12 +202,10 @@ function ContributionGrid({
     return () => ro.disconnect()
   }, [weeks.length])
 
-  const LABEL_W = 28
-
   return (
     <div ref={containerRef} className="w-full select-none">
       {/* Month labels row */}
-      <div className="relative mb-1" style={{ marginLeft: LABEL_W, height: 14 }}>
+      <div className="relative mb-1" style={{ height: 14 }}>
         {monthLabels.map(({ month, weekIdx }) => {
           // Hide labels for months that are entirely in the future
           const today = new Date()
@@ -230,27 +225,8 @@ function ContributionGrid({
         })}
       </div>
 
-      {/* Grid: day labels + week columns */}
-      <div className="flex gap-0" style={{ width: '100%' }}>
-        {/* Day labels — M W F S = Mon Wed Fri Sat; Sun row left blank */}
-        <div className="flex flex-col" style={{ width: LABEL_W, gap }}>
-          {DAYS.map((d, i) => {
-            // Mon=0,Tue=1,Wed=2,Thu=3,Fri=4,Sat=5,Sun=6
-            const label = i === 0 ? 'M' : i === 2 ? 'W' : i === 4 ? 'F' : i === 5 ? 'S' : ''
-            return (
-              <div
-                key={d}
-                className="font-mono text-[9px] text-muted/40 leading-none flex items-center"
-                style={{ height: cellSize, marginBottom: i < 6 ? gap : 0 }}
-              >
-                {label}
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Weeks */}
-        <div className="flex" style={{ gap }}>
+      {/* Grid: week columns only */}
+      <div className="flex" style={{ gap }}>
           {weeks.map((week, wi) => (
             <div key={wi} className="flex flex-col" style={{ gap }}>
               {week.map((cell, di) => {
@@ -296,9 +272,8 @@ function ContributionGrid({
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Tooltip */}
+      {/* Tooltip — flips below the cell if near the top to avoid clipping */}
       <AnimatePresence>
         {tooltip && (
           <motion.div
@@ -309,8 +284,8 @@ function ContributionGrid({
             transition={{ duration: 0.1 }}
             className="absolute z-20 pointer-events-none bg-ink text-paper font-mono text-[9px] px-2 py-1 whitespace-nowrap"
             style={{
-              left: tooltip.x,
-              top:  tooltip.y - 28,
+              left:      tooltip.x,
+              top:       tooltip.y < 32 ? tooltip.y + cellSize + 6 : tooltip.y - 28,
               transform: 'translateX(-50%)',
             }}
           >
