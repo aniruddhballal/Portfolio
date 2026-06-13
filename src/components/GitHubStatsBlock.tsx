@@ -9,22 +9,20 @@ const GITHUB_TOKEN    = import.meta.env.VITE_GITHUB_TOKEN    as string
 interface GitHubStats {
   totalRepos:     number
   totalCommits:   number
+  commitsByDate:  Record<string, number>   // "YYYY-MM-DD" → count
   commitsByYear:  Record<string, number>
-  commitsByMonth: Record<string, number>
-  commitsByDay:   Record<string, number>
   stars:          number
   longestStreak:  number
   topLanguages:   { name: string; pct: number }[]
+  years:          number[]
 }
-
-type View = 'year' | 'month' | 'day'
 
 // ─── GitHub fetcher ──────────────────────────────────────────────────────────
 
 async function fetchGitHubStats(): Promise<GitHubStats> {
   const headers: HeadersInit = {
-    'Authorization':      `Bearer ${GITHUB_TOKEN}`,
-    'Accept':             'application/vnd.github+json',
+    'Authorization':        `Bearer ${GITHUB_TOKEN}`,
+    'Accept':               'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   }
 
@@ -51,11 +49,9 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
     if (repo.language) langCount[repo.language] = (langCount[repo.language] ?? 0) + 1
   }
 
-  const commitsByYear:  Record<string, number> = {}
-  const commitsByMonth: Record<string, number> = {}
-  const commitsByDay:   Record<string, number> = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 }
+  const commitsByDate: Record<string, number> = {}
+  const commitsByYear: Record<string, number> = {}
   let totalCommits = 0
-  const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   await Promise.all(
     repos.map(async (repo: any) => {
@@ -83,11 +79,9 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
           if (!dateStr) continue
           const date  = new Date(dateStr)
           const year  = date.getFullYear().toString()
-          const month = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`
-          const day   = DAY_NAMES[date.getDay()]
-          commitsByYear[year]   = (commitsByYear[year]   ?? 0) + 1
-          commitsByMonth[month] = (commitsByMonth[month] ?? 0) + 1
-          commitsByDay[day]     = (commitsByDay[day]     ?? 0) + 1
+          const ymd   = dateStr.slice(0, 10)   // "YYYY-MM-DD"
+          commitsByDate[ymd]  = (commitsByDate[ymd]  ?? 0) + 1
+          commitsByYear[year] = (commitsByYear[year] ?? 0) + 1
         }
         totalCommits += repoCommits.length
       } catch { /* skip */ }
@@ -100,191 +94,214 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
     .slice(0, 5)
     .map(([name, cnt]) => ({ name, pct: Math.round((cnt / langTotal) * 100) }))
 
-  const sortedMonths = Object.keys(commitsByMonth).sort()
+  // Longest active-month streak
+  const allMonths = new Set(Object.keys(commitsByDate).map(d => d.slice(0, 7)))
+  const sortedMonths = [...allMonths].sort()
   let maxStreak = 0, cur = 0
   for (const m of sortedMonths) {
-    if ((commitsByMonth[m] ?? 0) > 0) { cur++; if (cur > maxStreak) maxStreak = cur }
-    else cur = 0
+    cur = [...Object.keys(commitsByDate)].some(d => d.startsWith(m)) ? cur + 1 : 0
+    if (cur > maxStreak) maxStreak = cur
   }
 
-  return { totalRepos, totalCommits, commitsByYear, commitsByMonth, commitsByDay, stars, longestStreak: maxStreak, topLanguages }
+  const years = [...new Set(Object.keys(commitsByDate).map(d => parseInt(d.slice(0, 4))))]
+    .sort((a, b) => a - b)
+
+  return { totalRepos, totalCommits, commitsByDate, commitsByYear, stars, longestStreak: maxStreak, topLanguages, years }
 }
 
-// ─── Inline SVG line chart (matches Strava's ProgressionChart aesthetic) ─────
+// ─── Contribution heatmap ─────────────────────────────────────────────────────
 
-interface ChartPoint { label: string; value: number }
+const DAYS   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
 
-function CommitLineChart({ points }: { points: ChartPoint[] }) {
-  const svgRef         = useRef<SVGSVGElement>(null)
-  const [hovered, setHovered] = useState<number | null>(points.length - 1)
-  const [w, setW]      = useState(0)
+/** Build the week-column grid for a given year, Sunday-anchored like GitHub */
+function buildYearGrid(year: number, commitsByDate: Record<string, number>) {
+  // Jan 1 of the year
+  const jan1    = new Date(year, 0, 1)
+  // Dec 31 of the year
+  const dec31   = new Date(year, 11, 31)
+
+  // We want Mon-anchored rows (GitHub uses Sun; we'll use Mon to match EU convention)
+  // dayOfWeek: Mon=0 … Sun=6
+  const dowMon = (d: Date) => (d.getDay() + 6) % 7
+
+  // Pad back to the Monday on or before Jan 1
+  const start = new Date(jan1)
+  start.setDate(start.getDate() - dowMon(jan1))
+
+  // Pad forward to the Sunday on or after Dec 31
+  const end = new Date(dec31)
+  const remaining = 6 - dowMon(dec31)
+  end.setDate(end.getDate() + remaining)
+
+  // Build week columns
+  type Cell = { date: string; count: number; inYear: boolean }
+  const weeks: Cell[][] = []
+  const cur = new Date(start)
+
+  while (cur <= end) {
+    const week: Cell[] = []
+    for (let d = 0; d < 7; d++) {
+      const iso    = cur.toISOString().slice(0, 10)
+      const inYear = cur.getFullYear() === year
+      week.push({ date: iso, count: inYear ? (commitsByDate[iso] ?? 0) : -1, inYear })
+      cur.setDate(cur.getDate() + 1)
+    }
+    weeks.push(week)
+  }
+
+  // Month label positions: first week where that month appears in-year
+  const monthLabels: { month: number; weekIdx: number }[] = []
+  const seen = new Set<number>()
+  weeks.forEach((week, wi) => {
+    week.forEach(cell => {
+      if (!cell.inYear) return
+      const m = new Date(cell.date).getMonth()
+      if (!seen.has(m)) { seen.add(m); monthLabels.push({ month: m, weekIdx: wi }) }
+    })
+  })
+
+  return { weeks, monthLabels }
+}
+
+/** Map commit count to an opacity level (0–4 scale, ink-based) */
+function countToLevel(count: number): 0 | 1 | 2 | 3 | 4 {
+  if (count === 0) return 0
+  if (count === 1) return 1
+  if (count <= 3)  return 2
+  if (count <= 6)  return 3
+  return 4
+}
+
+const LEVEL_OPACITY = ['0.06', '0.20', '0.40', '0.62', '0.85'] as const
+
+function ContributionGrid({
+  year, commitsByDate,
+}: {
+  year: number
+  commitsByDate: Record<string, number>
+}) {
+  const { weeks, monthLabels } = buildYearGrid(year, commitsByDate)
+  const [tooltip, setTooltip]  = useState<{ date: string; count: number; x: number; y: number } | null>(null)
+  const containerRef           = useRef<HTMLDivElement>(null)
+
+  // Responsive cell size
+  const [cellSize, setCellSize] = useState(11)
+  const gap = 2
 
   useEffect(() => {
-    const el = svgRef.current
+    const el = containerRef.current
     if (!el) return
-    const ro = new ResizeObserver(() => setW(el.clientWidth))
+    const update = () => {
+      // available width = container width minus day-label column (28px)
+      const avail = el.clientWidth - 28
+      // 53 weeks max + gaps
+      const size  = Math.max(8, Math.min(12, Math.floor((avail - (weeks.length - 1) * gap) / weeks.length)))
+      setCellSize(size)
+    }
+    update()
+    const ro = new ResizeObserver(update)
     ro.observe(el)
-    setW(el.clientWidth)
     return () => ro.disconnect()
-  }, [])
+  }, [weeks.length])
 
-  const H    = 160
-  const PAD  = { top: 16, bottom: 32, left: 44, right: 12 }
-  const cH   = H - PAD.top - PAD.bottom
-  const cW   = Math.max(w - PAD.left - PAD.right, 1)
-
-  const peak    = Math.max(...points.map(p => p.value), 1)
-  const niceMax = Math.ceil(peak / 10) * 10
-  const yTicks  = [0, Math.round(niceMax / 2), niceMax]
-
-  const xOf  = (i: number) => PAD.left + (i / Math.max(points.length - 1, 1)) * cW
-  const yOf  = (v: number) => PAD.top  + cH - (v / niceMax) * cH
-
-  const pts = points.map((p, i) => ({ x: xOf(i), y: yOf(p.value) }))
-
-  const polyline = pts.map(p => `${p.x},${p.y}`).join(' ')
-  const area = pts.length > 0
-    ? `M ${pts[0].x},${yOf(0)} ` +
-      pts.map(p => `L ${p.x},${p.y}`).join(' ') +
-      ` L ${pts[pts.length - 1].x},${yOf(0)} Z`
-    : ''
-
-  // Thin out x-axis labels so they don't collide
-  const labelStep = points.length <= 6 ? 1 : points.length <= 12 ? 2 : Math.ceil(points.length / 6)
+  const LABEL_W = 28
 
   return (
-    <div className="relative w-full" style={{ height: H }}>
-      <svg
-        ref={svgRef}
-        width="100%"
-        height={H}
-        viewBox={`0 0 ${w || 400} ${H}`}
-        style={{ display: 'block', cursor: 'crosshair' }}
-        onMouseLeave={() => setHovered(null)}
-        onMouseMove={e => {
-          if (!svgRef.current || w === 0) return
-          const rect = svgRef.current.getBoundingClientRect()
-          const mx   = e.clientX - rect.left
-          // find closest point
-          let best = 0, bestDist = Infinity
-          pts.forEach((p, i) => {
-            const d = Math.abs(p.x - mx)
-            if (d < bestDist) { bestDist = d; best = i }
-          })
-          setHovered(best)
-        }}
-      >
-        <defs>
-          <linearGradient id="ghGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#1a1a1a" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
-          </linearGradient>
-        </defs>
-
-        {/* Y-axis background panel */}
-        <rect x={0} y={0} width={PAD.left} height={H} fill="#EDE9E1" />
-
-        {/* Gridlines + Y labels */}
-        {yTicks.map((tick, ti) => (
-          <g key={ti}>
-            <line
-              x1={PAD.left} y1={yOf(tick)}
-              x2={(w || 400) - PAD.right} y2={yOf(tick)}
-              stroke="#1a1a1a" strokeOpacity="0.06" strokeWidth="1"
-            />
-            <text
-              x={PAD.left - 5} y={yOf(tick) + 4}
-              textAnchor="end"
-              fontSize={10} fill="#1a1a1a" fillOpacity="0.5"
-              fontFamily="monospace"
-            >
-              {tick}
-            </text>
-          </g>
-        ))}
-
-        {/* Area fill */}
-        {w > 0 && <path d={area} fill="url(#ghGrad)" />}
-
-        {/* Line */}
-        {w > 0 && (
-          <polyline
-            points={polyline}
-            fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
-          />
-        )}
-
-        {/* Hovered column highlight */}
-        {hovered !== null && (
-          <>
-            <line
-              x1={pts[hovered]?.x} y1={PAD.top}
-              x2={pts[hovered]?.x} y2={PAD.top + cH}
-              stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
-            />
-            <rect
-              x={(pts[hovered]?.x ?? 0) - (cW / points.length) / 2}
-              y={PAD.top}
-              width={cW / points.length}
-              height={cH}
-              fill="#1a1a1a" fillOpacity="0.03" rx="2"
-            />
-          </>
-        )}
-
-        {/* Dots */}
-        {w > 0 && pts.map((p, i) => {
-          if (i === hovered) return null
-          return (
-            <circle
-              key={i}
-              cx={p.x} cy={p.y} r={2.5}
-              fill="transparent"
-              stroke="#1a1a1a" strokeOpacity="0.4" strokeWidth="1.5"
-            />
-          )
-        })}
-
-        {/* Hovered dot */}
-        {hovered !== null && pts[hovered] && (
-          <circle
-            cx={pts[hovered].x} cy={pts[hovered].y} r={4}
-            fill="#c0392b" fillOpacity={0.9}
-            stroke="#EDE9E1" strokeWidth="1.5"
-          />
-        )}
-
-        {/* X-axis labels */}
-        {points.map((p, i) => {
-          if (i % labelStep !== 0 && i !== points.length - 1) return null
-          const x = xOf(i)
-          if (x < PAD.left + 2) return null
-          return (
-            <text
-              key={i}
-              x={x} y={H - 4}
-              textAnchor="middle"
-              fontSize={10} fill="#1a1a1a" fillOpacity="0.35"
-              fontFamily="monospace"
-            >
-              {p.label}
-            </text>
-          )
-        })}
-
-        {/* Hover tooltip value */}
-        {hovered !== null && pts[hovered] && (
-          <text
-            x={Math.min(Math.max(pts[hovered].x, PAD.left + 20), (w || 400) - PAD.right - 20)}
-            y={Math.max(pts[hovered].y - 8, PAD.top + 10)}
-            textAnchor="middle"
-            fontSize={10} fill="#1a1a1a" fillOpacity="0.7"
-            fontFamily="monospace"
+    <div ref={containerRef} className="w-full select-none">
+      {/* Month labels row */}
+      <div className="relative mb-1" style={{ marginLeft: LABEL_W, height: 14 }}>
+        {monthLabels.map(({ month, weekIdx }) => (
+          <span
+            key={month}
+            className="absolute font-mono text-[9px] text-muted/50 leading-none"
+            style={{ left: weekIdx * (cellSize + gap), top: 0 }}
           >
-            {points[hovered].value.toLocaleString()}
-          </text>
+            {MONTHS[month]}
+          </span>
+        ))}
+      </div>
+
+      {/* Grid: day labels + week columns */}
+      <div className="flex gap-0" style={{ width: '100%' }}>
+        {/* Day labels */}
+        <div className="flex flex-col" style={{ width: LABEL_W, gap }}>
+          {DAYS.map((d, i) => (
+            <div
+              key={d}
+              className="font-mono text-[9px] text-muted/40 leading-none flex items-center"
+              style={{ height: cellSize, marginBottom: i < 6 ? gap : 0 }}
+            >
+              {i % 2 === 0 ? d.slice(0, 1) : ''}
+            </div>
+          ))}
+        </div>
+
+        {/* Weeks */}
+        <div className="flex" style={{ gap }}>
+          {weeks.map((week, wi) => (
+            <div key={wi} className="flex flex-col" style={{ gap }}>
+              {week.map((cell, di) => {
+                const level   = cell.inYear && cell.count >= 0 ? countToLevel(cell.count) : -1
+                const isEmpty = level === -1 || !cell.inYear
+
+                return (
+                  <div
+                    key={di}
+                    style={{
+                      width:  cellSize,
+                      height: cellSize,
+                      borderRadius: 2,
+                      backgroundColor: isEmpty
+                        ? 'rgba(26,26,26,0.04)'
+                        : `rgba(26,26,26,${LEVEL_OPACITY[level as 0|1|2|3|4]})`,
+                      cursor: cell.inYear && cell.count > 0 ? 'crosshair' : 'default',
+                      flexShrink: 0,
+                      transition: 'background-color 0.15s',
+                    }}
+                    onMouseEnter={e => {
+                      if (!cell.inYear) return
+                      const rect = (e.target as HTMLElement).getBoundingClientRect()
+                      const parentRect = containerRef.current!.getBoundingClientRect()
+                      setTooltip({
+                        date:  cell.date,
+                        count: cell.count,
+                        x: rect.left - parentRect.left + cellSize / 2,
+                        y: rect.top  - parentRect.top,
+                      })
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  />
+                )
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tooltip */}
+      <AnimatePresence>
+        {tooltip && (
+          <motion.div
+            key={tooltip.date}
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="absolute z-20 pointer-events-none bg-ink text-paper font-mono text-[9px] px-2 py-1 whitespace-nowrap"
+            style={{
+              left: tooltip.x,
+              top:  tooltip.y - 28,
+              transform: 'translateX(-50%)',
+            }}
+          >
+            {tooltip.count === 0
+              ? `No commits · ${tooltip.date}`
+              : `${tooltip.count} commit${tooltip.count !== 1 ? 's' : ''} · ${tooltip.date}`
+            }
+          </motion.div>
         )}
-      </svg>
+      </AnimatePresence>
     </div>
   )
 }
@@ -292,10 +309,10 @@ function CommitLineChart({ points }: { points: ChartPoint[] }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function GitHubStatsBlock() {
-  const [stats,   setStats]   = useState<GitHubStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState<string | null>(null)
-  const [view,    setView]    = useState<View>('year')
+  const [stats,      setStats]      = useState<GitHubStats | null>(null)
+  const [loading,    setLoading]    = useState(true)
+  const [error,      setError]      = useState<string | null>(null)
+  const [activeYear, setActiveYear] = useState<number | null>(null)
 
   useEffect(() => {
     if (!GITHUB_USERNAME || !GITHUB_TOKEN) {
@@ -304,41 +321,18 @@ export default function GitHubStatsBlock() {
       return
     }
     fetchGitHubStats()
-      .then(s => { setStats(s); setLoading(false) })
+      .then(s => {
+        setStats(s)
+        setActiveYear(s.years[s.years.length - 1] ?? null)
+        setLoading(false)
+      })
       .catch(e => { setError(e.message ?? 'Failed to load'); setLoading(false) })
   }, [])
-
-  const VIEWS: { key: View; label: string }[] = [
-    { key: 'year',  label: 'Year'  },
-    { key: 'month', label: 'Month' },
-    { key: 'day',   label: 'Day'   },
-  ]
-
-  // Build chart point arrays
-  const yearPoints: ChartPoint[] = stats
-    ? Object.entries(stats.commitsByYear)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([k, v]) => ({ label: k, value: v }))
-    : []
-
-  const monthPoints: ChartPoint[] = stats
-    ? Object.entries(stats.commitsByMonth)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .slice(-12)
-        .map(([k, v]) => ({ label: k.slice(5), value: v }))   // "03" not "2025-03"
-    : []
-
-  const DAY_ORDER = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  const dayPoints: ChartPoint[] = stats
-    ? DAY_ORDER.map(d => ({ label: d, value: stats.commitsByDay[d] ?? 0 }))
-    : []
-
-  const chartPoints = view === 'year' ? yearPoints : view === 'month' ? monthPoints : dayPoints
 
   return (
     <div className="w-full border border-ink/10 bg-paper overflow-hidden">
 
-      {/* Header — identical structure to StravaStats section header */}
+      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-ink/10">
         <div className="flex items-center gap-2">
           <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-muted" aria-hidden="true">
@@ -385,9 +379,9 @@ export default function GitHubStatsBlock() {
       )}
 
       {/* Content */}
-      {!loading && !error && stats && (
+      {!loading && !error && stats && activeYear && (
         <>
-          {/* KPI row — styled like ProgressionPanel's summary row */}
+          {/* KPI row */}
           <div className="grid grid-cols-4 border-b border-ink/10">
             {[
               { n: stats.totalCommits.toLocaleString(), l: 'Commits' },
@@ -395,57 +389,67 @@ export default function GitHubStatsBlock() {
               { n: stats.stars.toString(),              l: 'Stars'   },
               { n: `${stats.longestStreak}mo`,          l: 'Streak'  },
             ].map((s, i) => (
-              <div
-                key={i}
-                className={`px-4 py-4 ${i < 3 ? 'border-r border-ink/10' : ''}`}
-              >
+              <div key={i} className={`px-4 py-4 ${i < 3 ? 'border-r border-ink/10' : ''}`}>
                 <p className="font-display text-2xl text-ink leading-none">{s.n}</p>
                 <p className="font-mono text-[10px] text-muted/50 mt-1 uppercase tracking-widest">{s.l}</p>
               </div>
             ))}
           </div>
 
-          {/* Tab bar — matches StravaStats tab style exactly */}
-          <div className="flex items-center gap-0 border-b border-ink/10">
-            {VIEWS.map(v => (
-              <button
-                key={v.key}
-                onClick={() => setView(v.key)}
-                className={`relative font-mono text-xs px-5 py-2.5 transition-colors ${
-                  view === v.key ? 'text-accent' : 'text-muted hover:text-ink'
-                }`}
-              >
-                {view === v.key && (
-                  <motion.div
-                    layoutId="gh-tab-indicator"
-                    className="absolute inset-0 border-b-2 border-accent"
-                  />
-                )}
-                {v.label}
-              </button>
-            ))}
+          {/* Year switcher + commit count for selected year */}
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-ink/10">
+            <div className="flex items-center gap-0">
+              {stats.years.map(y => (
+                <button
+                  key={y}
+                  onClick={() => setActiveYear(y)}
+                  className={`relative font-mono text-xs px-3 py-1.5 transition-colors ${
+                    activeYear === y ? 'text-accent' : 'text-muted hover:text-ink'
+                  }`}
+                >
+                  {activeYear === y && (
+                    <motion.div
+                      layoutId="gh-year-indicator"
+                      className="absolute inset-0 border-b-2 border-accent"
+                    />
+                  )}
+                  {y}
+                </button>
+              ))}
+            </div>
+            <span className="font-mono text-[10px] text-muted/50">
+              {(stats.commitsByYear[activeYear] ?? 0).toLocaleString()} commits
+            </span>
           </div>
 
-          {/* Chart area */}
-          <div className="px-0 pt-2 pb-0">
+          {/* Heatmap */}
+          <div className="relative px-4 py-4">
             <AnimatePresence mode="wait">
               <motion.div
-                key={view}
-                initial={{ opacity: 0, y: 6 }}
+                key={activeYear}
+                initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
+                exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.18 }}
               >
-                {chartPoints.length > 0
-                  ? <CommitLineChart points={chartPoints} />
-                  : (
-                    <div className="flex items-center justify-center h-40">
-                      <span className="font-mono text-[10px] text-muted/40">No data</span>
-                    </div>
-                  )
-                }
+                <ContributionGrid year={activeYear} commitsByDate={stats.commitsByDate} />
               </motion.div>
             </AnimatePresence>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center gap-1.5 px-4 pb-3 justify-end">
+            <span className="font-mono text-[9px] text-muted/40 mr-1">Less</span>
+            {([0, 1, 2, 3, 4] as const).map(l => (
+              <div
+                key={l}
+                style={{
+                  width: 10, height: 10, borderRadius: 2,
+                  backgroundColor: l === 0 ? 'rgba(26,26,26,0.06)' : `rgba(26,26,26,${LEVEL_OPACITY[l]})`,
+                }}
+              />
+            ))}
+            <span className="font-mono text-[9px] text-muted/40 ml-1">More</span>
           </div>
 
           {/* Top languages */}
