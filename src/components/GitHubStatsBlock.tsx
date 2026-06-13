@@ -69,7 +69,7 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
           if (!Array.isArray(batch) || batch.length === 0) break
           repoCommits = repoCommits.concat(batch)
           if (batch.length < 100) break
-          if (repoCommits.length >= 500) break
+          if (repoCommits.length >= 5000) break
           commitPage++
         }
         if (repoCommits.length === 0) return
