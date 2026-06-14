@@ -280,7 +280,7 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Udupi Shri Krishna',
     date: '2025',
     imagePath: '/creative/20250102_205807.jpg',
-    imageAlt: 'Description of what this sketch depicts',
+    imageAlt: 'A sketch of Udupi Shri Krishna',
     medium: 'Pencil Sketch + Digital Colouring',
   },
   {
@@ -289,7 +289,7 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Bansuri Krishna',
     date: '2023',
     imagePath: '/creative/IMG_20230727_105014.jpg',
-    imageAlt: 'Description of what this sketch depicts',
+    imageAlt: 'A sketch of Bansuri Krishna',
     medium: 'Colour Pencil + Watercolor Paint',
   },
   {
@@ -298,7 +298,7 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Hanuman',
     date: '2024',
     imagePath: '/creative/IMG_20260421_205649.jpg',
-    imageAlt: 'Description of what this painting depicts',
+    imageAlt: 'A sketch of Hanuman',
     medium: 'Pencil Sketch',
   },
   {
@@ -307,7 +307,7 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Poster Painting',
     date: '2024',
     imagePath: '/creative/IMG-20240310-WA0053.jpg',
-    imageAlt: 'Description of this piece',
+    imageAlt: '2 poster paintings',
     medium: 'Acrylic Paint',
   },
   {
@@ -316,7 +316,7 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Rama',
     date: '2023',
     imagePath: '/creative/IMG20240101193636.jpg',
-    imageAlt: 'Description of this piece',
+    imageAlt: 'A sketch of Rama',
     medium: 'Ink Pen Sketch',
   },
   {
@@ -325,7 +325,7 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Shiva Parvati',
     date: '2024',
     imagePath: '/creative/IMG20240615161313.jpg',
-    imageAlt: 'Description of this piece',
+    imageAlt: 'A sketch of Shiva and Parvati',
     medium: 'Pencil Sketch',
   },
 ]
