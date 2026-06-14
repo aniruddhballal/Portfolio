@@ -190,17 +190,12 @@ function ContributionGrid({
   const [cellSize, setCellSize] = useState(11)
   const gap = 2
 
-  // Count only the weeks that will actually be rendered (non-future)
-  const todayIso = new Date().toISOString().slice(0, 10)
-  const renderedWeekCount = weeks.filter(week => !week.every(c => !c.inYear || c.date > todayIso)).length
-
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
     const update = () => {
       const avail = el.clientWidth
-      const count = renderedWeekCount || weeks.length
-      const size  = Math.max(8, Math.min(12, Math.floor((avail - (count - 1) * gap) / count)))
+      const size  = Math.max(8, Math.min(12, Math.floor((avail - (weeks.length - 1) * gap) / weeks.length)))
       setCellSize(size)
     }
     update()
@@ -475,6 +470,21 @@ export default function GitHubStatsBlock() {
                 <ContributionGrid year={activeYear} commitsByDate={stats.commitsByDate} />
               </motion.div>
             </AnimatePresence>
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center gap-1.5 px-4 pb-3 justify-end">
+            <span className="font-mono text-[9px] text-muted/40 mr-1">Less</span>
+            {([0, 1, 2, 3, 4] as const).map(l => (
+              <div
+                key={l}
+                style={{
+                  width: 10, height: 10, borderRadius: 2,
+                  backgroundColor: l === 0 ? 'rgba(26,26,26,0.06)' : `rgba(26,26,26,${LEVEL_OPACITY[l]})`,
+                }}
+              />
+            ))}
+            <span className="font-mono text-[9px] text-muted/40 ml-1">More</span>
           </div>
 
           {/* Top languages */}
