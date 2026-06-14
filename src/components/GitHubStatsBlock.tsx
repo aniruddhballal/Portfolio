@@ -1,41 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ─── Config — set these in .env.local ────────────────────────────────────────
-//
-//   VITE_GITHUB_USERNAME=your_username
-//   VITE_GITHUB_TOKEN=github_pat_xxxxxxxxxxxxxxxx
-//
-// Token needs: repo (read-only fine-grained PAT is ideal)
-//
 const GITHUB_USERNAME = import.meta.env.VITE_GITHUB_USERNAME as string
-const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN as string
+const GITHUB_TOKEN    = import.meta.env.VITE_GITHUB_TOKEN    as string
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface GitHubStats {
-  totalRepos: number
-  totalCommits: number
-  commitsByYear: Record<string, number>
-  commitsByMonth: Record<string, number>
-  commitsByDay: Record<string, number>
-  stars: number
-  longestStreak: number
-  topLanguages: { name: string; pct: number }[]
+  totalRepos:     number
+  totalCommits:   number
+  commitsByDate:  Record<string, number>   // "YYYY-MM-DD" → count
+  commitsByYear:  Record<string, number>
+  stars:          number
+  longestStreak:  number
+  topLanguages:   { name: string; pct: number }[]
+  years:          number[]
 }
-
-type View = 'year' | 'month' | 'day'
 
 // ─── GitHub fetcher ──────────────────────────────────────────────────────────
 
 async function fetchGitHubStats(): Promise<GitHubStats> {
   const headers: HeadersInit = {
-    'Authorization': `Bearer ${GITHUB_TOKEN}`,
-    'Accept': 'application/vnd.github+json',
+    'Authorization':        `Bearer ${GITHUB_TOKEN}`,
+    'Accept':               'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   }
 
-  // 1. All repos (including private), paginated
   let repos: any[] = []
   let page = 1
   while (true) {
@@ -52,149 +42,312 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
   }
 
   const totalRepos = repos.length
-  const stars = repos.reduce((s: number, r: any) => s + (r.stargazers_count ?? 0), 0)
+  const stars      = repos.reduce((s: number, r: any) => s + (r.stargazers_count ?? 0), 0)
 
-  // Language breakdown from repo metadata — instant, no extra API calls needed
   const langCount: Record<string, number> = {}
   for (const repo of repos) {
     if (repo.language) langCount[repo.language] = (langCount[repo.language] ?? 0) + 1
   }
 
-  // 2. Fetch actual commits via /repos/:owner/:repo/commits
-  //    This endpoint returns real data immediately — no 202 caching issues like stats/commit_activity.
-  //    We filter by author so we only count our own commits.
-  //    Safety cap: 500 commits per repo max to keep rate limit usage sane (5000 req/hr with PAT).
-  const commitsByYear:    Record<string, number> = {}
-  const commitsByMonth:   Record<string, number> = {}
-  const commitsByDay:     Record<string, number> = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 }
+  const commitsByDate: Record<string, number> = {}
+  const commitsByYear: Record<string, number> = {}
   let totalCommits = 0
-
-  const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   await Promise.all(
     repos.map(async (repo: any) => {
       try {
         let commitPage = 1
         let repoCommits: any[] = []
-
         while (true) {
           const res = await fetch(
-            `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=100&page=${commitPage}&author=${GITHUB_USERNAME}`,
+            `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=100&page=${commitPage}`,
             { headers }
           )
-          // 409 = empty repo (no git history yet), 404 = no access — both are fine to skip
           if (res.status === 409 || res.status === 404) break
           if (!res.ok) break
-
           const batch: any[] = await res.json()
           if (!Array.isArray(batch) || batch.length === 0) break
-
           repoCommits = repoCommits.concat(batch)
-          if (batch.length < 100) break                   // last page
-          if (repoCommits.length >= 500) break            // safety cap
+          if (batch.length < 100) break
+          if (repoCommits.length >= 5000) break
           commitPage++
         }
-
         if (repoCommits.length === 0) return
-
         for (const commit of repoCommits) {
           const dateStr: string | undefined =
             commit.commit?.author?.date ?? commit.commit?.committer?.date
           if (!dateStr) continue
-
           const date  = new Date(dateStr)
           const year  = date.getFullYear().toString()
-          const month = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`
-          const day   = DAY_NAMES[date.getDay()]
-
-          commitsByYear[year]   = (commitsByYear[year]   ?? 0) + 1
-          commitsByMonth[month] = (commitsByMonth[month] ?? 0) + 1
-          commitsByDay[day]     = (commitsByDay[day]     ?? 0) + 1
+          const ymd   = dateStr.slice(0, 10)   // "YYYY-MM-DD"
+          commitsByDate[ymd]  = (commitsByDate[ymd]  ?? 0) + 1
+          commitsByYear[year] = (commitsByYear[year] ?? 0) + 1
         }
-
         totalCommits += repoCommits.length
-      } catch { /* skip repos that error */ }
+      } catch { /* skip */ }
     })
   )
 
-  const langTotal = Object.values(langCount).reduce((s, v) => s + v, 0) || 1
+  const langTotal    = Object.values(langCount).reduce((s, v) => s + v, 0) || 1
   const topLanguages = Object.entries(langCount)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
     .map(([name, cnt]) => ({ name, pct: Math.round((cnt / langTotal) * 100) }))
 
   // Longest active-month streak
-  const sortedMonths = Object.keys(commitsByMonth).sort()
+  const allMonths = new Set(Object.keys(commitsByDate).map(d => d.slice(0, 7)))
+  const sortedMonths = [...allMonths].sort()
   let maxStreak = 0, cur = 0
   for (const m of sortedMonths) {
-    if ((commitsByMonth[m] ?? 0) > 0) { cur++; if (cur > maxStreak) maxStreak = cur }
-    else cur = 0
+    cur = [...Object.keys(commitsByDate)].some(d => d.startsWith(m)) ? cur + 1 : 0
+    if (cur > maxStreak) maxStreak = cur
   }
 
-  return {
-    totalRepos, totalCommits, commitsByYear, commitsByMonth,
-    commitsByDay,
-    stars, longestStreak: maxStreak, topLanguages,
-  }
+  const years = [...new Set(Object.keys(commitsByDate).map(d => parseInt(d.slice(0, 4))))]
+    .sort((a, b) => a - b)
+
+  return { totalRepos, totalCommits, commitsByDate, commitsByYear, stars, longestStreak: maxStreak, topLanguages, years }
 }
 
-// ─── Mini bar chart ──────────────────────────────────────────────────────────
+// ─── Contribution heatmap ─────────────────────────────────────────────────────
 
-function BarChart({
-  data, labelKey, valueKey,
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const
+
+/** Build the week-column grid for a given year, Sunday-anchored like GitHub */
+function buildYearGrid(year: number, commitsByDate: Record<string, number>) {
+  // Jan 1 of the year
+  const jan1    = new Date(year, 0, 1)
+  // Dec 31 of the year
+  const dec31   = new Date(year, 11, 31)
+
+  // We want Mon-anchored rows (GitHub uses Sun; we'll use Mon to match EU convention)
+  // dayOfWeek: Mon=0 … Sun=6
+  const dowMon = (d: Date) => (d.getDay() + 6) % 7
+
+  // Pad back to the Monday on or before Jan 1
+  const start = new Date(jan1)
+  start.setDate(start.getDate() - dowMon(jan1))
+
+  // Pad forward to the Sunday on or after Dec 31
+  const end = new Date(dec31)
+  const remaining = 6 - dowMon(dec31)
+  end.setDate(end.getDate() + remaining)
+
+  // Build week columns
+  type Cell = { date: string; count: number; inYear: boolean }
+  const weeks: Cell[][] = []
+  const cur = new Date(start)
+
+  while (cur <= end) {
+    const week: Cell[] = []
+    for (let d = 0; d < 7; d++) {
+      const iso    = cur.toISOString().slice(0, 10)
+      const inYear = cur.getFullYear() === year
+      week.push({ date: iso, count: inYear ? (commitsByDate[iso] ?? 0) : -1, inYear })
+      cur.setDate(cur.getDate() + 1)
+    }
+    weeks.push(week)
+  }
+
+  // Month label positions: place only at weeks containing the 1st of that month,
+  // skipping padding weeks — prevents Dec/Jan collision at year boundaries.
+  const monthLabels: { month: number; weekIdx: number }[] = []
+  const seen = new Set<number>()
+  weeks.forEach((week, wi) => {
+    const monthStart = week.find(c => c.inYear && new Date(c.date).getDate() === 1)
+    if (!monthStart) return
+    const m = new Date(monthStart.date).getMonth()
+    if (!seen.has(m)) { seen.add(m); monthLabels.push({ month: m, weekIdx: wi }) }
+  })
+
+  return { weeks, monthLabels }
+}
+
+/** Map commit count to an opacity level (0–4 scale, ink-based) */
+function countToLevel(count: number): 0 | 1 | 2 | 3 | 4 {
+  if (count === 0) return 0
+  if (count === 1) return 1
+  if (count <= 3)  return 2
+  if (count <= 6)  return 3
+  return 4
+}
+
+const LEVEL_OPACITY = ['0.06', '0.20', '0.40', '0.62', '0.85'] as const
+
+function ContributionGrid({
+  year, commitsByDate,
 }: {
-  data: Record<string, number> | { name: string; count: number }[]
-  labelKey: string
-  valueKey: string
+  year: number
+  commitsByDate: Record<string, number>
 }) {
-  const entries: [string, number][] = Array.isArray(data)
-    ? (data as any[]).map((d) => [d[labelKey], d[valueKey]])
-    : Object.entries(data as Record<string, number>)
+  const { weeks, monthLabels } = buildYearGrid(year, commitsByDate)
+  const [tooltip, setTooltip]  = useState<{ date: string; count: number; x: number; y: number } | null>(null)
+  const [tooltipShift, setTooltipShift] = useState(0)
+  const containerRef           = useRef<HTMLDivElement>(null)
+  const tooltipRef             = useRef<HTMLDivElement>(null)
 
-  const peak = Math.max(...entries.map(([, v]) => v), 1)
+  // Responsive cell size
+  const [cellSize, setCellSize] = useState(11)
+  const gap = 2
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const update = () => {
+      const avail = el.clientWidth
+      const size  = Math.max(8, Math.min(12, Math.floor((avail - (weeks.length - 1) * gap) / weeks.length)))
+      setCellSize(size)
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [weeks.length])
+
+  // Keep the tooltip from overflowing the card's visible (overflow-hidden) edges
+  useLayoutEffect(() => {
+    if (!tooltip || !tooltipRef.current) {
+      setTooltipShift(0)
+      return
+    }
+    const ttEl = tooltipRef.current
+    const offsetParent = (ttEl.offsetParent as HTMLElement | null) ?? containerRef.current
+    if (!offsetParent) { setTooltipShift(0); return }
+
+    // The clipping boundary is the nearest ancestor that hides overflow
+    const card = ttEl.closest('.overflow-hidden') as HTMLElement | null
+    const bound = (card ?? offsetParent).getBoundingClientRect()
+
+    const parentRect = offsetParent.getBoundingClientRect()
+    const width  = ttEl.offsetWidth
+    const centerX = parentRect.left + tooltip.x   // viewport-space center of the (unshifted) tooltip
+    const half    = width / 2
+    const pad     = 6
+
+    let shift = 0
+    const overflowRight = (centerX + half) - (bound.right - pad)
+    const overflowLeft  = (bound.left + pad) - (centerX - half)
+
+    if (overflowRight > 0) shift = -overflowRight
+    if (overflowLeft > 0)  shift = overflowLeft
+
+    setTooltipShift(shift)
+  }, [tooltip])
 
   return (
-    <div className="flex items-end gap-1 h-16 w-full mt-2">
-      {entries.map(([label, val], i) => {
-        const pct = Math.max((val / peak) * 100, 2)
-        const display = label.includes('-') ? label.slice(5) : label
-        const trimmed = display.length > 8 ? display.slice(0, 7) + '…' : display
-        return (
-          <motion.div
-            key={label}
-            className="flex flex-col items-center flex-1 gap-1 group relative"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.04 }}
-          >
-            <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0
-                            group-hover:opacity-100 bg-ink text-paper font-mono text-[9px]
-                            px-1.5 py-0.5 whitespace-nowrap pointer-events-none z-10 transition-opacity">
-              {val.toLocaleString()}
-            </div>
-            <motion.div
-              className="w-full bg-accent/80 group-hover:bg-accent transition-colors"
-              initial={{ height: 0 }}
-              animate={{ height: `${(pct / 100) * 64}px` }}
-              transition={{ duration: 0.5, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-              style={{ minHeight: 2 }}
-            />
-            <span className="font-mono text-[8px] text-muted/60 truncate w-full text-center leading-none">
-              {trimmed}
+    <div ref={containerRef} className="w-full select-none">
+      {/* Month labels row */}
+      <div className="relative mb-1" style={{ height: 14 }}>
+        {monthLabels.map(({ month, weekIdx }) => {
+          // Hide labels for months that are entirely in the future
+          const today = new Date()
+          const labelYear = year
+          const labelMonth = month
+          if (labelYear > today.getFullYear()) return null
+          if (labelYear === today.getFullYear() && labelMonth > today.getMonth()) return null
+          return (
+            <span
+              key={month}
+              className="absolute font-mono text-[9px] text-muted/50 leading-none"
+              style={{ left: weekIdx * (cellSize + gap), top: 0 }}
+            >
+              {MONTHS[month]}
             </span>
-          </motion.div>
-        )
-      })}
+          )
+        })}
+      </div>
+
+      {/* Grid: week columns only */}
+      <div className="flex" style={{ gap }}>
+          {weeks.map((week, wi) => {
+            const todayIso = new Date().toISOString().slice(0, 10)
+            const allFuture = week.every(c => !c.inYear || c.date > todayIso)
+            if (allFuture) return null
+            return (
+            <div key={wi} className="flex flex-col" style={{ gap }}>
+              {week.map((cell, di) => {
+                const today    = todayIso
+                const isFuture = cell.inYear && cell.date > today
+                const isToday  = cell.date === today
+                const level    = cell.inYear && !isFuture && cell.count >= 0 ? countToLevel(cell.count) : -1
+                const isEmpty  = level === -1
+
+                return (
+                  <div
+                    key={di}
+                    style={{
+                      width:        cellSize,
+                      height:       cellSize,
+                      borderRadius: 2,
+                      backgroundColor: isFuture
+                        ? 'transparent'
+                        : isEmpty
+                          ? 'rgba(26,26,26,0.05)'
+                          : `rgba(26,26,26,${LEVEL_OPACITY[level as 0|1|2|3|4]})`,
+                      outline: isToday ? '1.5px solid rgba(192,57,43,0.5)' : 'none',
+                      outlineOffset: '-1px',
+                      cursor:    cell.inYear && !isFuture ? 'crosshair' : 'default',
+                      flexShrink: 0,
+                      transition: 'background-color 0.15s',
+                    }}
+                    onMouseEnter={e => {
+                      if (!cell.inYear || isFuture) return
+                      const rect = (e.target as HTMLElement).getBoundingClientRect()
+                      const parentRect = containerRef.current!.getBoundingClientRect()
+                      setTooltip({
+                        date:  cell.date,
+                        count: cell.count,
+                        x: rect.left - parentRect.left + cellSize / 2,
+                        y: rect.top  - parentRect.top,
+                      })
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  />
+                )
+              })}
+            </div>
+          )})}
+        </div>
+
+      {/* Tooltip — flips below the cell if near the top to avoid clipping */}
+      <AnimatePresence>
+        {tooltip && (
+          <div
+            key={tooltip.date}
+            ref={tooltipRef}
+            className="absolute z-20 pointer-events-none"
+            style={{
+              left:      tooltip.x,
+              top:       tooltip.y < 32 ? tooltip.y + cellSize + 6 : tooltip.y - 28,
+              transform: `translateX(calc(-50% + ${tooltipShift}px))`,
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+              className="bg-ink text-paper font-mono text-[9px] px-2 py-1 whitespace-nowrap"
+            >
+              {tooltip.count === 0
+                ? `No commits · ${tooltip.date}`
+                : `${tooltip.count} commit${tooltip.count !== 1 ? 's' : ''} · ${tooltip.date}`
+              }
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
-// ─── GitHub stats block ──────────────────────────────────────────────────────
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function GitHubStatsBlock() {
-  const [stats, setStats] = useState<GitHubStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [view, setView] = useState<View>('year')
+  const [stats,      setStats]      = useState<GitHubStats | null>(null)
+  const [loading,    setLoading]    = useState(true)
+  const [error,      setError]      = useState<string | null>(null)
+  const [activeYear, setActiveYear] = useState<number | null>(null)
 
   useEffect(() => {
     if (!GITHUB_USERNAME || !GITHUB_TOKEN) {
@@ -203,23 +356,13 @@ export default function GitHubStatsBlock() {
       return
     }
     fetchGitHubStats()
-      .then(s => { setStats(s); setLoading(false) })
+      .then(s => {
+        setStats(s)
+        setActiveYear(s.years[s.years.length - 1] ?? null)
+        setLoading(false)
+      })
       .catch(e => { setError(e.message ?? 'Failed to load'); setLoading(false) })
   }, [])
-
-  const VIEWS: { key: View; label: string }[] = [
-    { key: 'year', label: 'Year' },
-    { key: 'month', label: 'Month' },
-    { key: 'day', label: 'Day' },
-  ]
-
-  const last12Months = stats
-    ? Object.fromEntries(
-      Object.entries(stats.commitsByMonth)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .slice(-12)
-    )
-    : {}
 
   return (
     <div className="w-full border border-ink/10 bg-paper overflow-hidden">
@@ -271,60 +414,83 @@ export default function GitHubStatsBlock() {
       )}
 
       {/* Content */}
-      {!loading && !error && stats && (
-        <div className="p-4 space-y-4">
-
-          {/* KPIs */}
-          <div className="grid grid-cols-4 gap-0 border border-ink/10">
+      {!loading && !error && stats && activeYear && (
+        <>
+          {/* KPI row */}
+          <div className="grid grid-cols-4 border-b border-ink/10">
             {[
               { n: stats.totalCommits.toLocaleString(), l: 'Commits' },
-              { n: stats.totalRepos.toString(), l: 'Repos' },
-              { n: stats.stars.toString(), l: 'Stars' },
-              { n: `${stats.longestStreak}mo`, l: 'Streak' },
+              { n: stats.totalRepos.toString(),         l: 'Repos'   },
+              { n: stats.stars.toString(),              l: 'Stars'   },
+              { n: `${stats.longestStreak}mo`,          l: 'Streak'  },
             ].map((s, i) => (
-              <div key={i} className={`px-3 py-3 ${i < 3 ? 'border-r border-ink/10' : ''}`}>
-                <p className="font-display text-xl text-ink tracking-wide">{s.n}</p>
-                <p className="font-mono text-[10px] text-muted mt-0.5">{s.l}</p>
+              <div key={i} className={`px-4 py-3 ${i < 3 ? 'border-r border-ink/10' : ''}`}>
+                <p className="font-display text-xl md:text-2xl text-ink leading-none">{s.n}</p>
+                <p className="font-mono text-[10px] text-muted/50 mt-1 uppercase tracking-widest">{s.l}</p>
               </div>
             ))}
           </div>
 
-          {/* View toggle */}
-          <div className="flex">
-            {VIEWS.map((v, i) => (
-              <button
-                key={v.key}
-                onClick={() => setView(v.key)}
-                className={`flex-1 font-mono text-[10px] py-1.5 border border-ink/10 transition-colors
-                            tracking-widest uppercase ${i > 0 ? '-ml-px' : ''}
-                            ${view === v.key
-                    ? 'bg-accent text-paper border-accent z-10'
-                    : 'text-muted hover:text-ink hover:border-ink/30'}`}
-              >
-                {v.label}
-              </button>
-            ))}
+          {/* Year switcher + commit count for selected year */}
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-ink/10">
+            <div className="flex items-center gap-0">
+              {stats.years.map(y => (
+                <button
+                  key={y}
+                  onClick={() => setActiveYear(y)}
+                  className={`relative font-mono text-xs px-3 py-1.5 transition-colors ${
+                    activeYear === y ? 'text-accent' : 'text-muted hover:text-ink'
+                  }`}
+                >
+                  {activeYear === y && (
+                    <motion.div
+                      layoutId="gh-year-indicator"
+                      className="absolute inset-0 border-b-2 border-accent"
+                    />
+                  )}
+                  {y}
+                </button>
+              ))}
+            </div>
+            <span className="font-mono text-[10px] text-muted/50">
+              {(stats.commitsByYear[activeYear] ?? 0).toLocaleString()} commits
+            </span>
           </div>
 
-          {/* Chart */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={view}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.2 }}
-            >
-              {view === 'year' && <BarChart data={stats.commitsByYear} labelKey="year" valueKey="count" />}
-              {view === 'month' && <BarChart data={last12Months} labelKey="month" valueKey="count" />}
-              {view === 'day' && <BarChart data={stats.commitsByDay} labelKey="day" valueKey="count" />}
-            </motion.div>
-          </AnimatePresence>
+          {/* Heatmap */}
+          <div className="relative px-4 py-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeYear}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.18 }}
+              >
+                <ContributionGrid year={activeYear} commitsByDate={stats.commitsByDate} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-          {/* Languages */}
+          {/* Legend */}
+          <div className="flex items-center gap-1.5 px-4 pb-3 justify-end">
+            <span className="font-mono text-[9px] text-muted/40 mr-1">Less</span>
+            {([0, 1, 2, 3, 4] as const).map(l => (
+              <div
+                key={l}
+                style={{
+                  width: 10, height: 10, borderRadius: 2,
+                  backgroundColor: l === 0 ? 'rgba(26,26,26,0.06)' : `rgba(26,26,26,${LEVEL_OPACITY[l]})`,
+                }}
+              />
+            ))}
+            <span className="font-mono text-[9px] text-muted/40 ml-1">More</span>
+          </div>
+
+          {/* Top languages */}
           {stats.topLanguages.length > 0 && (
-            <div>
-              <p className="font-mono text-[10px] text-muted/50 tracking-widest uppercase mb-2">
+            <div className="px-4 pt-3 pb-4 border-t border-ink/10">
+              <p className="font-mono text-[10px] text-muted/50 tracking-widest uppercase mb-2.5">
                 Top Languages
               </p>
               <div className="flex flex-wrap gap-x-4 gap-y-1.5">
@@ -332,7 +498,7 @@ export default function GitHubStatsBlock() {
                   <div key={l.name} className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 bg-accent flex-shrink-0" />
                     <span className="font-mono text-[10px] text-ink">{l.name}</span>
-                    <span className="font-mono text-[10px] text-muted">{l.pct}%</span>
+                    <span className="font-mono text-[10px] text-muted/60">{l.pct}%</span>
                   </div>
                 ))}
               </div>
@@ -340,7 +506,7 @@ export default function GitHubStatsBlock() {
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-1 border-t border-ink/10">
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-ink/10">
             <span className="font-mono text-[9px] text-muted/40">
               github.com/{GITHUB_USERNAME}
             </span>
@@ -353,7 +519,7 @@ export default function GitHubStatsBlock() {
               <span className="font-mono text-[9px] text-muted/40">Live · private</span>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

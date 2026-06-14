@@ -104,6 +104,13 @@ export default function ProgressionChart({
         if (idx !== dragStartRef.current) didDragRef.current = true
         dragEndRef.current = idx
         setDragEnd(idx)
+        // Fire range update live as the drag moves, so the summary panel
+        // updates in real-time rather than only on mouse-up.
+        if (didDragRef.current) {
+          const lo = Math.min(dragStartRef.current, idx)
+          const hi = Math.max(dragStartRef.current, idx)
+          onRangeChangeRef.current?.({ start: lo, end: hi })
+        }
       }
     }
 
