@@ -1,12 +1,12 @@
 {
-  "fetchedAt": "2026-07-02T16:21:41.544Z",
+  "fetchedAt": "2026-07-02T16:33:52.156Z",
   "run": {
     "allTime": {
-      "distanceKm": 1829.55,
+      "distanceKm": 1829.59,
       "timeHours": 164.89,
       "elevGainM": 8758,
       "activities": 342,
-      "fetchedAt": "2026-07-02T16:21:41.544Z"
+      "fetchedAt": "2026-07-02T16:33:52.156Z"
     },
     "pbs": [
       {
@@ -83,11 +83,11 @@
   },
   "ride": {
     "allTime": {
-      "distanceKm": 2257.15,
+      "distanceKm": 2257.17,
       "timeHours": 227.97,
       "elevGainM": 16301,
       "activities": 159,
-      "fetchedAt": "2026-07-02T16:20:16.564Z"
+      "fetchedAt": "2026-07-02T16:33:52.156Z"
     },
     "pbs": [
       {
@@ -1826,7 +1826,7 @@
     {
       "weekStart": "2026-06-15",
       "run": {
-        "distanceKm": 48.75,
+        "distanceKm": 48.78,
         "timeHours": 4.14,
         "elevGainM": 204,
         "activities": 8
@@ -1841,13 +1841,13 @@
     {
       "weekStart": "2026-06-22",
       "run": {
-        "distanceKm": 46.56,
+        "distanceKm": 46.57,
         "timeHours": 3.97,
         "elevGainM": 173,
         "activities": 9
       },
       "ride": {
-        "distanceKm": 59.44,
+        "distanceKm": 59.46,
         "timeHours": 2.82,
         "elevGainM": 420,
         "activities": 5
@@ -2466,13 +2466,13 @@
       "month": "2026-06",
       "label": "Jun 2026",
       "run": {
-        "distanceKm": 250.38,
+        "distanceKm": 250.42,
         "timeHours": 22.34,
         "elevGainM": 933,
         "activities": 40
       },
       "ride": {
-        "distanceKm": 99.85,
+        "distanceKm": 99.87,
         "timeHours": 5.31,
         "elevGainM": 632,
         "activities": 7
@@ -2559,13 +2559,13 @@
     {
       "year": 2026,
       "run": {
-        "distanceKm": 928.18,
+        "distanceKm": 928.22,
         "timeHours": 82.76,
         "elevGainM": 2856,
         "activities": 146
       },
       "ride": {
-        "distanceKm": 321.24,
+        "distanceKm": 321.26,
         "timeHours": 16.71,
         "elevGainM": 1936,
         "activities": 31
