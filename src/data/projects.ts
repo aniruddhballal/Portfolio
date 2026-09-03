@@ -17,7 +17,7 @@ export const projects: Project[] = [
     name: 'Sunalyse',
     tagline: 'Interactive 3D viewer for 14 years of solar coronal magnetic fields',
     description:
-      'A physics-based 3D visualisation tool covering 181 Carrington Rotations (2010–2024). HMI synoptic FITS magnetograms from NASA/SDO are processed through a Python PFSS pipeline: spherical harmonic coefficients computed up to lmax=85, 500 adaptive seeds placed at peak photospheric field locations via haversine clustering, and field lines traced with Euler integration using multiprocessing. The React + Three.js frontend renders three layers — the photosphere texture, 3D coronal field lines colour-coded per-vertex by field strength via a GLSL shader, and the heliospheric current sheet at 2.5Rs. The full data pipeline took ~20 hours on Kaggle across 181 CRs.',
+      'A physics-based 3D visualisation tool covering 181 Carrington Rotations (2010–2024). HMI synoptic FITS magnetograms from NASA/SDO are processed through a Python PFSS pipeline: spherical harmonic coefficients computed up to lmax=85, 500 adaptive seeds placed at peak photospheric field locations via haversine clustering, and field lines traced with Euler integration using multiprocessing. The React + Three.js frontend renders the photosphere, coronal field lines, and heliospheric current sheet, with field-line filters, CR navigation, prefetching, and synchronised solar-cycle playback. The full data pipeline took ~20 hours on Kaggle across 181 CRs.',
     tech: ['React', 'TypeScript', 'Three.js', 'Python', 'SciPy', 'PFSS', 'GLSL'],
     category: 'Simulation',
     url: 'https://sunalyse.vercel.app',
@@ -28,9 +28,9 @@ export const projects: Project[] = [
   {
     id: 2,
     name: 'SatLies',
-    tagline: 'Satellite orbit simulator with real astrodynamics',
+    tagline: 'Interactive orbital mechanics sandbox with real-time perturbation comparison',
     description:
-      "A full-stack satellite mission simulator backed by real orbital mechanics. The orbit simulator numerically integrates the equations of motion using RK45 with optional J2 oblateness perturbation, rendering the orbit and ground track on a 3D Earth in real time via Three.js. The mission planner computes Hohmann transfers between circular orbits — showing delta-V budget, the transfer ellipse, and fuel consumed via the Tsiolkovsky rocket equation. The ground station tracker predicts passes over any location on Earth, reporting next pass time, duration, and maximum elevation angle. The Python FastAPI backend handles all physics via NumPy and SciPy.",
+      'A browser-based orbital mechanics sandbox where users shape a satellite orbit and compare a clean two-body trajectory against one affected by Earth’s oblateness (J2) and lunar/solar gravity. The production app runs a fixed-step RK4 integrator locally for responsive interaction, rendering the Earth, Moon, Sun, and satellite in Three.js. Live telemetry and graphs show orbital state and separation growth, with pause/reset controls and camera modes for following the satellite, Moon, or Earth.',
     tech: ['React', 'TypeScript', 'Three.js', 'Python', 'FastAPI', 'NumPy', 'SciPy'],
     category: 'Simulation',
     url: null,
@@ -43,7 +43,7 @@ export const projects: Project[] = [
     name: 'Credex',
     tagline: 'B2B procurement and embedded trade finance for Indian SMEs',
     description:
-      'A unified platform that brings procurement, payment tracking, cash flow optimisation, and trade finance into a single product. Buyers submit RFQs, negotiate terms, confirm purchase orders, and access working capital — linked directly to confirmed orders. A Python FastAPI microservice runs a linear programming cash flow optimiser (PuLP/CBC solver) and an XGBoost credit scoring model. The backend spans 17 MongoDB collections covering immutable payment and audit records, signed-URL KYC document access via Backblaze B2, and role-based access for buyers, suppliers, underwriters, and admins. Credex is the unification of VenPay, LOANlo, and VenPayRL.',
+      'A unified B2B platform that brings procurement, payment tracking, cash-flow optimisation, and trade finance into one product. Buyers submit RFQs, negotiate terms, confirm purchase orders, and access working capital linked to confirmed orders. A Python FastAPI microservice runs a linear-programming cash-flow optimiser (PuLP/CBC) and an XGBoost credit-scoring model. The backend spans 17 MongoDB models covering immutable payment and audit records, signed document URLs via Backblaze B2, and role-based access for buyers, suppliers, underwriters, and admins.',
     tech: ['Next.js', 'TypeScript', 'Node.js', 'MongoDB', 'Python', 'FastAPI', 'XGBoost', 'PuLP'],
     category: 'FinTech',
     url: null,
@@ -95,7 +95,7 @@ export const projects: Project[] = [
     name: 'VenPay',
     tagline: 'B2B procurement and payment platform for vendors and companies',
     description:
-      'A full-stack MERN platform handling the entire vendor-company transaction lifecycle. Companies browse vendor listings, submit purchase requests with quantities and optional repayment notes, and vendors accept — with default Net30 or custom payment deadlines. Accepted requests become tracked payment obligations: companies make partial or full payments via Razorpay Checkout, a full transaction history updates outstanding dues in real time, and ratings unlock after payment clears. Role-based dashboards, JWT cookie auth, Cloudinary-backed image uploads, Redux Toolkit for auth/profile state, and 645 commits of iterative development.',
+      'A full-stack MERN platform handling the entire vendor-company transaction lifecycle. Companies browse vendor listings, submit purchase requests with quantities and optional repayment notes, and vendors accept, with default Net30 or custom payment deadlines. Accepted requests become tracked payment obligations: companies make partial or full payments via Razorpay Checkout, a full transaction history updates outstanding dues in real time, and ratings unlock after payment clears. Role-based dashboards, JWT cookie auth, Cloudinary-backed image uploads, and Redux Toolkit manage the core workflow.',
     tech: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'Razorpay', 'Cloudinary', 'Redux'],
     category: 'FinTech',
     url: 'https://ven-pay.vercel.app',
