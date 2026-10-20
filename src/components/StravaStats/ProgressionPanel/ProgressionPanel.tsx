@@ -99,7 +99,7 @@ export default function ProgressionPanel({ mode }: ProgressionPanelProps) {
       <div className="grid grid-cols-1 md:grid-cols-[1.35fr_0.65fr] border-b border-ink/15">
         {/* Active sport totals */}
         <div className="px-5 md:px-8 py-6 md:py-8">
-          <span className="font-mono text-[10px] md:text-xs text-accent uppercase tracking-widest flex items-center gap-1.5 mb-3">
+          <span className="font-mono font-medium text-[10px] md:text-xs text-accent uppercase tracking-widest flex items-center gap-1.5 mb-3">
             {sport === 'run' ? <><SportShoe size={12} /> Run</> : <><Bike size={12} /> Ride</>}
           </span>
           <span className="font-display text-5xl md:text-7xl text-ink block leading-[0.82] tracking-wide">
