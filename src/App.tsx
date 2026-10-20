@@ -165,8 +165,14 @@ function Hero() {
       <div className="site-width hero-grid">
         <div className="hero-copy">
           <p className="eyebrow">
-            <span className="eyebrow-line" /> Bengaluru, India · Engineer &
-            curious mind
+            <span className="eyebrow-line" aria-hidden="true" />
+            <span className="hero-eyebrow-text">
+              <span>Bengaluru, India</span>
+              <span className="hero-eyebrow-dot" aria-hidden="true">
+                {" · "}
+              </span>
+              <span>Engineer & curious mind</span>
+            </span>
           </p>
           <h1>
             Making complex
