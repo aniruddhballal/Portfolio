@@ -30,7 +30,7 @@ export default function Projects() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              Selected work
+              Selected systems
             </motion.span>
             <motion.div
               className="flex-1 h-px bg-ink/10 mb-1"
@@ -45,7 +45,7 @@ export default function Projects() {
             style={{ x: headingX }}
             className="font-display text-[16vw] md:text-[10vw] leading-none tracking-wide text-ink"
           >
-            PROJECTS<span className="text-accent">.</span>
+            SYSTEMS<span className="text-accent">.</span>
           </motion.h2>
         </div>
 
@@ -75,18 +75,29 @@ export default function Projects() {
 
         {/* Count */}
         <motion.p
-          className="font-mono text-xs text-muted/50 mb-4"
+          className="font-body text-sm md:text-base text-muted max-w-xl mb-8 leading-relaxed"
           key={active}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {filtered.length} project{filtered.length !== 1 ? 's' : ''}
+          A working archive of simulations, financial workflows, developer infrastructure, and tools built to make complexity legible.
         </motion.p>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-12">
+          {projects.filter(project => project.category === 'Simulation').map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} featured />
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between border-t border-ink/10 pt-4 mb-2">
+          <span className="font-mono text-xs text-muted tracking-widest uppercase">The full archive</span>
+          <span className="font-mono text-xs text-muted">{filtered.length} systems</span>
+        </div>
 
         {/* Project list */}
         <div className="border-t border-ink/10">
-          {filtered.map((project, i) => (
+            {filtered.filter(project => project.category !== 'Simulation').map((project, i) => (
             <ProjectCard key={project.id} project={project} index={i} />
           ))}
         </div>

@@ -1,143 +1,97 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
 import GitHubStatsBlock from './GitHubStatsBlock'
-
-const skills = [
-  { label: 'Systems Thinking', value: 88 },
-  { label: 'Real-World Systems Modeling', value: 75 },
-  { label: 'Full-Stack Engineering', value: 90 },
-  { label: 'Debugging & Problem Solving', value: 92 },
-  { label: 'Architecture & Design', value: 80 },
-]
-
-const timeline = [
-  { year: '2026', event: 'Moving toward simulation and real-world system modeling' },
-  { year: '2025', event: 'Rapidly built and deployed multiple real-world systems' },
-  { year: '2024', event: 'Started building — quickly went deep into full-stack engineering' },
-]
+import { profile } from '../data/profile'
 
 export default function About() {
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const imgY = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
+  const headingX = useTransform(scrollYProgress, [0, 1], ['-2%', '2%'])
 
   return (
     <section ref={ref} id="about" className="bg-paper-dark py-16 md:py-28 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 md:px-8">
+        <div className="flex items-end gap-4 mb-3">
+          <span className="font-mono text-xs text-muted tracking-widest uppercase">Method & experience</span>
+          <div className="flex-1 h-px bg-ink/10" />
+        </div>
+        <motion.h2 style={{ x: headingX }} className="font-display text-[15vw] md:text-[10vw] leading-none tracking-wide text-ink mb-12 md:mb-16">
+          HOW I WORK<span className="text-accent">.</span>
+        </motion.h2>
 
-        {/* Mobile: single column. Desktop: 2-col grid */}
-        <div className="flex flex-col md:grid md:grid-cols-12 md:gap-16">
+        <div className="grid md:grid-cols-12 gap-10 md:gap-16">
+          <motion.div className="md:col-span-5" initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+            <h3 className="font-display text-5xl md:text-6xl leading-[0.9] tracking-wide mb-7">
+              PHYSICS<br /><span className="text-accent">FIRST,</span><br />SYSTEMS<br />ALWAYS<span className="text-accent">.</span>
+            </h3>
+            <div className="space-y-4 font-body text-sm text-muted leading-relaxed font-light">
+              <p>I start by understanding the system underneath the interface — its state, constraints, failure modes, and what makes it useful to a real person.</p>
+              <p>That has meant modelling coronal magnetic fields at IISc, building real-time orbital simulations, and shipping production platforms for finance and operations.</p>
+              <p>The common thread is end-to-end ownership: computation, data, interface, performance, and the explanation that lets someone else understand the result.</p>
+            </div>
+            <a href="/resume.pdf" className="inline-flex items-center gap-2 mt-8 font-mono text-xs text-ink border-b border-ink pb-2 hover:text-accent hover:border-accent transition-colors">
+              Read the full resume <ArrowUpRight size={13} />
+            </a>
+          </motion.div>
 
-          {/* Left col */}
-          <div className="md:col-span-5">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <span className="w-8 h-px bg-accent" />
-                <span className="font-mono text-xs text-muted tracking-widest uppercase">About</span>
+          <div className="md:col-span-7 space-y-10">
+            <motion.div initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }}>
+              <div className="flex items-center justify-between border-b border-ink/10 pb-3 mb-1">
+                <span className="font-mono text-xs text-muted tracking-widest uppercase">Experience</span>
+                <span className="font-mono text-xs text-muted">the systems behind the work</span>
               </div>
-
-              <h2 className="font-display text-5xl md:text-6xl text-ink tracking-wide leading-none mb-7 md:mb-8">
-                PHYSICS<br />
-                <span className="text-accent">FIRST,</span><br />
-                CODE<br />
-                SECOND<span className="text-accent">.</span>
-              </h2>
-
-              <div className="space-y-4 font-body text-sm text-muted leading-relaxed font-light">
-                <p>
-                  I work at the intersection of physical simulation and software — building tools that make complex systems visible and explorable.
-                </p>
-                <p>
-                  In 2024 I worked under a solar physics professor at IISc, analysing coronal magnetic field data. That work became Sunalyse — a physics-based 3D visualiser I built independently, processing 14 years of NASA/SDO magnetograms through a full PFSS pipeline with spherical harmonics and field-line tracing.
-                </p>
-                <p>
-                  I'm drawn to problems where deep domain understanding changes what you build — not just how you build it.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Timeline */}
-            <motion.div
-              className="mt-10 md:mt-12 space-y-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              {timeline.map((t, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <span className="font-mono text-xs text-accent w-10 flex-shrink-0">{t.year}</span>
-                  <div className="flex-1 h-px bg-ink/10" />
-                  <span className="font-body text-xs text-muted text-right">{t.event}</span>
+              {profile.experience.map(item => (
+                <div key={`${item.role}-${item.place}`} className="grid grid-cols-[82px_1fr] gap-4 py-4 border-b border-ink/10">
+                  <span className="font-mono text-xs text-accent pt-1">{item.period}</span>
+                  <div>
+                    <h3 className="font-body text-sm font-medium text-ink">{item.role}</h3>
+                    <p className="font-mono text-xs text-muted mt-1">{item.place}</p>
+                    <p className="font-body text-xs text-muted mt-2 leading-relaxed">{item.detail}</p>
+                  </div>
                 </div>
               ))}
             </motion.div>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.15 }}>
+              <div className="flex items-center justify-between border-b border-ink/10 pb-3 mb-1">
+                <span className="font-mono text-xs text-muted tracking-widest uppercase">Capabilities</span>
+                <span className="font-mono text-xs text-muted">what I bring to a problem</span>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-px bg-ink/10 border border-ink/10">
+                {profile.capabilities.map(capability => (
+                  <div key={capability.title} className="bg-paper-dark p-4 md:p-5">
+                    <h3 className="font-body text-sm text-ink font-medium">{capability.title}</h3>
+                    <p className="font-body text-xs text-muted leading-relaxed mt-2">{capability.detail}</p>
+                    <p className="font-mono text-[10px] text-accent mt-4 leading-relaxed">{capability.tools}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
+        </div>
 
-          {/* Right col */}
-          <div className="md:col-span-7 mt-12 md:mt-0">
-            {/* Skills */}
-            <motion.div
-              className="mb-10 md:mb-12"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <p className="font-mono text-xs text-muted tracking-widest uppercase mb-5 md:mb-6">
-                Proficiency
-              </p>
-              <div className="space-y-5">
-                {skills.map((s, i) => (
-                  <div key={s.label}>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-body text-sm text-ink">{s.label}</span>
-                      <span className="font-mono text-xs text-muted">{s.value}%</span>
-                    </div>
-                    <div className="h-px bg-ink/10 relative overflow-hidden">
-                      <motion.div
-                        className="absolute inset-y-0 left-0 bg-accent"
-                        style={{ height: '1.5px', top: '-0.25px' }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${s.value}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                      />
-                    </div>
-                  </div>
-                ))}
+        <div className="grid md:grid-cols-12 gap-10 md:gap-16 mt-16 md:mt-24">
+          <div className="md:col-span-5">
+            <p className="font-mono text-xs text-muted tracking-widest uppercase mb-4">Technical vocabulary</p>
+            <div className="space-y-3">
+              {profile.skillGroups.map(group => (
+                <div key={group.label} className="border-t border-ink/10 pt-3">
+                  <p className="font-mono text-xs text-accent">{group.label}</p>
+                  <p className="font-body text-sm text-ink/75 mt-1 leading-relaxed">{group.values}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="md:col-span-7">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="font-mono text-xs text-muted tracking-widest uppercase">Engineering activity</p>
+                <p className="font-body text-sm text-muted mt-2">A live pulse of the work behind the archive.</p>
               </div>
-            </motion.div>
-
-            {/* GitHub stats */}
-            <motion.div
-              style={{ y: imgY }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <GitHubStatsBlock />
-
-              {/* Stats row */}
-              <div className="grid grid-cols-3 gap-0 border border-t-0 border-ink/10">
-                {[
-                  { n: '15+', l: 'Systems built' },
-                  { n: '2+',  l: 'Years of rapid iteration' },
-                  { n: '∞',   l: 'Curiosity' },
-                ].map((s, i) => (
-                  <div key={i} className={`p-4 md:p-5 ${i < 2 ? 'border-r border-ink/10' : ''}`}>
-                    <p className="font-display text-2xl md:text-3xl text-ink tracking-wide">{s.n}</p>
-                    <p className="font-mono text-xs text-muted mt-1">{s.l}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+              <span className="font-display text-5xl text-accent">01</span>
+            </div>
+            <GitHubStatsBlock />
           </div>
         </div>
       </div>

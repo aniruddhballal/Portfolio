@@ -1,8 +1,9 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, ArrowUpRight } from 'lucide-react'
+import { profile } from '../data/profile'
 
-const words = ['SCIENTIST', 'SYSTEMS THINKER', 'PROBLEM SOLVER', 'EXPLORER']
+const words = ['SIMULATION', 'SYSTEMS', 'SOFTWARE', 'CURIOSITY']
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null)
@@ -23,14 +24,14 @@ export default function Hero() {
   }
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden bg-paper">
+    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden bg-paper border-b border-ink/10">
       {/* Parallax background text */}
       <motion.div
         style={{ y: bgY }}
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
       >
         <span className="font-display text-[22vw] text-ink/[0.04] whitespace-nowrap leading-none tracking-widest">
-          SYSTEMS
+          EXPLORE
         </span>
       </motion.div>
 
@@ -87,7 +88,7 @@ export default function Hero() {
             <motion.div variants={item} className="flex items-center gap-3 mb-5">
               <span className="w-6 md:w-8 h-px bg-accent" />
               <span className="font-mono text-xs text-muted tracking-widest uppercase">
-                Physics & Systems — Bengaluru
+                {profile.eyebrow} — {profile.location}
               </span>
             </motion.div>
 
@@ -110,9 +111,9 @@ export default function Hero() {
 
             <motion.p
               variants={item}
-              className="font-body text-sm md:text-base text-muted leading-relaxed max-w-md mb-7 font-light"
+              className="font-body text-base md:text-lg text-ink/75 leading-relaxed max-w-xl mb-7 font-light"
             >
-              I build at the intersection of physics and software — from coronal magnetic field simulations and orbital mechanics to financial systems and developer tools. I care about understanding how things actually work, then making that understanding visible and usable.
+              {profile.statement}
             </motion.p>
 
             <motion.div variants={item} className="flex items-center gap-4 flex-wrap">
@@ -122,23 +123,23 @@ export default function Hero() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                See my work
+                Explore the systems
                 <ArrowDown size={14} />
               </motion.a>
               <motion.a
                 href="#contact"
                 className="font-body text-sm text-muted hover:text-ink transition-colors underline underline-offset-4"
               >
-                Get in touch
+                Start a conversation <ArrowUpRight size={14} className="inline ml-1" />
               </motion.a>
             </motion.div>
 
-            {/* Stack pills */}
-            <motion.div variants={item} className="flex gap-2 md:gap-3 flex-wrap mt-8 md:mt-10">
-              {['Python', 'React', 'Three.js', 'Node.js', 'TypeScript', 'NumPy/SciPy', 'GLSL', 'Rust/WASM'].map(s => (
-                <span key={s} className="font-mono text-xs text-muted border border-ink/10 px-2.5 py-1">
-                  {s}
-                </span>
+            <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-3 border-t border-ink/10 mt-8 md:mt-10 max-w-xl">
+              {profile.proof.map((fact, i) => (
+                <div key={fact.label} className={`py-3 pr-4 ${i > 0 ? 'sm:pl-4 sm:border-l border-ink/10' : ''}`}>
+                  <p className="font-display text-3xl md:text-4xl leading-none text-ink">{fact.value}</p>
+                  <p className="font-mono text-[10px] leading-tight text-muted mt-1 uppercase tracking-wide">{fact.label}</p>
+                </div>
               ))}
             </motion.div>
           </motion.div>

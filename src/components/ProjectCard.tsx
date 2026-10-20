@@ -6,9 +6,10 @@ import type { Project } from '../data/projects'
 interface Props {
   project: Project
   index: number
+  featured?: boolean
 }
 
-export default function ProjectCard({ project, index }: Props) {
+export default function ProjectCard({ project, index, featured = false }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   return (
@@ -17,10 +18,10 @@ export default function ProjectCard({ project, index }: Props) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.6, delay: (index % 2) * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="border-b border-ink/10 last:border-b-0"
+      className={`${featured ? 'border border-ink/10 bg-paper' : 'border-b border-ink/10 last:border-b-0'}`}
     >
       <div
-        className="group flex items-start gap-3 md:gap-6 py-6 md:py-8 cursor-pointer"
+        className={`group flex items-start gap-3 md:gap-6 cursor-pointer ${featured ? 'p-5 md:p-7 min-h-64' : 'py-6 md:py-8'}`}
         onClick={() => setExpanded(e => !e)}
         data-hover
       >
@@ -39,10 +40,10 @@ export default function ProjectCard({ project, index }: Props) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="font-display text-2xl md:text-3xl text-ink tracking-wide group-hover:text-accent transition-colors duration-200 leading-tight">
+          <h3 className={`font-display ${featured ? 'text-4xl md:text-5xl' : 'text-2xl md:text-3xl'} text-ink tracking-wide group-hover:text-accent transition-colors duration-200 leading-tight`}>
                 {project.name}
               </h3>
-              <p className="font-body text-xs md:text-sm text-muted mt-1">{project.tagline}</p>
+          <p className="font-body text-xs md:text-sm text-muted mt-2 max-w-md leading-relaxed">{project.tagline}</p>
             </div>
 
             <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 pt-1">
@@ -58,7 +59,7 @@ export default function ProjectCard({ project, index }: Props) {
           </div>
 
           {/* Tags */}
-          <div className="flex gap-1.5 md:gap-2 flex-wrap mt-2.5 md:mt-3">
+        <div className="flex gap-1.5 md:gap-2 flex-wrap mt-4 md:mt-5">
             {project.tech.map(t => (
               <span key={t} className="font-mono text-xs px-2 py-0.5 bg-ink/5 text-ink/50">
                 {t}
@@ -87,7 +88,7 @@ export default function ProjectCard({ project, index }: Props) {
                 style={{ backgroundColor: project.color }}
               />
               <div className="flex-1 min-w-0">
-                <p className="font-body text-sm text-muted leading-relaxed">
+                <p className="font-body text-sm text-ink/70 leading-relaxed max-w-2xl">
                   {project.description}
                 </p>
 
