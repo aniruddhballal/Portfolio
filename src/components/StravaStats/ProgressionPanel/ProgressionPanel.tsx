@@ -141,9 +141,9 @@ export default function ProgressionPanel({ mode }: ProgressionPanelProps) {
             return (
               <>
                 <span className="font-mono text-[10px] md:text-xs text-accent uppercase tracking-widest block mb-2">Selected period</span>
-                <span className="font-mono text-xs md:text-sm text-paper/75 block leading-snug">{label}</span>
+                <span className="font-mono font-semibold text-xs md:text-sm text-paper/75 block leading-snug">{label}</span>
                 <span className="font-display text-3xl md:text-4xl text-paper mt-2 block leading-none tracking-wide">{fmtDist(tot.distanceKm)} km</span>
-                <span className="font-mono text-xs text-paper/60 mt-1 block">{tot.activities} {sport === 'run' ? 'runs' : 'rides'}</span>
+                <span className="font-mono font-semibold text-xs text-paper/60 mt-1 block">{tot.activities} {sport === 'run' ? 'runs' : 'rides'}</span>
               </>
             )
           })()}
