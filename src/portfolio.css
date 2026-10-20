@@ -597,8 +597,10 @@ h3 em {
   color: #fff;
 }
 .results-count {
+  margin: 0;
+  padding-bottom: 22px;
   color: #82908b;
-  font: 10px var(--font-mono);
+  font: 10px/1.5 var(--font-mono);
 }
 .project-list {
   border-top: 1px solid #bfcac3;
