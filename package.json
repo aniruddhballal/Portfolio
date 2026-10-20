@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "strava": "tsx scripts/fetch-strava.ts",
+    "strava2": "tsx scripts/manual-activity-logger.ts",
     "strava:auth": "tsx scripts/authorize-strava.ts"
   },
   "dependencies": {
