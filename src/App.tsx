@@ -266,7 +266,7 @@ function Feature({ project, index }: { project: Project; index: number }) {
         )}
         <div className="art-bottom">
           <span>{solar ? "CORONAL FIELD STUDY" : "PERTURBATION STUDY"}</span>
-          <span>{solar ? "2010—2024" : "TWO BODY ↔ J2 + GRAVITY"}</span>
+          <span>{solar ? "2010-2024" : "TWO BODY ↔ J2 + GRAVITY"}</span>
         </div>
       </div>
       <div className="feature-copy">
@@ -380,7 +380,7 @@ function Work() {
               More work, <em>same curiosity.</em>
             </h3>
           </div>
-          <span>10 further projects / 2024—2026</span>
+          <span>10 further projects / 2024-2026</span>
         </div>
         <div
           className="project-filters"
@@ -417,28 +417,28 @@ function Work() {
 
 const experience = [
   {
-    period: "Mar – Oct 2026",
+    period: "Mar - Oct 2026",
     role: "Assistant Software Engineer",
     place: "Indiassetz",
     detail:
       "React Native and Next.js product work across mobile compatibility, CRM sales and payment flows, and the ARCA investor platform.",
   },
   {
-    period: "Jan – Mar 2026",
+    period: "Jan - Mar 2026",
     role: "Data Analyst Intern",
     place: "Qwixpert Consulting",
     detail:
       "Translated client data and legacy spreadsheet workflows into deployed software tools.",
   },
   {
-    period: "Jun – Jul 2025",
+    period: "Jun - Jul 2025",
     role: "Frontend Web Dev Intern",
     place: "Indiassetz",
     detail:
       "Built React and MUI interfaces and refined interactions for production workflows.",
   },
   {
-    period: "Jun – Aug 2024",
+    period: "Jun - Aug 2024",
     role: "Solar Physics Intern",
     place: "IISc, Bengaluru",
     detail:

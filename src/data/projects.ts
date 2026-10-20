@@ -17,7 +17,7 @@ export const projects: Project[] = [
     name: 'Sunalyse',
     tagline: 'Interactive 3D viewer for 14 years of solar coronal magnetic fields',
     description:
-      'A physics-based 3D visualisation tool covering 181 Carrington Rotations (2010–2024). HMI synoptic FITS magnetograms from NASA/SDO are processed through a Python PFSS pipeline: spherical harmonic coefficients computed up to lmax=85, 500 adaptive seeds placed at peak photospheric field locations via haversine clustering, and field lines traced with Euler integration using multiprocessing. The React + Three.js frontend renders the photosphere, coronal field lines, and heliospheric current sheet, with field-line filters, CR navigation, prefetching, and synchronised solar-cycle playback. The full data pipeline took ~20 hours on Kaggle across 181 CRs.',
+      'A physics-based 3D visualisation tool covering 181 Carrington Rotations (2010-2024). HMI synoptic FITS magnetograms from NASA/SDO are processed through a Python PFSS pipeline: spherical harmonic coefficients computed up to lmax=85, 500 adaptive seeds placed at peak photospheric field locations via haversine clustering, and field lines traced with Euler integration using multiprocessing. The React + Three.js frontend renders the photosphere, coronal field lines, and heliospheric current sheet, with field-line filters, CR navigation, prefetching, and synchronised solar-cycle playback. The full data pipeline took ~20 hours on Kaggle across 181 CRs.',
     tech: ['React', 'TypeScript', 'Three.js', 'Python', 'SciPy', 'PFSS', 'GLSL'],
     category: 'Simulation',
     url: 'https://sunalyse.vercel.app',
@@ -56,7 +56,7 @@ export const projects: Project[] = [
     name: 'Graphite',
     tagline: 'Simulate npm dependency upgrades before you run them',
     description:
-      "A browser-only dependency upgrade impact analyser. Upload a lockfile, pick a package and target version — Graphite resolves the full transitive dependency tree of the new version, diffs it against your current graph, detects every version conflict and peer dependency violation, and renders a 3D force-directed graph of the cascade. No backend, no installs: the npm registry has open CORS headers so all calls happen directly from the browser. A safe-mode upgrade path computes the lowest version of each affected package that satisfies all constraints simultaneously. Tested against a 20,000-line package-lock.json.",
+      "A browser-only dependency upgrade impact analyser. Upload a lockfile, pick a package and target version - Graphite resolves the full transitive dependency tree of the new version, diffs it against your current graph, detects every version conflict and peer dependency violation, and renders a 3D force-directed graph of the cascade. No backend, no installs: the npm registry has open CORS headers so all calls happen directly from the browser. A safe-mode upgrade path computes the lowest version of each affected package that satisfies all constraints simultaneously. Tested against a 20,000-line package-lock.json.",
     tech: ['React', 'TypeScript', 'Vite', 'Three.js', 'semver', 'Tailwind CSS'],
     category: 'Developer Tool',
     url: 'https://graphite-neon.vercel.app',
@@ -67,9 +67,9 @@ export const projects: Project[] = [
   {
     id: 5,
     name: "Queen's Gambit 2.0",
-    tagline: 'Browser-based steganography rebuilt in Rust + WASM — 38× faster',
+    tagline: 'Browser-based steganography rebuilt in Rust + WASM - 38× faster',
     description:
-      "A full rebuild of Queen's Gambit as a client-side web app. The chess move generator was rewritten in Rust using shakmaty and compiled to WebAssembly via wasm-pack. The encode/decode loops run entirely in Web Workers (zero-copy ArrayBuffer transfer), keeping the React UI fully responsive. The result: a 32KB file that took 3m 15s in the original now encodes in 5.2 seconds — a 38× improvement. Optional AES-256-GCM encryption uses PBKDF2 key derivation via the Web Crypto API. No file data ever leaves your device. A lightweight Express + MongoDB backend optionally logs conversion analytics.",
+      "A full rebuild of Queen's Gambit as a client-side web app. The chess move generator was rewritten in Rust using shakmaty and compiled to WebAssembly via wasm-pack. The encode/decode loops run entirely in Web Workers (zero-copy ArrayBuffer transfer), keeping the React UI fully responsive. The result: a 32KB file that took 3m 15s in the original now encodes in 5.2 seconds - a 38× improvement. Optional AES-256-GCM encryption uses PBKDF2 key derivation via the Web Crypto API. No file data ever leaves your device. A lightweight Express + MongoDB backend optionally logs conversion analytics.",
     tech: ['React', 'TypeScript', 'Rust', 'WASM', 'Web Workers', 'AES-256-GCM'],
     category: 'Security',
     url: 'https://queens-gambit-2-0.vercel.app',
@@ -82,7 +82,7 @@ export const projects: Project[] = [
     name: 'VenPayRL',
     tagline: 'Reinforcement learning simulator for vendor payment decisions',
     description:
-      'A vendor payment RL environment that models a company managing cash reserves against invoices with due dates, penalty rates, and daily inflows. Five agents compete — rule-based, random, heuristic, Q-table (180-state), and DQN (TensorFlow.js, 6D state vector with amountRatio) — across 5 hardcoded scenarios and unlimited custom scenarios. Training streams live via SSE. The rule and heuristic agents use a three-pass partial payment strategy that reduces penalties by 92% on cash-constrained scenarios. Backed by 51 Vitest tests and a per-day trace validation script.',
+      'A vendor payment RL environment that models a company managing cash reserves against invoices with due dates, penalty rates, and daily inflows. Five agents compete - rule-based, random, heuristic, Q-table (180-state), and DQN (TensorFlow.js, 6D state vector with amountRatio) - across 5 hardcoded scenarios and unlimited custom scenarios. Training streams live via SSE. The rule and heuristic agents use a three-pass partial payment strategy that reduces penalties by 92% on cash-constrained scenarios. Backed by 51 Vitest tests and a per-day trace validation script.',
     tech: ['React', 'TypeScript', 'Express', 'TensorFlow.js', 'Q-Learning', 'DQN', 'SSE'],
     category: 'ML / RL',
     url: 'https://venpayrl.vercel.app',
@@ -108,7 +108,7 @@ export const projects: Project[] = [
     name: 'LOANlo',
     tagline: 'Role-based loan origination and underwriting workflow platform',
     description:
-      'A workflow-centric fintech platform for three roles — applicant, underwriter, and system admin. Applicants complete gated onboarding, submit loan applications, upload documents via GridFS, and track status through a full lifecycle. Underwriters review applications, request documents, and manage loan products. Admins govern soft-deleted records, restoration requests, IP whitelisting, and session control. A Python ML microservice handles credit-risk predictions. Gmail OAuth2 drives transactional emails at every lifecycle event. Security includes CAPTCHA, rate limiting, input sanitisation, and inactivity-based auto logout.',
+      'A workflow-centric fintech platform for three roles - applicant, underwriter, and system admin. Applicants complete gated onboarding, submit loan applications, upload documents via GridFS, and track status through a full lifecycle. Underwriters review applications, request documents, and manage loan products. Admins govern soft-deleted records, restoration requests, IP whitelisting, and session control. A Python ML microservice handles credit-risk predictions. Gmail OAuth2 drives transactional emails at every lifecycle event. Security includes CAPTCHA, rate limiting, input sanitisation, and inactivity-based auto logout.',
     tech: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'GridFS', 'Python', 'Gmail OAuth2'],
     category: 'FinTech',
     url: 'https://loanlo.vercel.app',
@@ -121,7 +121,7 @@ export const projects: Project[] = [
     name: "Queen's Gambit",
     tagline: 'Hide any file inside chess game notation using information theory',
     description:
-      'A Flask web app that hides arbitrary files inside chess PGN notation using information-theoretic steganography — binary data is encoded by mapping bits to legal chess moves via log₂-indexed selection (Shannon entropy maximisation). The encoded output looks exactly like real chess games with randomised metadata. Layered on top: AES-256-CBC encrypts the data, RSA-4096 encrypts the AES key, and XOR-obfuscated filenames link keys to ciphertext without any central index. SMTP-based OTP two-factor authentication gates access, and an admin dashboard handles user management.',
+      'A Flask web app that hides arbitrary files inside chess PGN notation using information-theoretic steganography - binary data is encoded by mapping bits to legal chess moves via log₂-indexed selection (Shannon entropy maximisation). The encoded output looks exactly like real chess games with randomised metadata. Layered on top: AES-256-CBC encrypts the data, RSA-4096 encrypts the AES key, and XOR-obfuscated filenames link keys to ciphertext without any central index. SMTP-based OTP two-factor authentication gates access, and an admin dashboard handles user management.',
     tech: ['Python', 'Flask', 'AES-256', 'RSA-4096', 'python-chess', 'SMTP OTP'],
     category: 'Security',
     url: null,
@@ -134,7 +134,7 @@ export const projects: Project[] = [
     name: 'Aavritti',
     tagline: 'Private daily activity intelligence dashboard',
     description:
-      'A password-gated personal productivity platform for capturing daily activities, building a reusable category taxonomy over time, and reviewing how time was spent. A drill-down pie chart lets you explore distribution from category level down to individual activities. An activity trends panel uses ECharts to show category-specific hours across 7-day windows. A draggable Cache board stores floating quick-note cards with persistent position in MongoDB. The category system learns usage patterns — suggestions are sorted by usage count so the most-used categories always surface first.',
+      'A password-gated personal productivity platform for capturing daily activities, building a reusable category taxonomy over time, and reviewing how time was spent. A drill-down pie chart lets you explore distribution from category level down to individual activities. An activity trends panel uses ECharts to show category-specific hours across 7-day windows. A draggable Cache board stores floating quick-note cards with persistent position in MongoDB. The category system learns usage patterns - suggestions are sorted by usage count so the most-used categories always surface first.',
     tech: ['React', 'TypeScript', 'Vite', 'Node.js', 'MongoDB', 'ECharts', 'Framer Motion'],
     category: 'Productivity',
     url: 'https://aavritti.vercel.app',

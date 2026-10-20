@@ -124,7 +124,7 @@ function Progression({ mode }: { mode: Exclude<Mode, "overall"> }) {
           </strong>
           <p>
             {visible.reduce((sum, entry) => sum + entry[sport].activities, 0)}{" "}
-            activities · {visible[0]?.label} – {visible.at(-1)?.label}
+            activities · {visible[0]?.label} - {visible.at(-1)?.label}
           </p>
         </div>
         <div>
