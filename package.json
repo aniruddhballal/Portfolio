@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "strava": "tsx scripts/fetch-strava.ts"
+    "strava": "tsx scripts/fetch-strava.ts",
+    "strava:auth": "tsx scripts/authorize-strava.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",

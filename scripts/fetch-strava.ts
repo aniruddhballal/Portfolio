@@ -70,6 +70,24 @@ interface StravaActivity {
   best_efforts?: BestEffort[]
 }
 
+interface TokenResponse {
+  access_token?: string
+  refresh_token?: string
+  scope?: string
+  error?: string
+  message?: string
+}
+
+function updateEnvValue(key: string, value: string) {
+  const current = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf-8') : ''
+  const line = `${key}=${value}`
+  const keyPattern = new RegExp(`^${key}=.*$`, 'm')
+  const next = keyPattern.test(current)
+    ? current.replace(keyPattern, line)
+    : `${current}${current.endsWith('\n') || !current ? '' : '\n'}${line}\n`
+  fs.writeFileSync(envPath, next)
+}
+
 // ── Strava API helpers ────────────────────────────────────────────────────────
 async function getAccessToken(): Promise<string> {
   console.log('🔑 Exchanging refresh token...')
@@ -83,8 +101,15 @@ async function getAccessToken(): Promise<string> {
       grant_type: 'refresh_token',
     }),
   })
-  const data = await res.json() as { access_token: string; error?: string }
-  if (data.error) throw new Error(`Token exchange failed: ${data.error}`)
+  const data = await res.json() as TokenResponse
+  if (!res.ok || data.error || !data.access_token) {
+    throw new Error(`Token exchange failed: ${data.error || data.message || `${res.status} ${res.statusText}`}`)
+  }
+  if (data.scope) console.log(`   Granted scopes: ${data.scope}`)
+  if (data.refresh_token && data.refresh_token !== REFRESH_TOKEN) {
+    updateEnvValue('STRAVA_REFRESH_TOKEN', data.refresh_token)
+    console.log('   Saved the latest Strava refresh token to .env.local')
+  }
   console.log('✅ Access token obtained')
   return data.access_token
 }
@@ -98,6 +123,20 @@ async function stravaGet<T>(token: string, endpoint: string): Promise<T> {
       console.log('\n⏳ Rate limited — waiting 15 minutes...')
       await new Promise(r => setTimeout(r, 15 * 60 * 1000))
       continue
+    }
+    if (res.status === 403) {
+      const body = await res.text()
+      let detail = body
+      try {
+        const parsed = JSON.parse(body) as { message?: string; errors?: unknown }
+        detail = parsed.message || JSON.stringify(parsed.errors || parsed)
+      } catch {
+        // Keep the raw response when Strava does not return JSON.
+      }
+      const scopeHint = endpoint.startsWith('/athlete/activities')
+        ? ' Re-authorize the app with activity:read_all, then update STRAVA_REFRESH_TOKEN in .env.local.'
+        : ''
+      throw new Error(`Strava API ${endpoint} -> 403 ${res.statusText}: ${detail || 'no response body'}.${scopeHint}`)
     }
     if (!res.ok) throw new Error(`Strava API ${endpoint} → ${res.status} ${res.statusText}`)
     return res.json() as Promise<T>
