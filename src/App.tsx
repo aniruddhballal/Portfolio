@@ -293,7 +293,19 @@ function Feature({ project, index }: { project: Project; index: number }) {
           <span>CASE STUDY / 0{index + 1}</span>
           <span>{solar ? "SOLAR PHYSICS" : "ORBITAL MECHANICS"}</span>
         </div>
-        {solar ? <SolarDiagram /> : <OrbitDiagram />}
+        {solar ? (
+          <img
+            className="feature-screenshot"
+            src="/projects/sunalyse-screenshot.png"
+            alt="Sunalyse showing the solar photosphere, coronal field lines, and display controls"
+            width="1917"
+            height="917"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <OrbitDiagram />
+        )}
         <div className="art-bottom">
           <span>{solar ? "CORONAL FIELD STUDY" : "PERTURBATION STUDY"}</span>
           <span>{solar ? "2010—2024" : "TWO BODY ↔ J2 + GRAVITY"}</span>

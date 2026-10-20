@@ -469,6 +469,22 @@ h3 em {
   background: #193c49;
   color: #d3e3e1;
 }
+.feature-solar .feature-art {
+  background: #102217;
+  color: #e9efd6;
+}
+.feature-solar .feature-art:before {
+  display: none;
+}
+.feature-screenshot {
+  display: block;
+  width: calc(100% - 34px);
+  height: auto;
+  max-height: calc(100% - 120px);
+  object-fit: contain;
+  border: 1px solid #4f6549;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+}
 .feature-art svg {
   position: relative;
   width: min(86%, 520px);
