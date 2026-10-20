@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test:visual": "node scripts/visual-check.mjs",
     "strava": "tsx scripts/fetch-strava.ts",
     "strava2": "tsx scripts/manual-activity-logger.ts",
     "strava:auth": "tsx scripts/authorize-strava.ts"
@@ -30,6 +31,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "playwright": "^1.64.1",
     "tsx": "^4.22.3",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
