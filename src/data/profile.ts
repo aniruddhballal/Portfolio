@@ -45,4 +45,3 @@ export const profile = {
     { label: 'Scientific & systems', values: 'NumPy · SciPy · XGBoost · PuLP · AstroPy · WebAssembly · Docker · KiCad' },
   ],
 } as const
-
