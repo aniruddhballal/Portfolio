@@ -115,50 +115,6 @@ function Header() {
   );
 }
 
-function SolarDiagram({ hero = false }: { hero?: boolean }) {
-  const paths = Array.from({ length: 11 }, (_, index) => {
-    const angle = (index / 10) * Math.PI;
-    const x1 = 245 + Math.cos(angle) * 55;
-    const y1 = 208 - Math.sin(angle) * 55;
-    const x2 = 245 + Math.cos(angle) * 193;
-    const y2 = 208 - Math.sin(angle) * 145;
-    return (
-      <path
-        key={index}
-        d={`M ${x1} ${y1} C ${x1 + (x1 - 245) * 0.65} ${y1 - 80}, ${x2} ${y2 - 58}, ${x2} ${y2}`}
-      />
-    );
-  });
-  const gradient = hero ? "heroSun" : "studySun";
-  return (
-    <svg
-      className={hero ? "solar-diagram hero-diagram" : "solar-diagram"}
-      viewBox="0 0 490 390"
-      role="img"
-      aria-label="Illustration of curved magnetic field lines around a sun"
-    >
-      <defs>
-        <radialGradient id={gradient}>
-          <stop offset="0" stopColor="#fbd88c" />
-          <stop offset=".72" stopColor="#ef9b54" />
-          <stop offset="1" stopColor="#d96037" />
-        </radialGradient>
-      </defs>
-      <circle className="diagram-orbit" cx="245" cy="208" r="172" />
-      <circle className="diagram-orbit" cx="245" cy="208" r="118" />
-      <g className="field-lines">{paths}</g>
-      <circle className="sun-halo" cx="245" cy="208" r="77" />
-      <circle cx="245" cy="208" r="55" fill={`url(#${gradient})`} />
-      <circle className="diagram-point" cx="403" cy="125" r="4" />
-      <circle className="diagram-point" cx="112" cy="116" r="3" />
-      <path
-        className="diagram-cross"
-        d="M245 15v20m-10-10h20M445 207h20m-10-10v20M25 208h20m-10-10v20"
-      />
-    </svg>
-  );
-}
-
 function Hero() {
   return (
     <section id="top" className="hero-section">
@@ -209,7 +165,15 @@ function Hero() {
             <span>FIG. 01</span>
             <span>THE INVISIBLE, MADE VISIBLE</span>
           </div>
-          <SolarDiagram hero />
+          <img
+            className="hero-sunalyse-image"
+            src="/projects/sunalyse-hero.png"
+            alt="Sunalyse view of the Sun, coronal field lines, and a surrounding magnetic field model"
+            width="1312"
+            height="907"
+            fetchPriority="high"
+            decoding="async"
+          />
           <div className="portrait-card">
             <img
               src="/aniruddh.jpg"
@@ -220,9 +184,6 @@ function Hero() {
             />
             <span>Behind the work ↗</span>
           </div>
-          <p className="hero-visual-caption">
-            A visual motif inspired by the magnetic fields behind Sunalyse.
-          </p>
         </div>
       </div>
       <div className="hero-tracks site-width">
