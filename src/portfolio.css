@@ -466,14 +466,14 @@ h3 em {
   color: #f9e2c9;
 }
 .feature-orbit .feature-art {
-  background: #193c49;
+  background: #080f1a;
   color: #d3e3e1;
 }
 .feature-solar .feature-art {
   background: #102217;
   color: #e9efd6;
 }
-.feature-solar .feature-art:before {
+.feature-art:before {
   display: none;
 }
 .feature-screenshot {
@@ -485,43 +485,8 @@ h3 em {
   border: 1px solid #4f6549;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
 }
-.feature-art svg {
-  position: relative;
-  width: min(86%, 520px);
-  max-height: 370px;
-}
-.feature-art .diagram-orbit {
-  stroke: #fff0d7;
-  opacity: 0.55;
-}
-.feature-art .field-lines {
-  stroke: #fff1c8;
-}
-.feature-art .sun-halo {
-  stroke: #fff2d3;
-}
-.orbit-grid {
-  fill: none;
-  stroke: #9ab2b6;
-  opacity: 0.25;
-  stroke-width: 1;
-  stroke-dasharray: 3 6;
-}
-.orbit-path {
-  fill: none;
-  stroke-width: 2;
-}
-.orbit-reference {
-  stroke: #bedcd5;
-  stroke-dasharray: 5 7;
-}
-.orbit-perturbed {
-  stroke: #e99770;
-}
-.orbit-diagram text {
-  fill: #c0ced1;
-  font: 10px var(--font-mono);
-  letter-spacing: 0.07em;
+.feature-orbit .feature-screenshot {
+  border-color: #34445c;
 }
 .feature-copy {
   display: flex;

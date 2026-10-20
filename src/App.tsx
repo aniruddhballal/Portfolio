@@ -159,56 +159,6 @@ function SolarDiagram({ hero = false }: { hero?: boolean }) {
   );
 }
 
-function OrbitDiagram() {
-  return (
-    <svg
-      className="orbit-diagram"
-      viewBox="0 0 550 380"
-      role="img"
-      aria-label="Two diverging orbital paths around Earth"
-    >
-      <defs>
-        <radialGradient id="earth">
-          <stop offset="0" stopColor="#638d9b" />
-          <stop offset="1" stopColor="#294d60" />
-        </radialGradient>
-      </defs>
-      <circle className="orbit-grid" cx="275" cy="190" r="72" />
-      <circle className="orbit-grid" cx="275" cy="190" r="133" />
-      <circle className="orbit-grid" cx="275" cy="190" r="192" />
-      <ellipse
-        className="orbit-path orbit-reference"
-        cx="275"
-        cy="190"
-        rx="195"
-        ry="113"
-        transform="rotate(-19 275 190)"
-      />
-      <path
-        className="orbit-path orbit-perturbed"
-        d="M82 226 C108 78 309 41 456 127 C544 180 461 301 305 309 C190 315 107 271 82 226Z"
-      />
-      <circle cx="275" cy="190" r="46" fill="url(#earth)" />
-      <path
-        d="M246 169c19 0 17 14 36 13 8 14-8 15-6 31m15-45c4 14 19 13 22 20"
-        stroke="#8fb4b5"
-        strokeWidth="3"
-        fill="none"
-        opacity=".65"
-      />
-      <circle cx="428" cy="94" r="5" fill="#eac494" />
-      <circle cx="447" cy="133" r="5" fill="#e96743" />
-      <path d="M438 96l29-25M454 135l37 16" stroke="#b7cdd0" strokeWidth="1" />
-      <text x="469" y="69">
-        TWO BODY
-      </text>
-      <text x="455" y="167">
-        PERTURBED
-      </text>
-    </svg>
-  );
-}
-
 function Hero() {
   return (
     <section id="top" className="hero-section">
@@ -304,7 +254,15 @@ function Feature({ project, index }: { project: Project; index: number }) {
             decoding="async"
           />
         ) : (
-          <OrbitDiagram />
+          <img
+            className="feature-screenshot"
+            src="/projects/satlies-screenshot.png"
+            alt="SatLies showing orbital trajectories, force controls, separation graph, and live metrics"
+            width="1917"
+            height="907"
+            loading="lazy"
+            decoding="async"
+          />
         )}
         <div className="art-bottom">
           <span>{solar ? "CORONAL FIELD STUDY" : "PERTURBATION STUDY"}</span>
