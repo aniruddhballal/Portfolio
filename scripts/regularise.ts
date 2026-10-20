@@ -50,11 +50,11 @@ interface StravaData {
   fetchedAt: string
   run: {
     allTime: PeriodStats & { fetchedAt: string }
-    pbs: any[]
+    pbs: { label: string; time: string; date: string }[]
   }
   ride: {
     allTime: PeriodStats & { fetchedAt: string }
-    pbs: any[]
+    pbs: { label: string; time: string; date: string }[]
   }
   weekly: WeeklyEntry[]
   monthly: MonthlyEntry[]

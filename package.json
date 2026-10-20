@@ -9,19 +9,20 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:visual": "node scripts/visual-check.mjs",
+    "format": "prettier --write src/App.tsx src/components/CreativeModal.tsx src/components/StravaStats/StravaStats.tsx src/portfolio.css scripts/visual-check.mjs index.html README.md",
     "strava": "tsx scripts/fetch-strava.ts",
     "strava2": "tsx scripts/manual-activity-logger.ts",
     "strava:auth": "tsx scripts/authorize-strava.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
-    "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^9.39.4",
     "@types/node": "^24.12.4",
     "@types/react": "^19.2.14",
@@ -32,6 +33,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "playwright": "^1.64.1",
+    "prettier": "^3.9.10",
     "tsx": "^4.22.3",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",

@@ -1,87 +1,327 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import stravaData from '../../data/strava.json'
-import type { StravaData } from '../../data/strava-types'
-import AllTimeCards from './AllTimeCards/AllTimeCards'
-import ProgressionPanel from './ProgressionPanel/ProgressionPanel'
+import { useEffect, useRef, useState } from "react";
+import stravaData from "../../data/strava.json";
+import type { PeriodStats } from "../../data/strava-types";
 
-const data = stravaData as StravaData
-const STRAVA_URL = 'https://www.strava.com/athletes/111442086'
+type Mode = "weekly" | "monthly" | "annual" | "overall";
+type Sport = "run" | "ride";
+type Entry = {
+  key: string;
+  label: string;
+  run: PeriodStats;
+  ride: PeriodStats;
+};
 
-type Tab = 'overall' | 'weekly' | 'monthly' | 'annual'
+const tabs: { key: Mode; label: string }[] = [
+  { key: "weekly", label: "Weekly" },
+  { key: "monthly", label: "Monthly" },
+  { key: "annual", label: "Annual" },
+  { key: "overall", label: "Overall" },
+];
+const distance = (km: number) =>
+  km.toLocaleString("en-GB", { maximumFractionDigits: 1 });
+function lastActiveIndex(
+  entries: Entry[],
+  sport: Sport,
+  from: number,
+  through: number,
+) {
+  for (let index = through; index >= from; index--) {
+    if (entries[index][sport].distanceKm > 0) return index;
+  }
+  return through;
+}
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'weekly', label: 'Weekly' },
-  { key: 'monthly', label: 'Monthly' },
-  { key: 'annual', label: 'Annual' },
-  { key: 'overall', label: 'Overall' },
-]
+function entriesFor(mode: Exclude<Mode, "overall">): Entry[] {
+  if (mode === "weekly")
+    return stravaData.weekly.map((item) => ({
+      key: item.weekStart,
+      label: new Date(item.weekStart).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+      run: item.run,
+      ride: item.ride,
+    }));
+  if (mode === "monthly")
+    return stravaData.monthly.map((item) => ({
+      key: item.month,
+      label: item.label,
+      run: item.run,
+      ride: item.ride,
+    }));
+  return stravaData.annual.map((item) => ({
+    key: String(item.year),
+    label: String(item.year),
+    run: item.run,
+    ride: item.ride,
+  }));
+}
 
-export default function StravaStats() {
-  const [tab, setTab] = useState<Tab>('weekly')
+function Progression({ mode }: { mode: Exclude<Mode, "overall"> }) {
+  const entries = entriesFor(mode);
+  const [sport, setSport] = useState<Sport>("run");
+  const [from, setFrom] = useState(Math.max(0, entries.length - 12));
+  const [through, setThrough] = useState(entries.length - 1);
+  const [selected, setSelected] = useState(
+    lastActiveIndex(
+      entries,
+      "run",
+      Math.max(0, entries.length - 12),
+      entries.length - 1,
+    ),
+  );
+  const chartRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (chart) chart.scrollLeft = chart.scrollWidth;
+  }, [from, through]);
+  const visible = entries.slice(from, through + 1);
+  const total = visible.reduce(
+    (sum, entry) => sum + entry[sport].distanceKm,
+    0,
+  );
+  const max = Math.max(1, ...visible.map((entry) => entry[sport].distanceKm));
+  const current = entries[selected];
 
   return (
-    <div>
-      {/* Section header */}
-      <div className="flex items-center gap-4 mb-6">
-        <span className="font-mono text-xs text-muted tracking-widest uppercase">Endurance</span>
-        <div className="flex-1 h-px bg-ink/10" />
-        <motion.a
-          href={STRAVA_URL}
+    <div className="strava-panel">
+      <div className="strava-panel-top">
+        <div>
+          <span className="strava-label">DISTANCE PROGRESSION</span>
+          <p>Select a period or adjust the range to explore the record.</p>
+        </div>
+        <div className="sport-toggle" role="group" aria-label="Sport">
+          <button
+            type="button"
+            aria-pressed={sport === "run"}
+            onClick={() => {
+              setSport("run");
+              setSelected(lastActiveIndex(entries, "run", from, through));
+            }}
+          >
+            Run
+          </button>
+          <button
+            type="button"
+            aria-pressed={sport === "ride"}
+            onClick={() => {
+              setSport("ride");
+              setSelected(lastActiveIndex(entries, "ride", from, through));
+            }}
+          >
+            Ride
+          </button>
+        </div>
+      </div>
+      <div className="strava-summary">
+        <div>
+          <span className="strava-label">
+            {sport === "run" ? "RUNNING" : "RIDING"} / VISIBLE RANGE
+          </span>
+          <strong>
+            {distance(total)} <small>km</small>
+          </strong>
+          <p>
+            {visible.reduce((sum, entry) => sum + entry[sport].activities, 0)}{" "}
+            activities · {visible[0]?.label} – {visible.at(-1)?.label}
+          </p>
+        </div>
+        <div>
+          <span className="strava-label">SELECTED PERIOD</span>
+          <strong>
+            {distance(current?.[sport].distanceKm ?? 0)} <small>km</small>
+          </strong>
+          <p>
+            {current?.label} · {current?.[sport].activities ?? 0} activities
+          </p>
+        </div>
+      </div>
+      <div className="strava-range">
+        <label>
+          From{" "}
+          <select
+            value={from}
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              setFrom(value);
+              if (value > through) setThrough(value);
+              setSelected(value);
+            }}
+          >
+            {entries.map((entry, index) => (
+              <option key={entry.key} value={index}>
+                {entry.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Through{" "}
+          <select
+            value={through}
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              setThrough(value);
+              if (value < from) setFrom(value);
+              setSelected(value);
+            }}
+          >
+            {entries.map((entry, index) => (
+              <option key={entry.key} value={index}>
+                {entry.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div
+        ref={chartRef}
+        className="bar-chart"
+        role="group"
+        aria-label={`${sport === "run" ? "Running" : "Riding"} distance by ${mode} period`}
+        tabIndex={0}
+      >
+        {visible.map((entry, index) => {
+          const value = entry[sport].distanceKm;
+          return (
+            <button
+              key={entry.key}
+              type="button"
+              className="bar-column"
+              aria-pressed={selected === from + index}
+              onClick={() => setSelected(from + index)}
+            >
+              <span className="sr-only">
+                {entry.label}: {distance(value)} kilometres.{" "}
+              </span>
+              <span className="bar-value">{distance(value)}</span>
+              <span className="bar-track">
+                <span
+                  className="bar-fill"
+                  style={{ height: `${Math.max(2, (value / max) * 100)}%` }}
+                />
+              </span>
+              <span className="bar-date">
+                {mode === "annual"
+                  ? entry.label
+                  : mode === "monthly"
+                    ? entry.label.slice(0, 3)
+                    : entry.label.slice(0, 6)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <details className="strava-data-table">
+        <summary>
+          View all {entries.length} {mode} records as a table
+        </summary>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Period</th>
+                <th scope="col">Run (km)</th>
+                <th scope="col">Ride (km)</th>
+                <th scope="col">Runs</th>
+                <th scope="col">Rides</th>
+              </tr>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={entry.key}>
+                  <th scope="row">{entry.label}</th>
+                  <td>{distance(entry.run.distanceKm)}</td>
+                  <td>{distance(entry.ride.distanceKm)}</td>
+                  <td>{entry.run.activities}</td>
+                  <td>{entry.ride.activities}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function Overall() {
+  return (
+    <div className="overall-grid">
+      {(["run", "ride"] as const).map((sport) => {
+        const summary = stravaData[sport];
+        return (
+          <div className="overall-sport" key={sport}>
+            <span className="strava-label">
+              {sport === "run" ? "RUNNING" : "RIDING"} / ALL TIME
+            </span>
+            <strong>
+              {distance(summary.allTime.distanceKm)} <small>km</small>
+            </strong>
+            <div className="overall-metrics">
+              <span>
+                {summary.allTime.activities}
+                <small>activities</small>
+              </span>
+              <span>
+                {distance(summary.allTime.timeHours)}
+                <small>hours</small>
+              </span>
+              <span>
+                {distance(summary.allTime.elevGainM)}
+                <small>metres climbed</small>
+              </span>
+            </div>
+            <h4>Personal bests</h4>
+            <ul>
+              {summary.pbs.map((pb) => (
+                <li key={pb.label + pb.date}>
+                  <span>{pb.label}</span>
+                  <strong>{pb.time}</strong>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function StravaStats() {
+  const [tab, setTab] = useState<Mode>("weekly");
+  const synced = new Date(stravaData.fetchedAt).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  return (
+    <div className="strava-stats">
+      <div className="strava-heading">
+        <span>ENDURANCE DATA / STRAVA SNAPSHOT</span>
+        <a
+          href="https://www.strava.com/athletes/111442086"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 font-mono text-xs text-muted border border-ink/15 px-3 py-1.5 hover:border-accent hover:text-accent transition-colors flex-shrink-0"
-          whileHover={{ scale: 1.02 }}
-          data-hover
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.599h4.172L10.463 0 0 13.828h4.172" />
-          </svg>
-          View on Strava
-        </motion.a>
+          View on Strava ↗
+        </a>
       </div>
-
-      {/* Tab bar */}
-      <div className="grid grid-cols-4 items-stretch border border-ink/15 mb-6 w-full max-w-[520px]">
-        {TABS.map(t => (
+      <div className="strava-tabs" role="group" aria-label="Distance period">
+        {tabs.map((item) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`relative font-mono text-xs px-2 md:px-4 py-3 transition-colors ${tab === t.key ? 'text-paper bg-ink' : 'text-ink/60 hover:text-ink hover:bg-ink/[0.04]'
-              }`}
+            key={item.key}
+            type="button"
+            aria-pressed={tab === item.key}
+            onClick={() => setTab(item.key)}
           >
-            {tab === t.key && (
-              <motion.div
-                layoutId="tab-indicator"
-                className="absolute inset-x-0 bottom-0 h-0.5 bg-accent pointer-events-none"
-              />
-            )}
-            {t.label}
+            {item.label}
           </button>
         ))}
       </div>
-
-      {/* Tab content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={tab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.2 }}
-        >
-          {tab === 'overall' && <AllTimeCards />}
-          {tab === 'weekly' && <ProgressionPanel mode="weekly" />}
-          {tab === 'monthly' && <ProgressionPanel mode="monthly" />}
-          {tab === 'annual' && <ProgressionPanel mode="annual" />}
-        </motion.div>
-      </AnimatePresence>
-
-      <p className="font-mono text-[10px] text-ink/45 mt-4 text-right">
-        Last synced: {new Date(data.fetchedAt).toLocaleDateString('en-GB', {
-          day: 'numeric', month: 'short', year: 'numeric',
-        })}
-      </p>
+      {tab === "overall" ? <Overall /> : <Progression key={tab} mode={tab} />}
+      <p className="strava-synced">Last synced: {synced}</p>
     </div>
-  )
+  );
 }
