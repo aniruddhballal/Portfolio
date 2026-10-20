@@ -298,7 +298,7 @@ async function main() {
     console.log(`📅 Days to log: ${Math.max(0, daysToLog)}\n`)
 
     let continueLogging = true
-    let currentDate = new Date(nextLogDate)
+    const currentDate = new Date(nextLogDate)
     
     while (continueLogging && currentDate <= today) {
       const dateStr = dateToString(currentDate)

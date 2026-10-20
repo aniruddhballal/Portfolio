@@ -1,36 +1,34 @@
-# Portfolio — Aniruddh Ballal
+# Aniruddh Ballal — Systems Atlas
 
-Built with **Vite + React + TypeScript + Tailwind CSS + Framer Motion**.
+An editorial portfolio about making complex systems explorable. The page opens with science case studies, then offers a browsable project archive, verified experience, writing, artwork, and endurance data.
 
-## Stack
-- Vite · React 19 · TypeScript
-- Tailwind CSS v4
-- Framer Motion (animations & parallax)
-- Lucide React (icons)
-- Google Fonts: Bebas Neue + DM Sans + DM Mono
+## Run locally
 
-## Customising
-
-### Details
-- **`src/data/projects.ts`** — add/edit all projects (name, tagline, description, tech, category, url, year, color)
-- **`src/components/Hero.tsx`** — name, tagline, stack pills, photo
-- **`src/components/About.tsx`** — bio, skill %, timeline
-- **`src/components/Contact.tsx`** — email, GitHub, LinkedIn URLs
-- **`src/components/Navbar.tsx`** — logo initials
-- **`src/components/Footer.tsx`** — name
-
-### Photo
-In `Hero.tsx`, replace the placeholder div inside `.photo-frame` with `<img src="/a-photo.jpg" ... />`.
-
-### Accent color
-Change `#E84B2E` in `tailwind.config.js` (colors.accent) and `src/index.css` (cursor styles).
-
-## Structure
+```sh
+npm install
+npm run dev
 ```
-src/
-  components/   Cursor, Navbar, Hero, Projects, ProjectCard, About, Contact, Footer
-  data/         projects.ts
-  index.css     global styles + cursor + grain overlay
-  App.tsx
-  main.tsx
+
+The app uses Vite, React, TypeScript, Tailwind CSS, and Lucide icons. No runtime API key is needed.
+
+## Content and structure
+
+- `src/App.tsx` contains the page sections, project filter, experience summary, and inline project diagrams.
+- `src/portfolio.css` contains the responsive visual system.
+- `src/data/projects.ts` is the source for all 12 projects and their live links.
+- `src/data/creative.ts` contains the six written pieces and six artworks. The artwork JPGs remain in `public/creative`; smaller WebP thumbnails are in `public/creative/thumbs`.
+- `src/data/strava.json` is a dated snapshot. `scripts/fetch-strava.ts` refreshes it when Strava credentials are available locally. The visible page uses no visitor credentials.
+- `public/resume.pdf` is the source for the dated work history.
+
+The charts have keyboard selectable bars, from/through range controls, and full tables for weekly, monthly, and annual records. The writing and artwork viewer uses a native modal dialog.
+
+## Checks
+
+```sh
+npm run lint
+npm run build
+npm run test:visual
+npm run format
 ```
+
+`test:visual` expects a running local Vite server at `http://localhost:5173/`; set `PORTFOLIO_TEST_URL` to use another URL. It uses Playwright with Microsoft Edge on Windows and Playwright Chromium elsewhere. The test captures desktop, tablet, and mobile screenshots in ignored `artifacts/` and checks filters, dialogs, keyboard selection, mobile navigation, and horizontal overflow. On non-Windows systems, install the browser with `npx playwright install chromium` if needed.
