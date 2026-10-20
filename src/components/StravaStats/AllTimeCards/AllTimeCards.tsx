@@ -17,15 +17,15 @@ export default function AllTimeCards() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       {/* Running card */}
       <motion.div
-        className="border border-ink/10 overflow-hidden"
+        className="border border-ink/15 border-t-2 border-t-accent overflow-hidden bg-paper"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
         <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-1">
-          <span className="font-mono text-xs text-muted tracking-widest uppercase">Running</span>
-          <span className="font-mono text-xs text-muted/40">
+          <span className="font-mono text-xs text-ink/70 tracking-widest uppercase">Running</span>
+          <span className="font-mono text-xs text-ink/60">
             {run.allTime.activities} activities · {fmtDist(run.allTime.distanceKm)} km
           </span>
         </div>
@@ -35,22 +35,22 @@ export default function AllTimeCards() {
           <StatCell value={fmtElev(run.allTime.elevGainM)} label="Elevation" border={false} />
         </div>
         <PBList pbs={run.pbs} direction={-1} />
-        <div className="px-5 py-3 bg-ink/[0.02]">
-          <span className="font-mono text-xs text-muted/50">As of {fetchedDate}</span>
+        <div className="px-5 py-3 bg-ink/[0.03]">
+          <span className="font-mono text-xs text-ink/50">As of {fetchedDate}</span>
         </div>
       </motion.div>
 
       {/* Cycling card */}
       <motion.div
-        className="border border-ink/10 overflow-hidden"
+        className="border border-ink/15 border-t-2 border-t-accent overflow-hidden bg-paper"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.1 }}
       >
         <div className="px-5 py-4 border-b border-ink/10 flex items-center justify-between flex-wrap gap-1">
-          <span className="font-mono text-xs text-muted tracking-widest uppercase">Cycling</span>
-          <span className="font-mono text-xs text-muted/40">
+          <span className="font-mono text-xs text-ink/70 tracking-widest uppercase">Cycling</span>
+          <span className="font-mono text-xs text-ink/60">
             {ride.allTime.activities} activities · {fmtDist(ride.allTime.distanceKm)} km
           </span>
         </div>
@@ -60,8 +60,8 @@ export default function AllTimeCards() {
           <StatCell value={fmtElev(ride.allTime.elevGainM)} label="Elevation" border={false} />
         </div>
         <PBList pbs={ride.pbs} direction={1} />
-        <div className="px-5 py-3 bg-ink/[0.02]">
-          <span className="font-mono text-xs text-muted/50">Ultramarathon · Triathlon · Self-supported</span>
+        <div className="px-5 py-3 bg-ink/[0.03]">
+          <span className="font-mono text-xs text-ink/50">Ultramarathon · Triathlon · Self-supported</span>
         </div>
       </motion.div>
     </div>

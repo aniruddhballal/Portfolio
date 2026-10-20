@@ -42,18 +42,18 @@ export default function StravaStats() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex items-center gap-0 border border-ink/10 mb-6 w-fit">
+      <div className="grid grid-cols-4 items-stretch border border-ink/15 mb-6 w-full max-w-[520px]">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`relative font-mono text-xs px-4 py-2.5 transition-colors ${tab === t.key ? 'text-accent bg-ink/[0.03]' : 'text-muted hover:text-ink'
+            className={`relative font-mono text-xs px-2 md:px-4 py-3 transition-colors ${tab === t.key ? 'text-paper bg-ink' : 'text-ink/60 hover:text-ink hover:bg-ink/[0.04]'
               }`}
           >
             {tab === t.key && (
               <motion.div
                 layoutId="tab-indicator"
-                className="absolute inset-0 border-b-2 border-accent"
+                className="absolute inset-x-0 bottom-0 h-0.5 bg-accent pointer-events-none"
               />
             )}
             {t.label}
@@ -77,7 +77,7 @@ export default function StravaStats() {
         </motion.div>
       </AnimatePresence>
 
-      <p className="font-mono text-[10px] text-muted/30 mt-4 text-right">
+      <p className="font-mono text-[10px] text-ink/45 mt-4 text-right">
         Last synced: {new Date(data.fetchedAt).toLocaleDateString('en-GB', {
           day: 'numeric', month: 'short', year: 'numeric',
         })}

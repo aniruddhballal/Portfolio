@@ -305,8 +305,8 @@ export default function ProgressionChart({
           >
             <defs>
               <linearGradient id="sportGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#1a1a1a" stopOpacity="0.14" />
-                <stop offset="100%" stopColor="#1a1a1a" stopOpacity="0.01" />
+                <stop offset="0%" stopColor="#E84B2E" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#E84B2E" stopOpacity="0.01" />
               </linearGradient>
             </defs>
 
@@ -323,7 +323,7 @@ export default function ProgressionChart({
             <path d={toArea(activePoints)} fill="url(#sportGrad)" />
             <polyline
               points={toPolyline(activePoints)}
-              fill="none" stroke="#1a1a1a" strokeOpacity="0.55" strokeWidth="1.5"
+              fill="none" stroke="#E84B2E" strokeOpacity="0.8" strokeWidth="2"
             />
 
             {/* Drag range highlight */}
@@ -335,7 +335,7 @@ export default function ProgressionChart({
                 <rect
                   x={xOf(lo) - COL_W / 2} y={PAD.top}
                   width={xOf(hi) - xOf(lo) + COL_W} height={cH}
-                  fill="#1a1a1a" fillOpacity="0.06" rx="2"
+                  fill="#E84B2E" fillOpacity="0.08" rx="2"
                   style={{ pointerEvents: 'none' }}
                 />
               )
@@ -346,7 +346,7 @@ export default function ProgressionChart({
               <rect
                 x={xOf(selected) - COL_W / 2} y={PAD.top}
                 width={COL_W} height={cH}
-                fill="#1a1a1a" fillOpacity="0.04" rx="2"
+                fill="#E84B2E" fillOpacity="0.07" rx="2"
               />
             )}
 
@@ -355,7 +355,7 @@ export default function ProgressionChart({
               <line
                 x1={xOf(selected)} y1={PAD.top}
                 x2={xOf(selected)} y2={PAD.top + cH}
-                stroke="#1a1a1a" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="3 3"
+                stroke="#E84B2E" strokeOpacity="0.35" strokeWidth="1" strokeDasharray="3 3"
               />
             )}
 
@@ -372,7 +372,7 @@ export default function ProgressionChart({
                   cx={p.x} cy={p.y}
                   r={inRange ? 3.5 : previewed === i ? 3.5 : 3}
                   fill="transparent"
-                  stroke="#1a1a1a" strokeOpacity={inRange ? 0.7 : previewed === i ? 0.7 : 0.5}
+                  stroke="#0F0F0F" strokeOpacity={inRange ? 0.8 : previewed === i ? 0.8 : 0.55}
                   strokeWidth="1.5"
                 />
               )
@@ -383,7 +383,7 @@ export default function ProgressionChart({
               <circle
                 cx={xOf(selected)} cy={activePoints[selected].y}
                 r={4}
-                fill="#c0392b" fillOpacity={0.9}
+                fill="#E84B2E" fillOpacity={0.95}
                 stroke="#fff" strokeWidth="1.5"
               />
             )}
@@ -398,7 +398,7 @@ export default function ProgressionChart({
                   key={`drag-dot-${k}`}
                   cx={xOf(idx)} cy={activePoints[idx]?.y ?? yOf(0)}
                   r={4}
-                  fill="#c0392b" fillOpacity={0.9}
+                  fill="#E84B2E" fillOpacity={0.95}
                   stroke="#fff" strokeWidth="1.5"
                   style={{ pointerEvents: 'none' }}
                 />
@@ -417,7 +417,7 @@ export default function ProgressionChart({
                   x={x} y={H - 3}
                   textAnchor="middle"
                   fontSize={isMobile ? 10 : 11}
-                  fill="#1a1a1a" fillOpacity="0.35"
+                  fill="#0F0F0F" fillOpacity="0.6"
                   fontFamily="monospace"
                 >
                   {xLabel(entry)}

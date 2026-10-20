@@ -10,7 +10,7 @@ export default function PBList({ pbs, direction = -1 }: PBListProps) {
   return (
     <>
       <div className="px-5 py-3 border-b border-ink/10">
-        <span className="font-mono text-xs text-muted/50 tracking-widest uppercase">Personal bests</span>
+        <span className="font-mono text-xs text-ink/60 tracking-widest uppercase">Personal bests</span>
       </div>
       <div className="divide-y divide-ink/[0.06]">
         {pbs.map((pb, i) => (
@@ -22,8 +22,8 @@ export default function PBList({ pbs, direction = -1 }: PBListProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.3, delay: i * 0.04 }}
           >
-            <span className="font-body text-sm text-muted">{pb.label}</span>
-            <span className="font-mono text-sm text-ink font-medium">{pb.time}</span>
+            <span className="font-body text-sm text-ink/70">{pb.label}</span>
+            <span className="font-mono text-sm text-accent font-medium">{pb.time}</span>
           </motion.div>
         ))}
       </div>
