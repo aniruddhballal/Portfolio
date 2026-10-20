@@ -82,6 +82,20 @@ function monthLabel(key: string): string {
   return d.toLocaleString('en-GB', { month: 'short', year: 'numeric' })
 }
 
+function displayDate(date: string): string {
+  const [year, month, day] = date.split('-').map(Number)
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(year, month - 1, day)))
+}
+
+function displayMonth(month: string): string {
+  return displayDate(`${month}-01`).replace(/^01 /, '')
+}
+
 function r2(n: number): number {
   return Math.round(n * 100) / 100
 }
@@ -204,7 +218,7 @@ async function getActivityInput(type: 'Run' | 'Ride', dateStr: string): Promise<
 }
 
 async function getDayActivities(dateStr: string): Promise<Activity[]> {
-  console.log(`\n📅 Logging activities for ${dateStr}`)
+  console.log(`\n📅 Logging activities for ${displayDate(dateStr)}`)
   const activities: Activity[] = []
 
   while (true) {
@@ -262,8 +276,8 @@ async function main() {
 
     const data = loadStravaData()
     console.log(`✅ Loaded strava.json`)
-    console.log(`   Last weekly entry: ${data.weekly[data.weekly.length - 1].weekStart}`)
-    console.log(`   Last monthly entry: ${data.monthly[data.monthly.length - 1].month}`)
+    console.log(`   Last weekly entry: ${displayDate(data.weekly[data.weekly.length - 1].weekStart)}`)
+    console.log(`   Last monthly entry: ${displayMonth(data.monthly[data.monthly.length - 1].month)}`)
     console.log(`   Last annual entry: ${data.annual[data.annual.length - 1].year}\n`)
 
     // Smart date detection
@@ -279,8 +293,8 @@ async function main() {
     
     const daysToLog = getDaysDifference(nextLogDate, new Date(today.getTime() + 24 * 60 * 60 * 1000))
     
-    console.log(`📊 Last logged date: ${lastLogStr}`)
-    console.log(`📝 Missing data from: ${nextLogStr} to ${todayStr}`)
+    console.log(`📊 Last logged date: ${displayDate(lastLogStr)}`)
+    console.log(`📝 Missing data from: ${displayDate(nextLogStr)} to ${displayDate(todayStr)}`)
     console.log(`📅 Days to log: ${Math.max(0, daysToLog)}\n`)
 
     let continueLogging = true
@@ -289,7 +303,8 @@ async function main() {
     while (continueLogging && currentDate <= today) {
       const dateStr = dateToString(currentDate)
       
-      const skipChoice = await question(`\nLog activities for ${dateStr}? (Yes/Skip/Quit): `).then(a => a.toLowerCase().trim())
+      const readableDate = displayDate(dateStr)
+      const skipChoice = await question(`\nLog activities for ${readableDate}? (Yes/Skip/Quit): `).then(a => a.toLowerCase().trim())
       
       if (skipChoice.startsWith('q')) {
         continueLogging = false
@@ -297,7 +312,7 @@ async function main() {
       }
       
       if (skipChoice.startsWith('s')) {
-        console.log(`  ⏭️ Skipped ${dateStr}`)
+        console.log(`  ⏭️ Skipped ${readableDate}`)
         currentDate.setDate(currentDate.getDate() + 1)
         continue
       }
@@ -310,7 +325,7 @@ async function main() {
       const dayActivities = await getDayActivities(dateStr)
 
       if (dayActivities.length === 0) {
-        console.log(`  ℹ️ No activities logged for ${dateStr}`)
+        console.log(`  ℹ️ No activities logged for ${readableDate}`)
         continue
       }
 
