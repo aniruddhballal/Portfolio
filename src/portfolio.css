@@ -1194,6 +1194,7 @@ h3 em {
   width: min(720px, calc(100vw - 28px));
   max-width: none;
   max-height: min(88vh, 850px);
+  margin: auto;
   padding: 0;
   border: 1px solid #bdc9bd;
   background: #f9f6ee;
@@ -1222,9 +1223,13 @@ h3 em {
   font: 10px var(--font-mono);
   text-transform: uppercase;
 }
+.dialog-header > div {
+  min-width: 0;
+}
 .dialog-header h2 {
   font-size: clamp(28px, 4vw, 44px);
   margin: 8px 0 0;
+  overflow-wrap: anywhere;
 }
 .dialog-header button {
   display: grid;
@@ -1573,6 +1578,19 @@ h3 em {
   }
 }
 @media (max-width: 520px) {
+  .dialog-header {
+    gap: 12px;
+    padding: 24px 20px 20px;
+  }
+  .dialog-header h2 {
+    font-size: clamp(26px, 7.5vw, 34px);
+  }
+  .dialog-body {
+    padding: 24px 20px 32px;
+  }
+  .dialog-footer {
+    padding: 12px 20px;
+  }
   .hero-copy .eyebrow {
     display: flex;
     align-items: flex-start;
