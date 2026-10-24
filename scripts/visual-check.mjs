@@ -72,17 +72,9 @@ for (const [name, viewport] of Object.entries({
         return `${selector}=${element?.getBoundingClientRect().width}/${element?.scrollWidth}`;
       }),
     );
-    const scrollable = await page.evaluate(() => {
-      const top = scrollY;
-      scrollTo(9999, top);
-      const x = scrollX;
-      scrollTo(0, top);
-      return x;
-    });
-    if (scrollable > 1)
-      errors.push(
-        `${name}: horizontal overflow ${horizontalOverflow}px, page scroll ${scrollable}px: ${widths.join(" ")}; ${offenders.join(", ")}`,
-      );
+    errors.push(
+      `${name}: horizontal overflow ${horizontalOverflow}px: ${widths.join(" ")}; ${offenders.join(", ")}`,
+    );
   }
   if (name !== "tablet") {
     const accessibility = await new AxeBuilder({ page })

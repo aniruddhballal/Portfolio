@@ -1023,6 +1023,7 @@ h3 em {
   overflow-y: hidden;
 }
 .bar-column {
+  position: relative;
   display: flex;
   flex: 1 0 44px;
   min-width: 44px;
