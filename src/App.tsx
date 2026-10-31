@@ -1,25 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
-import { projects, type Project } from "./data/projects";
+import { collaborations, projects, type Project } from "./data/projects";
 import { creativeItems, type CreativeItem } from "./data/creative";
 import StravaStats from "./components/StravaStats/StravaStats";
 import CreativeModal from "./components/CreativeModal";
 
 const email = "aniruddhballaldeeksha@gmail.com";
-const filters = [
-  "All",
-  "Finance",
-  "Developer tools",
-  "Security",
-  "Other",
-] as const;
+const filters = ["All", "Independent tools", "Finance", "Security"] as const;
 type Filter = (typeof filters)[number];
 
 function group(project: Project): Filter {
   if (project.category === "FinTech") return "Finance";
-  if (project.category === "Developer Tool") return "Developer tools";
+  if (project.category === "Independent tools") return "Independent tools";
   if (project.category === "Security") return "Security";
-  return "Other";
+  return "All";
 }
 
 function SectionLabel({
@@ -200,6 +194,41 @@ function Hero() {
   );
 }
 
+function ProjectLinks({
+  project,
+  featured = false,
+}: {
+  project: Project;
+  featured?: boolean;
+}) {
+  const visitLabel =
+    project.urlLabel ?? (featured ? "Explore live project" : "Visit project");
+  return (
+    <div className="project-links">
+      {project.url && (
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${visitLabel}: ${project.name}`}
+        >
+          {visitLabel} <ArrowUpRight size={16} aria-hidden="true" />
+        </a>
+      )}
+      {project.repo && (
+        <a
+          href={project.repo}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Source code: ${project.name}`}
+        >
+          Source code <ArrowUpRight size={16} aria-hidden="true" />
+        </a>
+      )}
+    </div>
+  );
+}
+
 function Feature({ project, index }: { project: Project; index: number }) {
   const solar = index === 0;
   return (
@@ -257,7 +286,7 @@ function Feature({ project, index }: { project: Project; index: number }) {
             </small>
           </span>
           <span>
-            {solar ? "500" : "3"}
+            {solar ? "≤ 500" : "3"}
             <small>
               {solar ? "adaptive field seeds" : "perturbation sources"}
             </small>
@@ -265,11 +294,7 @@ function Feature({ project, index }: { project: Project; index: number }) {
         </div>
         <div className="feature-bottom">
           <span>{project.tech.slice(0, 4).join(" · ")}</span>
-          {project.url && (
-            <a href={project.url} target="_blank" rel="noopener noreferrer">
-              Explore live project <ArrowUpRight size={16} />
-            </a>
-          )}
+          <ProjectLinks project={project} featured />
         </div>
       </div>
     </article>
@@ -300,11 +325,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
               <span key={tech}>{tech}</span>
             ))}
           </div>
-          {project.url && (
-            <a href={project.url} target="_blank" rel="noopener noreferrer">
-              Visit project <ArrowUpRight size={16} />
-            </a>
-          )}
+          <ProjectLinks project={project} />
         </div>
       </div>
     </details>
@@ -329,9 +350,9 @@ function Work() {
             <em>when you can interact.</em>
           </h2>
           <p>
-            From scientific models to tools for decisions, these projects make
-            underlying systems legible. Two deep dives lead into a wider
-            archive.
+            Physical models, private tools, and financial workflows. These
+            projects make complex systems easier to explore, and question the
+            defaults of the platforms I use.
           </p>
         </div>
         <div className="feature-list">
@@ -339,43 +360,66 @@ function Work() {
             <Feature key={project.id} project={project} index={index} />
           ))}
         </div>
-        <div className="archive-header">
-          <div>
-            <p className="eyebrow">THE PROJECT ARCHIVE</p>
-            <h3>
-              More work, <em>same curiosity.</em>
-            </h3>
+        <div className="project-archive">
+          <div className="archive-header">
+            <div>
+              <p className="eyebrow">MORE SELECTED WORK</p>
+              <h3>
+                Small revolts, <em>practical tools.</em>
+              </h3>
+              <p className="archive-intro">
+                A few personal alternatives to platform clutter, alongside
+                experiments in security and finance.
+              </p>
+            </div>
+            <span>{archive.length} further projects</span>
           </div>
-          <span>10 further projects / 2024-2026</span>
+          <div
+            className="project-filters"
+            role="group"
+            aria-label="Filter selected projects"
+          >
+            {filters.map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={option === filter}
+                onClick={() => setFilter(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <p className="results-count" aria-live="polite">
+            Showing {visible.length} of {archive.length} projects
+          </p>
+          <div className="project-list personal-project-list">
+            {visible.map((project) => (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                index={projects.indexOf(project)}
+              />
+            ))}
+          </div>
         </div>
-        <div
-          className="project-filters"
-          role="group"
-          aria-label="Filter project archive"
+        <section
+          className="collaboration-work"
+          aria-labelledby="collaboration-title"
         >
-          {filters.map((option) => (
-            <button
-              key={option}
-              type="button"
-              aria-pressed={option === filter}
-              onClick={() => setFilter(option)}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-        <p className="results-count" aria-live="polite">
-          Showing {visible.length} of {archive.length} archive projects
-        </p>
-        <div className="project-list">
-          {visible.map((project) => (
-            <ProjectRow
-              key={project.id}
-              project={project}
-              index={projects.indexOf(project)}
-            />
-          ))}
-        </div>
+          <div className="archive-header">
+            <div>
+              <p className="eyebrow">COLLABORATIONS</p>
+              <h3 id="collaboration-title">Built for people I know.</h3>
+            </div>
+            <span>{collaborations.length} websites</span>
+          </div>
+          <div className="project-list collaboration-project-list">
+            {collaborations.map((project, index) => (
+              <ProjectRow key={project.id} project={project} index={index} />
+            ))}
+          </div>
+        </section>
       </div>
     </section>
   );

@@ -42,6 +42,15 @@ for (const [name, viewport] of Object.entries({
     path: path.join("artifacts", `revamp2-${name}-endurance.png`),
     style: ".site-header, .skip-link { visibility: hidden; }",
   });
+  for (const [selector, section] of [
+    [".project-archive", "projects"],
+    [".collaboration-work", "collaborations"],
+  ]) {
+    await page.locator(selector).screenshot({
+      path: path.join("artifacts", `projects-${name}-${section}.png`),
+      style: ".site-header, .skip-link { visibility: hidden; }",
+    });
+  }
   await page.screenshot({
     path: path.join("artifacts", `revamp2-${name}.png`),
     fullPage: true,
@@ -107,6 +116,126 @@ for (const [name, viewport] of Object.entries({
   );
   if (featureOverflow)
     errors.push(`${name}: endurance content requires horizontal scrolling`);
+
+  const personalRows = page.locator(".personal-project-list .project-row");
+  const collaborationRows = page.locator(
+    ".collaboration-project-list .project-row",
+  );
+  const selectedNames = [
+    ...(await page.locator(".feature-copy h3").allTextContents()).map((text) =>
+      text.trim().replace(/\.$/, ""),
+    ),
+    ...(await personalRows
+      .locator(".project-row-main strong")
+      .allTextContents()),
+  ];
+  const expectedNames = [
+    "Sunalyse",
+    "SatLies",
+    "Queen's Gambit 2.0",
+    "mp3fy",
+    "kNupdate",
+    "dedgram",
+    "LOANlo",
+    "VenPay",
+    "Credex",
+  ];
+  if (JSON.stringify(selectedNames) !== JSON.stringify(expectedNames))
+    errors.push(
+      `${name}: incorrect personal project selection or order: ${selectedNames.join(", ")}`,
+    );
+  const collaborationNames = await collaborationRows
+    .locator(".project-row-main strong")
+    .allTextContents();
+  if (
+    JSON.stringify(collaborationNames) !==
+    JSON.stringify([
+      "Bheeshma",
+      "Project Gudi",
+      "Sankalpa For Change",
+      "Nikhil Lab Site",
+    ])
+  )
+    errors.push(
+      `${name}: incorrect collaborations: ${collaborationNames.join(", ")}`,
+    );
+
+  // Inspect the expanded content too: source links and technology tags must fit.
+  for (const row of await page.locator(".project-row").all()) {
+    await row.locator("summary").click();
+  }
+  for (const project of ["mp3fy", "kNupdate"]) {
+    const row = personalRows.filter({
+      has: page.getByText(project, { exact: true }),
+    });
+    const download = row.getByRole("link", {
+      name: `Download APK: ${project}`,
+      exact: true,
+    });
+    if (
+      (await download.getAttribute("href")) !==
+      `https://raw.githubusercontent.com/aniruddhballal/${project}/main/${project}.apk`
+    )
+      errors.push(`${name}: incorrect Android download for ${project}`);
+  }
+  const credex = personalRows.filter({
+    has: page.getByText("Credex", { exact: true }),
+  });
+  if (
+    (await credex.getByRole("link").count()) !== 1 ||
+    (await credex.getByRole("link").getAttribute("href")) !==
+      "https://github.com/aniruddhballal/Credex"
+  )
+    errors.push(
+      `${name}: Credex should expose its source without an invented live demo`,
+    );
+  for (const project of [
+    "Bheeshma",
+    "Sankalpa For Change",
+    "Nikhil Lab Site",
+  ]) {
+    const row = collaborationRows.filter({
+      has: page.getByText(project, { exact: true }),
+    });
+    if ((await row.getByRole("link", { name: /^Source code:/ }).count()) !== 0)
+      errors.push(`${name}: private ${project} source must not be linked`);
+  }
+  const sources = await page
+    .locator("#work a[aria-label^='Source code:']")
+    .evaluateAll((links) =>
+      links.map((link) => link.getAttribute("href")).sort(),
+    );
+  const expectedSources = [
+    "sunalyse",
+    "SatLies",
+    "queens-gambit-2.0",
+    "mp3fy",
+    "kNupdate",
+    "dedgram",
+    "LOANlo",
+    "VenPay",
+    "Credex",
+    "project-gudi",
+  ]
+    .map((repo) => `https://github.com/aniruddhballal/${repo}`)
+    .sort();
+  if (JSON.stringify(sources) !== JSON.stringify(expectedSources))
+    errors.push(`${name}: incorrect public project source links`);
+  const expandedOverflow = await page
+    .locator("#work")
+    .evaluate((section) =>
+      [...section.querySelectorAll("*")].some(
+        (element) => element.scrollWidth > element.clientWidth + 1,
+      ),
+    );
+  if (expandedOverflow)
+    errors.push(`${name}: expanded project content overflows`);
+  await personalRows
+    .filter({ has: page.getByText("mp3fy", { exact: true }) })
+    .screenshot({
+      path: path.join("artifacts", `projects-${name}-mp3fy-detail.png`),
+      style: ".site-header, .skip-link { visibility: hidden; }",
+    });
   if (name !== "tablet") {
     const accessibility = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
@@ -127,15 +256,31 @@ for (const [name, viewport] of Object.entries({
           `Internal asset ${asset} returned ${assetResponse.status()}`,
         );
     }
+    for (const [filter, expected] of [
+      ["Independent tools", 3],
+      ["Finance", 3],
+      ["Security", 1],
+      ["All", 7],
+    ]) {
+      await page.getByRole("button", { name: filter, exact: true }).click();
+      const count = await personalRows.count();
+      if (count !== expected)
+        errors.push(
+          `${filter} filter returned ${count} projects instead of ${expected}`,
+        );
+      if ((await collaborationRows.count()) !== 4)
+        errors.push(`${filter} filter hid collaborations`);
+      if (
+        (await page.locator(".results-count").textContent()) !==
+        `Showing ${expected} of 7 projects`
+      )
+        errors.push(`${filter} filter has an incorrect results announcement`);
+    }
     await page.getByRole("button", { name: "Security", exact: true }).click();
-    const count = await page.locator(".project-row").count();
-    if (count !== 2) errors.push(`Security filter returned ${count} projects`);
-    const first = page.locator(".project-row summary").first();
+    const first = personalRows.locator("summary").first();
     await first.focus();
     await page.keyboard.press("Enter");
-    if (
-      (await page.locator(".project-row").first().getAttribute("open")) === null
-    )
+    if ((await personalRows.first().getAttribute("open")) === null)
       errors.push("Project details failed to open by keyboard");
     await page.locator(".creative-tile").first().click();
     await page.locator("dialog").waitFor({ state: "visible" });
