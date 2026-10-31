@@ -58,12 +58,16 @@ export default function StravaStats() {
 
       <div className="endurance-overview">
         {milestone && (
-          <div className="endurance-milestone">
-            <p className="endurance-caption">THE LONG RUN</p>
+          <div
+            className="endurance-milestone"
+            role="group"
+            aria-label="Random 50km for fun"
+          >
+            <p className="endurance-caption">RANDOM</p>
             <p className="endurance-milestone-distance">
               50 <span>km</span>
             </p>
-            <h4>In a single run.</h4>
+            <h4>For fun.</h4>
             <div className="endurance-milestone-detail">
               <span>
                 <strong>{milestone.time}</strong>

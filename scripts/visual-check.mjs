@@ -209,7 +209,7 @@ for (const [name, viewport] of Object.entries({
   }
   if (
     !(await endurance
-      .getByText("In a single run.", { exact: true })
+      .getByRole("group", { name: "Random 50km for fun", exact: true })
       .isVisible())
   )
     errors.push(`${name}: the endurance milestone is missing`);
