@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { LoaderCircle, X } from "lucide-react";
 import type { CreativeItem } from "../data/creative";
 
@@ -21,6 +22,8 @@ function Artwork({ item }: { item: CreativeItem }) {
           className={status === "ready" ? "is-ready" : undefined}
           src={item.imagePath}
           alt={item.imageAlt}
+          width={item.imageWidth}
+          height={item.imageHeight}
           onLoad={() => setStatus("ready")}
           onError={() => setStatus("error")}
         />
@@ -49,7 +52,9 @@ function Artwork({ item }: { item: CreativeItem }) {
           </div>
         )}
       </div>
-      <figcaption>{item.medium}</figcaption>
+      <figcaption>
+        {item.medium} · {item.date}
+      </figcaption>
     </figure>
   );
 }
@@ -74,6 +79,14 @@ export default function CreativeModal({ item, onClose }: Props) {
     <dialog
       ref={dialogRef}
       className={`creative-dialog${isArtwork ? " artwork-dialog" : ""}`}
+      style={
+        isArtwork
+          ? ({
+              "--artwork-ratio":
+                (item.imageWidth ?? 1) / (item.imageHeight ?? 1),
+            } as CSSProperties)
+          : undefined
+      }
       aria-labelledby="creative-dialog-title"
       onClose={onClose}
       onClick={(event) => {
@@ -83,9 +96,11 @@ export default function CreativeModal({ item, onClose }: Props) {
       <div className="dialog-panel">
         <div className="dialog-header">
           <div>
-            <span>
-              {item.type} / {item.date}
-            </span>
+            {!isArtwork && (
+              <span>
+                {item.type} / {item.date}
+              </span>
+            )}
             <h2 id="creative-dialog-title">{item.title}</h2>
           </div>
           <button type="button" aria-label="Close piece" onClick={onClose}>
@@ -105,9 +120,11 @@ export default function CreativeModal({ item, onClose }: Props) {
             </div>
           )}
         </div>
-        <div className="dialog-footer">
-          Aniruddh Ballal <span>WORDS & IMAGES</span>
-        </div>
+        {!isArtwork && (
+          <div className="dialog-footer">
+            Aniruddh Ballal <span>WORDS & IMAGES</span>
+          </div>
+        )}
       </div>
     </dialog>
   );

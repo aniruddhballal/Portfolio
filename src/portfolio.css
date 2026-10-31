@@ -1182,25 +1182,45 @@ h3 em {
   font: inherit;
 }
 .artwork-dialog {
+  --artwork-edge: 12px;
+  --artwork-gutter: 12px;
+  /* Reserve room for the compact title, caption, and space outside the frame. */
+  --artwork-image-width: min(
+    calc(100vw - 2 * var(--artwork-edge) - 2 * var(--artwork-gutter) - 2px),
+    calc((100dvh - 140px) * var(--artwork-ratio))
+  );
+  width: calc(var(--artwork-image-width) + 2 * var(--artwork-gutter) + 2px);
+  max-height: calc(100dvh - 2 * var(--artwork-edge));
   overflow: hidden;
 }
 .artwork-dialog .dialog-panel {
-  height: min(calc(88dvh - 2px), 848px);
   max-height: none;
 }
-.artwork-dialog .dialog-header,
-.artwork-dialog .dialog-footer {
+.artwork-dialog .dialog-header {
+  align-items: center;
   flex-shrink: 0;
+  gap: 12px;
+  padding: 8px var(--artwork-gutter);
+  border-bottom: 0;
+}
+.artwork-dialog .dialog-header h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+.artwork-dialog .dialog-header button {
+  width: 44px;
+  height: 44px;
 }
 .artwork-dialog .dialog-body {
   display: flex;
-  flex: 1;
+  padding: 0 var(--artwork-gutter) 12px;
   overflow: hidden;
 }
 .artwork-figure {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
   min-height: 0;
   margin: 0;
@@ -1211,6 +1231,7 @@ h3 em {
   display: grid;
   place-items: center;
   min-height: 0;
+  aspect-ratio: var(--artwork-ratio);
 }
 .artwork-stage img {
   position: absolute;
@@ -1253,6 +1274,7 @@ h3 em {
 .artwork-figure figcaption {
   color: #53665e;
   font: 11px var(--font-mono);
+  line-height: 1.5;
 }
 .dialog-footer {
   display: flex;
@@ -1726,19 +1748,26 @@ h3 em {
     display: none;
   }
 }
+@media (max-width: 520px) {
+  .artwork-dialog {
+    --artwork-edge: 8px;
+    --artwork-gutter: 8px;
+  }
+}
 @media (max-height: 550px) {
   .artwork-dialog .dialog-header {
-    padding: 16px 20px 12px;
+    gap: 8px;
   }
   .artwork-dialog .dialog-header h2 {
-    margin-top: 4px;
-    font-size: 28px;
+    font-size: 18px;
   }
-  .artwork-dialog .dialog-body {
-    padding: 12px 20px 16px;
+  .artwork-dialog .dialog-header button {
+    width: 36px;
+    height: 36px;
   }
-  .artwork-dialog .dialog-footer {
-    padding: 10px 20px;
+  .artwork-figure figcaption {
+    font-size: 10px;
+    line-height: 1.3;
   }
 }
 @media (prefers-reduced-motion: reduce) {

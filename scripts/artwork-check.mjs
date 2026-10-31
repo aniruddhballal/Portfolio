@@ -12,10 +12,12 @@ async function checkFit(page, label) {
     const stage = dialog.querySelector(".artwork-stage");
     const image = stage.querySelector("img");
     const caption = dialog.querySelector("figcaption");
-    const footer = dialog.querySelector(".dialog-footer");
     const bounds = dialog.getBoundingClientRect();
     const frame = stage.getBoundingClientRect();
     const style = getComputedStyle(image);
+    const ratio = image.naturalWidth / image.naturalHeight;
+    const paintedHeight = Math.min(frame.height, frame.width / ratio);
+    const paintedWidth = paintedHeight * ratio;
     return {
       inViewport: bounds.top >= 0 && bounds.bottom <= innerHeight + 1,
       noScroll: [dialog, body, dialog.querySelector("figure")].every(
@@ -30,11 +32,15 @@ async function checkFit(page, label) {
       contained:
         style.objectFit === "contain" && style.objectPosition === "50% 50%",
       hasImage: image.naturalWidth > 0 && image.naturalHeight > 0,
-      hasRoom: frame.height > 70 && frame.width > 150,
+      hasRoom: frame.height > 70 && frame.width > 100,
       captionBelowImage: frame.bottom <= caption.getBoundingClientRect().top,
-      footerBelowCaption:
-        caption.getBoundingClientRect().bottom <=
-        footer.getBoundingClientRect().top,
+      captionInDialog: caption.getBoundingClientRect().bottom <= bounds.bottom,
+      frameMatchesImage: Math.abs(frame.width / frame.height - ratio) < 0.01,
+      usesViewport:
+        paintedWidth >= innerWidth - 52 || paintedHeight >= innerHeight - 144,
+      compactHeader:
+        dialog.querySelector(".dialog-header").getBoundingClientRect().height <=
+        85,
     };
   });
   for (const [check, passed] of Object.entries(layout))
@@ -126,9 +132,9 @@ for (const [engine, browserType] of Object.entries({ chromium, firefox })) {
         await page.locator(".art-tile").nth(index).click();
         await page.locator("dialog img.is-ready").waitFor();
         await checkFit(page, `${engine}/${name}/artwork ${index + 1}`);
-        if (index === 1)
+        if (index === 1 || index === 5)
           await page.screenshot({
-            path: `artifacts/artwork-${engine}-${name}.png`,
+            path: `artifacts/artwork-${engine}-${name}-${index + 1}.png`,
           });
         await page.keyboard.press("Escape");
         await page.locator("dialog").waitFor({ state: "detached" });
