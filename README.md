@@ -15,6 +15,7 @@ The app uses Vite, React, TypeScript, Tailwind CSS, and Lucide icons. No runtime
 
 - `src/App.tsx` contains the page sections, project filter, experience summary, and inline project diagrams.
 - `src/portfolio.css` contains the responsive visual system.
+- `public/organisations/` contains official logos for the organisation-led work history; `docs/organisation-assets.md` records their sources.
 - `src/data/projects.ts` contains the nine selected personal projects and four collaborations, with verified public source, live demo, and Android download links. Sunalyse and SatLies lead as featured studies; the remaining personal projects retain their selected order in the expandable list.
 - `docs/project-sources.md` records the repository review, source revisions, and factual boundaries behind the project copy.
 - `src/data/creative.ts` contains the six written pieces and six artworks. The artwork JPGs remain in `public/creative`; smaller WebP thumbnails are in `public/creative/thumbs`.

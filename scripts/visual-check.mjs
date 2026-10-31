@@ -38,6 +38,14 @@ for (const [name, viewport] of Object.entries({
   await page.locator(".feature-solar").screenshot({
     path: path.join("artifacts", `revamp2-${name}-case-study.png`),
   });
+  await page.locator(".experience-list").scrollIntoViewIfNeeded();
+  await page
+    .locator(".experience-logo")
+    .evaluateAll((logos) => Promise.all(logos.map((logo) => logo.decode())));
+  await page.locator(".experience-list").screenshot({
+    path: path.join("artifacts", `experience-${name}.png`),
+    style: ".site-header, .skip-link { visibility: hidden; }",
+  });
   await page.locator(".strava-wrap").screenshot({
     path: path.join("artifacts", `revamp2-${name}-endurance.png`),
     style: ".site-header, .skip-link { visibility: hidden; }",
@@ -85,6 +93,43 @@ for (const [name, viewport] of Object.entries({
     errors.push(
       `${name}: horizontal overflow ${horizontalOverflow}px: ${widths.join(" ")}; ${offenders.join(", ")}`,
     );
+  }
+  const jobs = await page.locator(".experience-item").evaluateAll((items) =>
+    items.map((item) => {
+      const heading = item.querySelector("h4");
+      const role = item.querySelector(".experience-role");
+      const logo = item.querySelector("img");
+      return {
+        organisation: heading.textContent,
+        role: role.textContent,
+        headingSize: parseFloat(getComputedStyle(heading).fontSize),
+        roleSize: parseFloat(getComputedStyle(role).fontSize),
+        logoLoaded: logo.complete && logo.naturalWidth > 0,
+        logoBesideName:
+          logo.getBoundingClientRect().right <=
+          heading.getBoundingClientRect().left,
+      };
+    }),
+  );
+  if (
+    JSON.stringify(jobs.map((job) => job.organisation)) !==
+    JSON.stringify([
+      "Indiassetz",
+      "Qwixpert Consulting",
+      "Indiassetz",
+      "IISc, Bengaluru",
+    ])
+  )
+    errors.push(`${name}: work history organisations changed`);
+  for (const job of jobs) {
+    if (job.headingSize <= job.roleSize)
+      errors.push(
+        `${name}: ${job.organisation} should be more prominent than the role`,
+      );
+    if (!job.logoLoaded || !job.logoBesideName)
+      errors.push(
+        `${name}: ${job.organisation} logo failed to load or sit beside its name`,
+      );
   }
   const endurance = page.getByRole("region", { name: "Going the distance." });
   if ((await endurance.locator("button, select, table, details").count()) !== 0)

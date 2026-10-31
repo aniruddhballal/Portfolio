@@ -430,6 +430,7 @@ const experience = [
     period: "Mar - Oct 2026",
     role: "Assistant Software Engineer",
     place: "Indiassetz",
+    logo: "/organisations/indiassetz.webp",
     detail:
       "React Native and Next.js product work across mobile compatibility, CRM sales and payment flows, and the ARCA investor platform.",
   },
@@ -437,6 +438,7 @@ const experience = [
     period: "Jan - Mar 2026",
     role: "Data Analyst Intern",
     place: "Qwixpert Consulting",
+    logo: "/organisations/qwixpert.jpg",
     detail:
       "Translated client data and legacy spreadsheet workflows into deployed software tools.",
   },
@@ -444,6 +446,7 @@ const experience = [
     period: "Jun - Jul 2025",
     role: "Frontend Web Dev Intern",
     place: "Indiassetz",
+    logo: "/organisations/indiassetz.webp",
     detail:
       "Built React and MUI interfaces and refined interactions for production workflows.",
   },
@@ -451,6 +454,7 @@ const experience = [
     period: "Jun - Aug 2024",
     role: "Solar Physics Intern",
     place: "IISc, Bengaluru",
+    logo: "/organisations/iisc.png",
     detail:
       "Worked under Dr. Prantika Bhowmik on solar magnetic field and cycle modeling with Python and scientific computing tools.",
   },
@@ -508,14 +512,25 @@ function Practice() {
           <div className="experience-list">
             <h3>Where I’ve worked</h3>
             {experience.map((item) => (
-              <div className="experience-item" key={item.role + item.place}>
-                <span>{item.period}</span>
-                <div>
-                  <strong>{item.role}</strong>
-                  <em>{item.place}</em>
-                  <p>{item.detail}</p>
+              <article className="experience-item" key={item.role + item.place}>
+                <img
+                  className="experience-logo"
+                  src={item.logo}
+                  alt=""
+                  width="64"
+                  height="64"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="experience-copy">
+                  <h4>{item.place}</h4>
+                  <div className="experience-meta">
+                    <p className="experience-role">{item.role}</p>
+                    <span className="experience-period">{item.period}</span>
+                  </div>
+                  <p className="experience-detail">{item.detail}</p>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
