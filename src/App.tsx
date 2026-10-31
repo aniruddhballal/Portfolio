@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
 import { projects, type Project } from "./data/projects";
 import { creativeItems, type CreativeItem } from "./data/creative";
-import stravaData from "./data/strava.json";
 import StravaStats from "./components/StravaStats/StravaStats";
 import CreativeModal from "./components/CreativeModal";
 
@@ -560,32 +559,6 @@ function Elsewhere() {
               </span>
             </button>
           ))}
-        </div>
-        <div className="endurance-header">
-          <div>
-            <p className="eyebrow">ENDURANCE / THE LONG VIEW</p>
-            <h3>Movement, measured.</h3>
-            <p>
-              Running and riding data, with periods to explore and personal
-              bests from a Strava snapshot.
-            </p>
-          </div>
-          <div className="endurance-totals">
-            <span>
-              <strong>
-                {Math.round(stravaData.run.allTime.distanceKm).toLocaleString()}
-              </strong>{" "}
-              km run
-            </span>
-            <span>
-              <strong>
-                {Math.round(
-                  stravaData.ride.allTime.distanceKm,
-                ).toLocaleString()}
-              </strong>{" "}
-              km ridden
-            </span>
-          </div>
         </div>
         <div className="strava-wrap">
           <StravaStats />

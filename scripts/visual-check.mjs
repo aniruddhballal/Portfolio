@@ -40,6 +40,7 @@ for (const [name, viewport] of Object.entries({
   });
   await page.locator(".strava-wrap").screenshot({
     path: path.join("artifacts", `revamp2-${name}-endurance.png`),
+    style: ".site-header, .skip-link { visibility: hidden; }",
   });
   await page.screenshot({
     path: path.join("artifacts", `revamp2-${name}.png`),
@@ -65,8 +66,8 @@ for (const [name, viewport] of Object.entries({
         ".site-width",
         ".strava-wrap",
         ".strava-stats",
-        ".strava-panel",
-        ".bar-chart",
+        ".endurance-overview",
+        ".endurance-records",
       ].map((selector) => {
         const element = document.querySelector(selector);
         return `${selector}=${element?.getBoundingClientRect().width}/${element?.scrollWidth}`;
@@ -76,6 +77,36 @@ for (const [name, viewport] of Object.entries({
       `${name}: horizontal overflow ${horizontalOverflow}px: ${widths.join(" ")}; ${offenders.join(", ")}`,
     );
   }
+  const endurance = page.getByRole("region", { name: "Going the distance." });
+  if ((await endurance.locator("button, select, table, details").count()) !== 0)
+    errors.push(
+      `${name}: the endurance feature still exposes archive controls`,
+    );
+  const bests = endurance.locator(".endurance-records dl > div");
+  if ((await bests.count()) !== 3)
+    errors.push(`${name}: expected three selected running bests`);
+  for (const [label, time] of [
+    ["5K", "20:44"],
+    ["10K", "46:02"],
+    ["Half marathon", "1:57:42"],
+  ]) {
+    const best = bests.filter({ has: page.getByText(label, { exact: true }) });
+    if ((await best.locator("dd").textContent()) !== time)
+      errors.push(`${name}: incorrect ${label} best`);
+  }
+  if (
+    !(await endurance
+      .getByText("In a single run.", { exact: true })
+      .isVisible())
+  )
+    errors.push(`${name}: the endurance milestone is missing`);
+  const featureOverflow = await endurance.evaluate((section) =>
+    [...section.querySelectorAll("*")].some(
+      (element) => element.scrollWidth > element.clientWidth + 1,
+    ),
+  );
+  if (featureOverflow)
+    errors.push(`${name}: endurance content requires horizontal scrolling`);
   if (name !== "tablet") {
     const accessibility = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
@@ -117,22 +148,6 @@ for (const [name, viewport] of Object.entries({
       );
     await page.keyboard.press("Escape");
     await page.locator("dialog").waitFor({ state: "detached" });
-    await page.getByRole("button", { name: "Annual" }).click();
-    if (
-      (await page
-        .getByRole("button", { name: "Annual" })
-        .getAttribute("aria-pressed")) !== "true"
-    )
-      errors.push("Annual Strava view failed");
-    await page.locator(".bar-column").first().focus();
-    await page.keyboard.press("Enter");
-    if (
-      (await page
-        .locator(".bar-column")
-        .first()
-        .getAttribute("aria-pressed")) !== "true"
-    )
-      errors.push("Strava bar failed keyboard selection");
     await page.locator(".art-tile").first().click();
     await page.locator("dialog img").waitFor({ state: "visible" });
     await page.keyboard.press("Escape");
