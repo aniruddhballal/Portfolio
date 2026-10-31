@@ -2,7 +2,7 @@
 
 \usepackage[empty]{fullpage}
 \usepackage{titlesec}
-\usepackage[usenames,dvipsnames]{color}
+\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
@@ -10,7 +10,9 @@
 \usepackage{graphicx}
 \usepackage{multicol}
 \usepackage{paracol}
-\input{glyphtounicode}
+\ifdefined\pdfglyphtounicode
+  \input{glyphtounicode}
+\fi
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -36,7 +38,9 @@
 }{}{0em}{}[\color{black}\titlerule\vspace{2pt}]
 \titlespacing*{\section}{0pt}{5pt}{2pt}
 
-\pdfgentounicode=1
+\ifdefined\pdfgentounicode
+  \pdfgentounicode=1
+\fi
 
 % Tight bullet
 \newcommand{\rItem}[1]{\item\footnotesize{#1\vspace{-1pt}}}
@@ -141,7 +145,7 @@
 \vspace{4pt}
 
 \entry{Data Analyst Intern $|$ Qwixpert Consulting}{Jan--Mar 2026}\\[4pt]
-{\small Built and deployed end-to-end full-stack tools, translating client data and legacy Excel workflows into scalable, high-performance solutions; diagnosed real-world problems and delivered accurate, maintainable systems.}
+{\small Analysed client data, automated reporting across Excel workbooks and prepared consulting presentations. Independently built decision-support tools for supply-chain network design, demand forecasting and dispatch planning.}
 
 \vspace{4pt}
 

@@ -20,7 +20,7 @@ The app uses Vite, React, TypeScript, Tailwind CSS, and Lucide icons. No runtime
 - `docs/project-sources.md` records the repository review, source revisions, and factual boundaries behind the project copy.
 - `src/data/creative.ts` contains the six written pieces and six artworks. The artwork JPGs remain in `public/creative`; smaller WebP thumbnails are in `public/creative/thumbs`.
 - `src/data/strava.json` is a dated snapshot. `scripts/fetch-strava.ts` refreshes it when Strava credentials are available locally. The visible page uses no visitor credentials.
-- `public/resume.pdf` is the source for the dated work history.
+- `docs/resume.tex` is the editable résumé source, with its existing portrait in `docs/picture2.jpg`. `public/resume.pdf` is the downloadable version; regenerate it when changing the source (for example, `tectonic --outdir public docs/resume.tex`). The Qwixpert summary distinguishes client analysis and reporting automation from separately built decision-support tools.
 
 The endurance feature shows a 50 km running highlight, lifetime running and cycling totals, and selected 5K, 10K, and half-marathon best efforts. It links to Strava for the full history. The complete snapshot and collection scripts are retained; the display reads its highlights from that snapshot. The writing and artwork viewer uses a native modal dialog.
 

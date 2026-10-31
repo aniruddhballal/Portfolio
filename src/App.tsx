@@ -452,7 +452,7 @@ const experience = [
         period: "Jan - Mar 2026",
         role: "Data Analyst Intern",
         detail:
-          "Translated client data and legacy spreadsheet workflows into deployed software tools.",
+          "Analysed client data, automated reporting across linked workbooks, and prepared consulting presentations. I also built tools for planning supply-chain networks, comparing demand forecasts, and managing dispatch plans, with maps, dashboards, and spreadsheet reports.",
       },
     ],
   },
@@ -484,9 +484,8 @@ function Practice() {
             </h2>
             <p>
               I move between models, interfaces, and the practical details that
-              make software useful. A physics question becomes a
-              visualization. A messy business process becomes a clearer
-              product.
+              make software useful. A physics question becomes a visualization.
+              A messy business process becomes a clearer product.
             </p>
             <div className="skill-groups">
               <div>
