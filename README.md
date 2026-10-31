@@ -20,7 +20,7 @@ The app uses Vite, React, TypeScript, Tailwind CSS, and Lucide icons. No runtime
 - `src/data/strava.json` is a dated snapshot. `scripts/fetch-strava.ts` refreshes it when Strava credentials are available locally. The visible page uses no visitor credentials.
 - `public/resume.pdf` is the source for the dated work history.
 
-The charts have keyboard selectable bars, from/through range controls, and full tables for weekly, monthly, and annual records. The writing and artwork viewer uses a native modal dialog.
+The endurance feature shows a 50 km running highlight, lifetime running and cycling totals, and selected 5K, 10K, and half-marathon best efforts. It links to Strava for the full history. The complete snapshot and collection scripts are retained; the display reads its highlights from that snapshot. The writing and artwork viewer uses a native modal dialog.
 
 ## Checks
 
@@ -31,4 +31,4 @@ npm run test:visual
 npm run format
 ```
 
-`test:visual` expects a running local Vite server at `http://localhost:5173/`; set `PORTFOLIO_TEST_URL` to use another URL. It uses Playwright with Microsoft Edge on Windows and Playwright Chromium elsewhere. The test captures desktop, tablet, and mobile screenshots in ignored `artifacts/` and checks filters, dialogs, keyboard selection, mobile navigation, and horizontal overflow. On non-Windows systems, install the browser with `npx playwright install chromium` if needed.
+`test:visual` expects a running local Vite server at `http://localhost:5173/`; set `PORTFOLIO_TEST_URL` to use another URL. It uses Playwright with Microsoft Edge on Windows and Playwright Chromium elsewhere. The test captures desktop, tablet, mobile, and compact screenshots in ignored `artifacts/` and checks accessibility, filters, dialogs, keyboard interaction, mobile navigation, endurance highlights, and horizontal overflow. Update the expected running bests in the check when refreshing the snapshot. On non-Windows systems, install the browser with `npx playwright install chromium` if needed.

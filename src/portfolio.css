@@ -849,306 +849,174 @@ h3 em {
   font: 9px var(--font-mono);
   text-align: right;
 }
+/* A small endurance feature, with the full training history on Strava. */
+.strava-wrap {
+  margin-top: 120px;
+}
 .endurance-header {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 30px;
-  margin: 120px 0 35px;
+  margin-bottom: 30px;
 }
 .endurance-header .eyebrow {
-  color: var(--color-accent);
+  margin-bottom: 10px;
 }
 .endurance-header h3 {
-  margin: 8px 0 15px;
+  margin: 0 0 14px;
 }
 .endurance-header p:last-child {
-  max-width: 530px;
-  color: #667a73;
+  margin-bottom: 0;
+  color: #50645f;
   font-size: 14px;
   line-height: 1.6;
 }
-.endurance-totals {
-  display: flex;
-  gap: 25px;
-}
-.endurance-totals span {
-  color: #6f807a;
-  font: 11px var(--font-mono);
-  white-space: nowrap;
-}
-.endurance-totals strong {
-  display: block;
-  color: var(--color-ink);
-  font: 400 43px var(--font-display);
-}
-.strava-wrap {
-  padding: clamp(16px, 2.5vw, 35px);
-  border: 1px solid #becac1;
-  background: #f6f3eb;
-}
-/* Period exploration */
-.strava-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  border-bottom: 1px solid #bdcbc2;
-  padding-bottom: 18px;
-}
-.strava-heading span,
-.strava-heading a,
-.strava-synced,
-.strava-label {
-  font: 10px var(--font-mono);
-  letter-spacing: 0.06em;
-}
-.strava-heading a {
-  color: var(--color-ink);
-  text-underline-offset: 4px;
-}
-.strava-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 24px 0;
-}
-.strava-tabs button,
-.sport-toggle button {
-  min-width: 82px;
-  padding: 9px 14px;
-  border: 1px solid #9bad9e;
-  background: transparent;
-  color: var(--color-ink);
-  font: 11px var(--font-mono);
-}
-.strava-tabs button[aria-pressed="true"],
-.sport-toggle button[aria-pressed="true"] {
-  color: #fff;
-  background: var(--color-ink);
-  border-color: var(--color-ink);
-}
-.strava-panel {
-  overflow: hidden;
-  border: 1px solid #b7c5bb;
-  background: #fcfaf4;
-}
-.strava-panel-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 17px 23px;
-  border-bottom: 1px solid #d2dcd2;
-}
-.strava-panel-top p {
-  margin: 6px 0 0;
-  color: #52665d;
-  font-size: 12px;
-}
-.strava-label {
-  color: #ac3e22;
-}
-.sport-toggle {
-  display: inline-flex;
-  gap: 5px;
-}
-.sport-toggle button {
-  min-width: 58px;
-}
-.strava-summary {
+.endurance-overview {
   display: grid;
-  grid-template-columns: 1.45fr 0.55fr;
+  grid-template-columns: 1fr 1.15fr;
+  border: 1px solid #becac1;
 }
-.strava-summary > div {
-  padding: 26px 30px;
+.endurance-caption {
+  margin: 0;
+  font: 10px/1.6 var(--font-mono);
+  letter-spacing: 0.07em;
 }
-.strava-summary > div + div {
+.endurance-milestone {
+  min-width: 0;
+  padding: 32px 36px;
   background: var(--color-ink);
-  color: #fff;
+  color: var(--color-paper);
 }
-.strava-summary > div + div .strava-label {
+.endurance-milestone .endurance-caption {
   color: #f4a684;
 }
-.strava-summary strong,
-.overall-sport > strong {
-  display: block;
-  margin-top: 10px;
-  font: 400 clamp(40px, 5vw, 72px)/1 var(--font-display);
+.endurance-milestone-distance {
+  margin: 22px 0 8px;
+  font: 400 clamp(84px, 8vw, 120px)/0.95 var(--font-display);
   letter-spacing: -0.06em;
 }
-.strava-summary strong small,
-.overall-sport > strong small {
-  font: 400 18px var(--font-display);
-  letter-spacing: 0;
+.endurance-milestone-distance > span {
+  font-size: 0.32em;
+  letter-spacing: -0.03em;
 }
-.strava-summary p {
-  margin: 9px 0 0;
-  font: 11px/1.5 var(--font-mono);
-  color: #536861;
+.endurance-milestone h4 {
+  margin: 0;
+  font: 400 25px/1.2 var(--font-display);
+  letter-spacing: -0.025em;
 }
-.strava-summary > div + div p {
-  color: #bed2ca;
-}
-.strava-range {
+.endurance-milestone-detail {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  padding: 19px 25px;
-  border-top: 1px solid #d2dcd2;
-}
-.strava-range label {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font: 11px var(--font-mono);
-}
-.strava-range select {
-  max-width: 190px;
-  padding: 8px 25px 8px 9px;
-  border: 1px solid #acbdb0;
-  border-radius: 0;
-  background: #fff;
-  color: var(--color-ink);
-  font: 11px var(--font-mono);
-}
-.bar-chart {
-  display: flex;
-  align-items: stretch;
-  gap: clamp(5px, 1vw, 15px);
-  height: 300px;
-  max-width: 100%;
-  padding: 22px 26px 16px;
-  border-top: 1px solid #d2dcd2;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-.bar-column {
-  position: relative;
-  display: flex;
-  flex: 1 0 44px;
-  min-width: 44px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: end;
-  gap: 6px;
-  border: 0;
-  background: transparent;
-  color: #536861;
-}
-.bar-value {
-  font: 10px var(--font-mono);
-  opacity: 0;
-}
-.bar-column:hover .bar-value,
-.bar-column:focus-visible .bar-value,
-.bar-column[aria-pressed="true"] .bar-value {
-  opacity: 1;
-}
-.bar-track {
-  display: flex;
   align-items: end;
-  width: min(100%, 56px);
-  height: 215px;
-  border-bottom: 1px solid #98aba0;
-}
-.bar-fill {
-  width: 100%;
-  min-height: 2px;
-  background: #7caaa2;
-  transition: height 0.25s;
-}
-.bar-column[aria-pressed="true"] .bar-fill {
-  background: var(--color-accent);
-}
-.bar-column:hover .bar-fill {
-  background: #b4462a;
-}
-.bar-date {
-  font: 10px var(--font-mono);
-  white-space: nowrap;
-}
-.strava-data-table {
-  border-top: 1px solid #d2dcd2;
-}
-.strava-data-table summary {
-  padding: 14px 24px;
-  cursor: pointer;
-  font: 11px var(--font-mono);
-}
-.strava-data-table > div {
-  max-height: 330px;
-  overflow: auto;
-  padding: 0 24px 20px;
-}
-.strava-data-table table {
-  width: 100%;
-  border-collapse: collapse;
-  font: 11px var(--font-mono);
-}
-.strava-data-table th,
-.strava-data-table td {
-  padding: 9px 10px;
-  border-bottom: 1px solid #e1e7dd;
-  text-align: left;
-  white-space: nowrap;
-}
-.overall-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-.overall-sport {
-  min-width: 0;
-  padding: 30px;
-  border: 1px solid #b7c5bb;
-  background: #fcfaf4;
-}
-.overall-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 25px 0;
-  margin-top: 25px;
-  border-top: 1px solid #d2dcd2;
-  border-bottom: 1px solid #d2dcd2;
-}
-.overall-metrics span {
-  font: 400 25px var(--font-display);
-}
-.overall-metrics small {
-  display: block;
-  margin-top: 5px;
-  color: #536861;
-  font: 10px var(--font-mono);
-}
-.overall-sport h4 {
-  margin: 25px 0 10px;
-  font: 500 12px var(--font-mono);
-  text-transform: uppercase;
-}
-.overall-sport ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  max-height: 315px;
-  overflow: auto;
-}
-.overall-sport li {
-  display: flex;
   justify-content: space-between;
-  gap: 12px;
-  padding: 9px 0;
-  border-bottom: 1px solid #e0e7de;
-  font-size: 12px;
+  gap: 16px;
+  margin-top: 28px;
+  color: #bed2ca;
+  font: 10px/1.6 var(--font-mono);
 }
-.overall-sport li strong {
-  font: 500 12px var(--font-mono);
-  white-space: nowrap;
+.endurance-milestone-detail strong {
+  display: block;
+  color: var(--color-paper);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
 }
-.strava-synced {
-  text-align: right;
-  margin: 14px 0 0;
-  color: #52665d;
+.endurance-lifetime {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  margin: 0;
+}
+.endurance-lifetime:only-child {
+  grid-column: 1 / -1;
+}
+.endurance-lifetime > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 32px 24px;
+}
+.endurance-lifetime > div + div {
+  border-left: 1px solid #becac1;
+}
+.endurance-lifetime dt {
+  color: #50645f;
+}
+.endurance-lifetime dd {
+  margin: 22px 0 0;
+}
+.endurance-distance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font: 400 clamp(36px, 4.4vw, 64px)/1.1 var(--font-display);
+  letter-spacing: -0.055em;
+}
+.endurance-distance small {
+  font-size: 18px;
+  letter-spacing: 0;
+}
+.endurance-activity-count {
+  display: block;
+  margin-top: 12px;
+  color: #50645f;
+  font: 11px/1.5 var(--font-mono);
+}
+.endurance-records {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: center;
+  border: 1px solid #becac1;
+  border-top: 0;
+}
+.endurance-records h4 {
+  margin: 0;
+  padding: 24px;
+  color: #50645f;
+  font: 400 11px/1.6 var(--font-mono);
+}
+.endurance-records dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+.endurance-records dl > div {
+  min-width: 0;
+  padding: 24px;
+  border-left: 1px solid #becac1;
+}
+.endurance-records dt {
+  color: #50645f;
+  font: 11px/1.5 var(--font-mono);
+}
+.endurance-records dd {
+  margin: 8px 0 0;
+  font: 400 clamp(26px, 3vw, 40px)/1.2 var(--font-display);
+  letter-spacing: -0.035em;
+}
+.endurance-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: 18px;
+  color: #50645f;
+  font: 11px/1.6 var(--font-mono);
+}
+.endurance-footer p {
+  margin: 0;
+}
+.endurance-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  color: var(--color-ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+.endurance-footer a:hover {
+  color: #b63e22;
 }
 
 /* Readable small metadata throughout the light chapters */
@@ -1182,8 +1050,7 @@ h3 em {
 .project-row-main > span,
 .experience-item > span,
 .experience-item p,
-.endurance-header p:last-child,
-.endurance-totals span {
+.endurance-header p:last-child {
   color: #50645f;
 }
 .contact-section .section-label > span:first-child {
@@ -1542,12 +1409,37 @@ h3 em {
   .art-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .endurance-header {
-    display: block;
+  .strava-wrap {
     margin-top: 90px;
   }
-  .endurance-totals {
-    margin-top: 30px;
+  .endurance-overview {
+    grid-template-columns: 1fr;
+  }
+  .endurance-milestone {
+    padding: 28px;
+  }
+  .endurance-milestone-distance {
+    margin-top: 18px;
+    font-size: 90px;
+  }
+  .endurance-milestone-detail {
+    margin-top: 22px;
+  }
+  .endurance-lifetime > div {
+    padding: 28px 24px;
+  }
+  .endurance-records {
+    grid-template-columns: 1fr;
+  }
+  .endurance-records h4 {
+    padding: 20px 24px 0;
+  }
+  .endurance-records dl > div {
+    padding: 20px 24px;
+    border-left: 0;
+  }
+  .endurance-records dl > div + div {
+    border-left: 1px solid #becac1;
   }
   .contact-section {
     padding-top: 80px;
@@ -1558,27 +1450,58 @@ h3 em {
   .contact-links {
     padding-top: 0;
   }
-  .strava-summary {
-    grid-template-columns: 1fr 1fr;
-  }
-  .strava-summary > div {
-    padding: 22px 16px;
-  }
-  .strava-summary strong {
-    font-size: 44px;
-  }
-  .bar-chart {
-    height: 265px;
-    padding-inline: 12px;
-  }
-  .bar-track {
-    height: 180px;
-  }
-  .overall-grid {
-    grid-template-columns: 1fr;
-  }
 }
 @media (max-width: 520px) {
+  .endurance-milestone {
+    padding: 24px;
+  }
+  .endurance-lifetime > div {
+    padding: 24px 16px;
+  }
+  .endurance-lifetime dd {
+    margin-top: 14px;
+  }
+  .endurance-lifetime dt {
+    min-height: 3.2em;
+  }
+  .endurance-distance {
+    font-size: clamp(32px, 8.5vw, 44px);
+  }
+  .endurance-distance small {
+    font-size: 15px;
+  }
+  .endurance-caption {
+    font-size: 9px;
+  }
+  .endurance-records h4 {
+    padding: 20px 16px 8px;
+  }
+  .endurance-records dl {
+    grid-template-columns: 1fr;
+    padding: 0 16px;
+  }
+  .endurance-records dl > div,
+  .endurance-records dl > div + div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-left: 0;
+  }
+  .endurance-records dl > div + div {
+    border-top: 1px solid #d2dcd2;
+  }
+  .endurance-records dd {
+    margin: 0;
+    font-size: 28px;
+  }
+  .endurance-footer {
+    gap: 4px;
+  }
+  .endurance-footer p {
+    flex-basis: 100%;
+  }
   .dialog-header {
     gap: 12px;
     padding: 24px 20px 20px;
@@ -1672,12 +1595,6 @@ h3 em {
     font-size: 8px;
     text-align: left;
   }
-  .endurance-totals {
-    gap: 25px;
-  }
-  .endurance-totals strong {
-    font-size: 34px;
-  }
   .skill-groups > div {
     grid-template-columns: 85px 1fr;
   }
@@ -1690,25 +1607,6 @@ h3 em {
   }
   .site-footer span:nth-child(2) {
     display: none;
-  }
-  .strava-panel-top {
-    align-items: start;
-    flex-direction: column;
-  }
-  .strava-summary {
-    grid-template-columns: 1fr;
-  }
-  .strava-summary strong {
-    font-size: 49px;
-  }
-  .strava-range select {
-    max-width: 205px;
-  }
-  .strava-heading {
-    flex-wrap: wrap;
-  }
-  .bar-column {
-    flex-basis: 50px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
