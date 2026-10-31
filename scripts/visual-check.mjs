@@ -147,6 +147,55 @@ for (const [name, viewport] of Object.entries({
       `${name}: the endurance feature still exposes archive controls`,
     );
   const bests = endurance.locator(".endurance-records dl > div");
+  const annualChart = endurance.getByRole("figure", {
+    name: "Year after year.",
+  });
+  if (!(await annualChart.isVisible()))
+    errors.push(`${name}: annual distance chart is missing`);
+  const yearly = await annualChart
+    .locator(".endurance-year")
+    .evaluateAll((years) =>
+      years.map((year) => ({
+        label: year.getAttribute("aria-label"),
+        values: [...year.querySelectorAll(".endurance-bar-value")].map(
+          (value) => Number(value.textContent),
+        ),
+        bars: [...year.querySelectorAll(".endurance-bar")].map(
+          (bar) => bar.getBoundingClientRect().height,
+        ),
+        baseline: [...year.querySelectorAll(".endurance-bar")].map(
+          (bar) => bar.getBoundingClientRect().bottom,
+        ),
+      })),
+    );
+  if (
+    JSON.stringify(yearly.map(({ values }) => values)) !==
+    JSON.stringify([
+      [87, 619],
+      [201, 276],
+      [614, 1042],
+      [1008, 476],
+    ])
+  )
+    errors.push(`${name}: annual totals or year order changed`);
+  if (
+    !yearly[0]?.label.startsWith("2023:") ||
+    !yearly[3]?.label.startsWith("2026 year to date:")
+  )
+    errors.push(
+      `${name}: annual chart should start with recorded activity and flag the incomplete year`,
+    );
+  for (const year of yearly) {
+    if (Math.abs(year.baseline[0] - year.baseline[1]) > 1)
+      errors.push(`${name}: annual bars should share a zero baseline`);
+  }
+  const pixelsPerKm = yearly.flatMap((year) =>
+    year.bars.map((height, index) => height / year.values[index]),
+  );
+  if (Math.max(...pixelsPerKm) - Math.min(...pixelsPerKm) > 0.002)
+    errors.push(
+      `${name}: annual running and cycling bars should use the same scale`,
+    );
   if ((await bests.count()) !== 3)
     errors.push(`${name}: expected three selected running bests`);
   for (const [label, time] of [
@@ -160,7 +209,7 @@ for (const [name, viewport] of Object.entries({
   }
   if (
     !(await endurance
-      .getByText("In a single run.", { exact: true })
+      .getByRole("group", { name: "Random 50km for fun", exact: true })
       .isVisible())
   )
     errors.push(`${name}: the endurance milestone is missing`);

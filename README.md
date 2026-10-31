@@ -23,7 +23,7 @@ The app uses Vite, React, TypeScript, Tailwind CSS, and Lucide icons. No runtime
 - `src/data/strava.json` is a dated snapshot. `scripts/fetch-strava.ts` refreshes it when Strava credentials are available locally. The visible page uses no visitor credentials.
 - `docs/resume.tex` is the editable résumé source, with its existing portrait in `docs/picture2.jpg`. `public/resume.pdf` is the downloadable version; regenerate it when changing the source (for example, `tectonic --outdir public docs/resume.tex`). The Qwixpert summary distinguishes client analysis and reporting automation from separately built decision-support tools.
 
-The endurance feature shows a 50 km running highlight, lifetime running and cycling totals, and selected 5K, 10K, and half-marathon best efforts. It links to Strava for the full history. The complete snapshot and collection scripts are retained; the display reads its highlights from that snapshot. The writing and artwork viewer uses a native modal dialog.
+The endurance feature shows a "Random 50km for fun" highlight, lifetime running and cycling totals, a compact annual distance chart, and selected 5K, 10K, and half-marathon best efforts. The chart compares both sports on the same zero-based scale, starts with the first active year, and labels the snapshot year as YTD. It links to Strava for the full history. The complete snapshot and collection scripts are retained; the display reads its highlights from that snapshot. The writing and artwork viewer uses a native modal dialog.
 
 ## Checks
 
