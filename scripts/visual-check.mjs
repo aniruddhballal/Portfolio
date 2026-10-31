@@ -101,7 +101,10 @@ for (const [name, viewport] of Object.entries({
       const logo = item.querySelector("img");
       return {
         organisation: heading.textContent,
-        role: role.textContent,
+        roles: [...item.querySelectorAll(".experience-stint")].map((stint) => ({
+          role: stint.querySelector(".experience-role").textContent,
+          period: stint.querySelector(".experience-period").textContent,
+        })),
         headingSize: parseFloat(getComputedStyle(heading).fontSize),
         roleSize: parseFloat(getComputedStyle(role).fontSize),
         logoLoaded: logo.complete && logo.naturalWidth > 0,
@@ -113,14 +116,21 @@ for (const [name, viewport] of Object.entries({
   );
   if (
     JSON.stringify(jobs.map((job) => job.organisation)) !==
-    JSON.stringify([
-      "Indiassetz",
-      "Qwixpert Consulting",
-      "Indiassetz",
-      "IISc, Bengaluru",
-    ])
+    JSON.stringify(["Indiassetz", "Qwixpert Consulting", "IISc, Bengaluru"])
   )
     errors.push(`${name}: work history organisations changed`);
+  if (
+    JSON.stringify(jobs[0]?.roles) !==
+    JSON.stringify([
+      { role: "Assistant Software Engineer", period: "Mar - Oct 2026" },
+      { role: "Frontend Web Dev Intern", period: "Jun - Jul 2025" },
+    ])
+  )
+    errors.push(
+      `${name}: Indiassetz should group both stints with separate dates`,
+    );
+  if (jobs.reduce((count, job) => count + job.roles.length, 0) !== 4)
+    errors.push(`${name}: work history should retain all four roles`);
   for (const job of jobs) {
     if (job.headingSize <= job.roleSize)
       errors.push(
