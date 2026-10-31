@@ -484,8 +484,8 @@ function Practice() {
             </h2>
             <p>
               I move between models, interfaces, and the practical details that
-              make software useful. A physics question might become a
-              visualization. A messy business process might become a clearer
+              make software useful. A physics question becomes a
+              visualization. A messy business process becomes a clearer
               product.
             </p>
             <div className="skill-groups">
