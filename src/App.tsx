@@ -434,7 +434,7 @@ const experience = [
         period: "Mar - Oct 2026",
         role: "Assistant Software Engineer",
         detail:
-          "React Native and Next.js product work across mobile compatibility, CRM sales and payment flows, and the ARCA investor platform.",
+          "Modernised existing mobile apps and added CRM workflows for payment reviews, approvals, and revenue reporting. I also developed an investor and back-office platform for document access, capital-call tracking, and portfolio reporting.",
       },
       {
         period: "Jun - Jul 2025",
