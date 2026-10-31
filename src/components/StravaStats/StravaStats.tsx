@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import type { CSSProperties } from "react";
 import stravaData from "../../data/strava.json";
 
 const bestFor = (distance: string) =>
@@ -15,6 +16,25 @@ const selectedBests = [
 });
 
 const formatDistance = (km: number) => Math.round(km).toLocaleString("en-GB");
+const annualHistory = [...stravaData.annual].sort((a, b) => a.year - b.year);
+const firstActiveYear = annualHistory.findIndex(
+  ({ run, ride }) => run.activities > 0 || ride.activities > 0,
+);
+const annualTotals =
+  firstActiveYear < 0 ? [] : annualHistory.slice(firstActiveYear);
+const annualScale = Math.max(
+  250,
+  Math.ceil(
+    Math.max(
+      0,
+      ...annualTotals.flatMap(({ run, ride }) => [
+        run.distanceKm,
+        ride.distanceKm,
+      ]),
+    ) / 250,
+  ) * 250,
+);
+const snapshotYear = new Date(stravaData.fetchedAt).getUTCFullYear();
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -78,6 +98,66 @@ export default function StravaStats() {
           })}
         </dl>
       </div>
+
+      {annualTotals.length > 0 && (
+        <figure
+          className="endurance-yearly"
+          aria-labelledby="endurance-yearly-title"
+        >
+          <figcaption className="endurance-yearly-heading">
+            <div>
+              <p className="endurance-caption">DISTANCE / KM</p>
+              <h4 id="endurance-yearly-title">Year after year.</h4>
+            </div>
+            <div className="endurance-yearly-legend">
+              <span>
+                <i className="endurance-key-run" aria-hidden="true" />
+                Running
+              </span>
+              <span>
+                <i className="endurance-key-ride" aria-hidden="true" />
+                Cycling
+              </span>
+            </div>
+          </figcaption>
+          <div
+            className="endurance-yearly-plot"
+            style={{ "--year-count": annualTotals.length } as CSSProperties}
+          >
+            {annualTotals.map((entry) => (
+              <div
+                className="endurance-year"
+                key={entry.year}
+                role="img"
+                aria-label={`${entry.year}${entry.year === snapshotYear ? " year to date" : ""}: running ${formatDistance(entry.run.distanceKm)} kilometres, cycling ${formatDistance(entry.ride.distanceKm)} kilometres`}
+              >
+                <div className="endurance-year-bars">
+                  {(["run", "ride"] as const).map((sport) => (
+                    <div
+                      className={`endurance-bar-column endurance-bar-${sport}`}
+                      key={sport}
+                    >
+                      <span className="endurance-bar-value">
+                        {Math.round(entry[sport].distanceKm)}
+                      </span>
+                      <span
+                        className="endurance-bar"
+                        style={{
+                          height: `${(entry[sport].distanceKm / annualScale) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="endurance-year-label">
+                  {entry.year}
+                  {entry.year === snapshotYear && <span>YTD</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </figure>
+      )}
 
       {selectedBests.length > 0 && (
         <div className="endurance-records">

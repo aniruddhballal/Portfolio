@@ -1017,6 +1017,107 @@ h3 em {
   color: #50645f;
   font: 11px/1.5 var(--font-mono);
 }
+.endurance-yearly {
+  margin: 0;
+  padding: 28px 24px 22px;
+  border: 1px solid #becac1;
+  border-top: 0;
+}
+.endurance-yearly-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.endurance-yearly-heading .endurance-caption {
+  color: #50645f;
+}
+.endurance-yearly h4 {
+  margin: 5px 0 0;
+  font: 400 28px/1.2 var(--font-display);
+  letter-spacing: -0.035em;
+}
+.endurance-yearly-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  color: #50645f;
+  font: 11px var(--font-mono);
+}
+.endurance-yearly-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.endurance-yearly-legend i {
+  width: 10px;
+  height: 10px;
+}
+.endurance-key-run,
+.endurance-bar-run .endurance-bar {
+  background: #b63e22;
+}
+.endurance-key-ride,
+.endurance-bar-ride .endurance-bar {
+  background: var(--color-ink);
+}
+.endurance-yearly-plot {
+  display: grid;
+  grid-template-columns: repeat(var(--year-count), minmax(0, 1fr));
+  gap: 20px;
+}
+.endurance-year {
+  min-width: 0;
+}
+.endurance-year-bars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  height: 220px;
+  padding: 0 12px;
+  border-bottom: 1px solid #9cad9f;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent calc(25% - 1px),
+    #dce2d9 calc(25% - 1px),
+    #dce2d9 25%
+  );
+}
+.endurance-bar-column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  min-width: 0;
+  max-width: 56px;
+  height: 100%;
+}
+.endurance-bar-value {
+  color: var(--color-ink);
+  font: 12px/1.4 var(--font-mono);
+}
+.endurance-bar {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 56px;
+}
+.endurance-year-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 12px;
+  font: 12px/1.5 var(--font-mono);
+}
+.endurance-year-label > span {
+  color: #50645f;
+  font-size: 9px;
+}
 .endurance-records {
   display: grid;
   grid-template-columns: 1fr 3fr;
@@ -1586,6 +1687,37 @@ h3 em {
   }
 }
 @media (max-width: 520px) {
+  .endurance-yearly {
+    padding: 24px 16px 20px;
+  }
+  .endurance-yearly-heading {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .endurance-yearly h4 {
+    font-size: 24px;
+  }
+  .endurance-yearly-legend {
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 3px;
+    font-size: 10px;
+  }
+  .endurance-yearly-plot {
+    gap: 10px;
+  }
+  .endurance-year-bars {
+    gap: 4px;
+    height: 180px;
+    padding: 0;
+  }
+  .endurance-bar-value {
+    font-size: 10px;
+  }
+  .endurance-year-label {
+    font-size: 10px;
+  }
   .endurance-milestone {
     padding: 24px;
   }
