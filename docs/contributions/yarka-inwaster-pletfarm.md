@@ -1,0 +1,112 @@
+# Contribution audit: yarka-inwaster-pletfarm
+
+This report records Aniruddh Ballal's attributable work on the investor and back-office application. It is evidence for the Indiassetz Assistant Software Engineer entry for March–October 2026. Repository identifiers are retained for tracking; suggested public experience copy uses functional descriptions.
+
+## Scope and attribution
+
+| Item                                    | Finding                                                                     |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| Inspected snapshot                      | `d6c83b9337a7041db41b743347d55ed15c417087`                                  |
+| Available history                       | Non-shallow; local `main`, `origin/main`, and `origin/HEAD`                 |
+| Reachable commits across all local refs | 1,456                                                                       |
+| Matching primary-author commits         | 1,456; all recorded as `Aniruddh Ballal`                                    |
+| Matching merges / non-merges            | 0 / 1,456                                                                   |
+| Matching author-date range              | 28 August–10 October 2026, all within the requested employment period       |
+| Identity rule                           | Case-insensitive substring `Aniruddh` in raw Git author name; email ignored |
+| Source state                            | Tracked worktree clean during inspection                                    |
+
+The audit reviewed the complete locally reachable commit and changed-file history, initial/major implementation diffs, current domain/API/UI code, tests, package configuration, AI workflow implementation and records, and validation documentation. No source checkout was modified, installed, built, or run. Remote-only refs, uncommitted work and actual hosted operation are outside the evidence.
+
+714 commits change only pipeline files. Many remaining commits concern review, tests, documentation or tooling, so the total must not be presented as the number of product features or a productivity metric. Matching author identity records responsibility for the commits; it does not imply every line was manually written without AI or reused foundations.
+
+## Product and ownership classification
+
+This is the strongest evidence in the audited investor workstream of **primary implementation ownership across an application**, rather than a small feature added to an inherited mature product.
+
+The root commit, `6ecd3749`, contains a minimal backend scaffold: package directories and mostly empty application modules, plus Alembic setup. Subsequent matching commits incrementally add configuration, health endpoints, PostgreSQL, platform/project models, user/role records, authentication, the frontend, governance, documents, conversations, notifications, CRM membership, capital calls, settlement tracking and portfolio reporting. There is no other primary author in the available history.
+
+This supports “built a full-stack investor and back-office application.” It does not establish sole business/product authorship, absence of help, original invention of framework tooling, or a production launch. The repository's own current README explicitly describes an actively developed codebase rather than a hosted production deployment.
+
+The stack is FastAPI/Python, SQLAlchemy 2, Alembic, PostgreSQL, and a Next.js/React/TypeScript frontend with MUI and TanStack Query. The auth prototype repository has a separate Git root with no shared commit hashes; similar authentication concepts and reused SDLC tooling should be summarized once in the public employment entry.
+
+## Chronological contribution summary
+
+| Period                | Work attributable to Aniruddh                                                                                                                                                                                                                                         | Evidence and current source                                                                                                                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 28 August             | Established backend configuration, API health, database/session boundaries and local PostgreSQL; added platform/project models, migrations and CRUD endpoints.                                                                                                        | `6ecd3749`, `c60ea0aa`, `a382ea87`, `a9a59511`, `c17b1d1f`, `61f4f337`, `5539514f`, `64ef6552`, `42a558eb`, `903f900c`; `backend/app/core/`, models, repositories, schemas, migrations                                        |
+| 29 August–3 September | Built user/profile/role records and passwordless registration/login. Added email/phone verification, partial-registration resume, distinct challenge/session references, resend controls, current-user access and verified-account login requirements.                | `b78a64c9`, `141d67ff`, `a61613a1`, `00999697`, `c904451e`, `5f706356`, `e209fee2`, `fa2fb829`; `backend/app/services/auth.py`, `otp.py`, auth/session models and auth tests                                                  |
+| 4 September           | Added a working frontend/API console, then routed authentication, dashboard session validation and user-management screens. Evolved user cards into compact filterable tables with inline edits and verification states.                                              | `8520ab51`, `3b509a14`, `3d7c9f6d`, `deeab336`, `a97771ae`, `f2342ea0`, `8140008f`; `frontend/src/app/`, `features/authentication/`, `features/users/`                                                                        |
+| 4–5 September         | Built role-based operational governance, gated project documents, approvals/audit records, protected file upload/preview/replacement/editing, access requests, revoke/retry behavior, and matching staff/investor screens.                                            | `de6eda9c`, `685320b3`, `18ce57d0`, `cd33f1c2`, `36a5d6ed`, `9ef2bea6`, `06ec0568`, `b7fa2676`; `services/governance.py`, access/document models, approval/document UI                                                        |
+| 7–8 September         | Adapted the unified AI SDLC runner to the new backend/frontend layout; created retrospective feature contracts for already-built foundations and added a read-only quality-audit command.                                                                             | `0d1082e6`, `72023d7e`, `6e9b9aad`, `70b5e74d`; `scripts/ai_sdlc.py`, `sdlc_orchestrator/`, `pipeline/`                                                                                                                       |
+| 10 September          | Added soft-delete/retention behavior; richer catalog/project profiles; investor dashboard/profile and early portfolio-ledger APIs/UI; configurable inherited/overridden project and document access policies.                                                         | `872045c1`, `3e2bca81`, `4b031e0e`, `5124df6f`, `1b180e9c`, `4254fcc6`, `18bc29ec`; cleanup jobs, access services, catalog/portfolio feature modules                                                                          |
+| 10 September          | Implemented private project conversations, event notifications and reversible investor CRM membership, with schema migrations, APIs, authorization and tests. Generic SDLC commit subjects conceal substantial application changes here.                              | `96856d98` adds conversation persistence/service/API; `185ee597` adds notifications; `0e459dcb` adds CRM membership; `services/conversation.py`, `notification.py`, `crm.py` and corresponding tests                          |
+| 11–12 September       | Refined catalog and portfolio presentation, searchable inboxes, unread/read states, notification refresh/navigation, compact project chat and conversation resumption; added audit-log filters and tightened operating-role access.                                   | `672b2131`, `21175b27`, `35809686`, `e3001ed8`, `49f08d98`, `257f5521`, `2993c384`, `c66f1e71`, `f0aecf35`; conversation/notification UI and API services                                                                     |
+| 15–18 September       | Extended repository assurance prompts, investment-request notifications and resolution states; implemented an early investor contribution-request workflow; improved document preview/review comparisons, audit readability and pending approval information.         | `5baca179`, `efbef2dc`, `40c88ed6`, `ab3709e5`, `7be56a70`, `7d84538a`; services, migrations and tests. Earlier contribution/investment mutations were later retired or retained only for compatibility.                      |
+| 19–20 September       | Built the capital-call domain and API: draft/issue lifecycle, eligibility, equal/manual allocations, investor responses, settlement records, notifications, auditability and back-office/investor UI.                                                                 | `84e1c909` introduces model/migration/API/service; `335537b2`, `215b6833`, `930579e3`, `6ee5e941`, `3b6393d2`; `models/capital_call.py`, `services/capital_call.py`, `api/v1/capital_calls.py`, frontend capital-call feature |
+| 21 September          | Reworked funding around confirmed capital-call settlements; retired duplicate legacy portfolio mutations; enforced current-project eligibility and lifecycle-aware private conversations.                                                                             | `8c879444`, `9cec5792`, `d23a544d`, `cb4f9b1f`, `ce2c1da9`; migrations, portfolio/investment services, lifecycle tests                                                                                                        |
+| 22–28 September       | Added investor-to-staff contact requests and staff-to-administrator requests; integrated request navigation, improved capital-call workspace/detail states, seeded local demonstrations and added staff response notifications.                                       | `af751efb`, `610e9684`, `4f03699c`, `c62bb42e`, `f09371f2`, `33f97bd0`; contact-request models/services and UI, capital-call feature                                                                                          |
+| 30 September          | Clarified project-detail access terminology; separated explicit investment-interest signaling from access requests; added lifecycle tabs, notification/capital-call filters, reusable UI controls and shared component adoption.                                      | `84631ed6`, `b4840097`, `00ffb9b8`, `4187be04`, `8287be6e`, `2c1c688f`, `0faa7a3c`, `68db5280`, `79c32e12`; catalog, notification, capital-call and common-component modules                                                  |
+| 1 October             | Hardened document handling, moved browser login sessions to HttpOnly cookies, enforced privileged user-management boundaries, and made governance approvals atomic. Refactored API/frontend modules while preserving contracts; improved portfolio/ledger navigation. | `295e6ffe`, `1bdb9fcc`, `a16bdf99`, `d26bf503`, `6c11914d`, `92e9b8e9`, `1e319104`, `230f637a`; security/document services, RBAC, API split and regression tests                                                              |
+| 7–9 October           | Added responsive layout work, improved date/amount input behavior and local developer setup; locked draft recipients before capital-call issue.                                                                                                                       | `36fe320d`, `19258c83`, `2fc26d91`, `b6fcdd03`, `ef45199a`; responsive routes, shared controls, capital-call services/tests                                                                                                   |
+| 9 October             | Added project valuation operations, immutable capital-call valuation baselines, received-capital performance calculations, historical portfolio trend APIs/charts, project-level capital-call history and project-detail valuation editing.                           | `cada751e`, `1df46b1a`, `84e8920c`, `ea0c01c6`, `3cc72c71`, `a4650562`, `b0d05bd1`, `9610dee6`, `eda5c855`; `services/portfolio.py`, capital-call model, dashboard/portfolio feature modules                                  |
+| 9–10 October          | Refined search/filter layouts, conversation actions, profile and portfolio composition; added demonstration valuation history and refreshed README/product documentation.                                                                                             | `d62acb81`, `0de32c3d`, `873b8f3c`, `9963bb26`, `b2617f1d`, `e40954cf`, `d6c83b93`                                                                                                                                            |
+
+The table groups overlapping implementation, review fixes, tests, documentation and UI refinements into actual product work. It deliberately avoids presenting each workflow-state commit as another shipped feature.
+
+## What is implemented, and what it means
+
+### Investor and staff workflows
+
+The current code contains verified registration/login, account/profile management, role-aware catalog browsing, configurable project/document access, approval queues, protected document preview, user/CRM administration, private conversations, contact requests, notifications and audit trails. Backend roles and current database user state govern protected operations; frontend visibility is an additional presentation layer.
+
+Explicit project interest, project/detail access and document access are separate concepts in the later model. Staff approval workflows include staged document changes, preview of current/proposed content and audit context. Soft deletion and scheduled-style cleanup logic preserve a retention period; the existence of a cleanup command does not establish that a production scheduler runs it.
+
+### Funding and portfolio workflows
+
+The application implements capital-call allocation and settlement **recording**, not movement of funds. Draft recipients and terms are revalidated on issue; allocations become snapshots. Monetary calculations use decimal arithmetic and deterministic paise rounding. Investors can accept/reject allocations, and authorized staff can record settlement outcomes. Service logic uses row locking, idempotency keys and audit/notification changes to handle repeat settlement operations.
+
+Only confirmed received settlements feed current portfolio reporting. Acceptance is not receipt of money. Later valuation work compares project valuation snapshots with the capital call's issue-time baseline, exposes holdings/current-value/performance history, and visualizes invested versus current value. Test/demo valuation seeds are not real investment performance or evidence of assets managed.
+
+Earlier commitment, contribution and generic portfolio-ledger code exists in history and some compatibility modules. The later product-alignment commits retire mutation paths and remove duplicated funding records. Those earlier flows should be described as work performed and then redesigned, not advertised as additional current funding systems.
+
+### Delivery boundaries
+
+| Claim                                                                   | Audit conclusion                                                                                  |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Built full-stack investor/back-office product code                      | Strongly supported by incremental matching-author changes from minimal scaffold                   |
+| Implemented role/access/document governance and audit workflows         | Supported by models, services, UI and tests                                                       |
+| Built capital-call, settlement-tracking and portfolio workflows         | Supported; describe operational record-keeping and reporting accurately                           |
+| Integrated live payment/banking rails                                   | Unsupported; explicitly absent from current README/code architecture                              |
+| Integrated production OTP delivery or external NDA signing              | Unsupported; provider integration remains future/deployment work                                  |
+| Hosted production launch or live user adoption                          | Not established; current README explicitly says codebase rather than hosted production deployment |
+| Measured business impact, speedup, transaction volume or assets managed | No evidence sufficient to quantify                                                                |
+
+## AI-assisted SDLC assessment
+
+Evidence supports **active use and adaptation of an AI-assisted staged development process**, with an important chronological limit.
+
+The runner, prompts and layer orchestration are added on 7 September in `0d1082e6`, adapted from earlier work. The following `72023d7e` adds ten explicitly retrospective feature records for foundations already implemented in August and early September. These files do not prove that the earlier implementation followed the pipeline at the time.
+
+Later histories do show staged architecture, implementation, review, testing, documentation, release, reopening and cross-layer handoffs alongside application changes. Generated commit bodies identify pipeline, stage, changed areas and diff summaries; `6c11914d` is a concrete example. The runner includes diff-aware commit messages, read-only audit commands and separate assurance prompts. The final workflow copies prompts rather than automatically launching every subsequent conversation. No AI coauthor trailers were found; exact model involvement and generated-code proportion cannot be reconstructed.
+
+Two copied documentation files need special treatment: `docs/AI_SDLC_MIGRATION_REPORT.md` and the opening of `docs/AI_SDLC_VALIDATION_REPORT.md` still contain 22 August authentication-prototype reports, preceding this repository's 28 August root. Their Google-auth and old test counts are reused historical text, **not validation of this investor application**. Later investor-specific sections and app-specific reports must be assessed independently.
+
+A stage marked complete records workflow state; it is not an independent release certification. Imported/adapted orchestration should not be counted as a separately invented SDLC framework in every repository.
+
+## Quality assessment and limits
+
+There is substantial engineering beyond assembling screens: migrations evolve the domain, API/service/schema boundaries are explicit, authorization is server-side, document previews have conservative content handling, settlement and approval operations address transaction integrity, and tests cover negative cases and regression contracts.
+
+Examples in committed tests include OTP replay/session-purpose rejection, missing/expired/revoked sessions, privilege restrictions, document type validation, immutable capital-call recipients/baselines, precise allocation rounding, project lifecycle eligibility, settlement idempotency and migration upgrade/downgrade/re-upgrade. Frontend coverage mixes helper/contract tests, source-structure checks and Playwright workflows; these are different strengths of evidence and should not be conflated into one end-to-end claim. PostgreSQL integration tests can skip when a disposable database is unavailable, so a generic “pytest passed” statement does not establish that every database test executed.
+
+The 1 October app-specific operational report records 238 backend tests and 109 frontend tests passing, plus successful lint/type/build checks, but only **16 of 18** functional Playwright tests passing. Its own notes attribute two remaining failures to capital-call fixture/contract mismatches. Other frontend report sections also retain unresolved or environment-dependent browser failures. Visual regression checks were paused. These are historical recorded results, not tests rerun by this audit, and do not support “all quality gates passed.” Later October changes are not certified by the earlier report.
+
+The current backend still has a large general API module and sizeable domain services despite the maintainability refactor. Some root documentation retains pre-cookie auth wording while current backend documentation/code reflects HttpOnly browser sessions. OTP delivery remains a development mechanism; live delivery, infrastructure hardening, deployment operations, load/performance behavior and complete integration readiness were not validated. These limits do not negate the feature work, but they rule out blanket “production-ready,” “fully secure” or “fully tested” claims.
+
+## Appropriate public presentation
+
+**Résumé fragment:** “Built a full-stack investor and back-office platform using Next.js, FastAPI and PostgreSQL, covering role-based access, document approvals, capital-call settlement tracking and portfolio reporting.”
+
+**Website fragment:** “Built an investor and back-office platform, from sign-in and document approvals to capital calls and portfolio reporting.”
+
+If space permits, automated regression coverage and the staged AI-assisted delivery workflow are additional supported engineering detail. Prioritize functional ownership and breadth over raw commit totals, branded project names or a long feature inventory. Avoid implying live funds processing, a production launch, unverified commercial impact or independent invention of imported tooling.

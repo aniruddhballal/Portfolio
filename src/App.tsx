@@ -427,32 +427,46 @@ function Work() {
 
 const experience = [
   {
-    period: "Mar - Oct 2026",
-    role: "Assistant Software Engineer",
     place: "Indiassetz",
-    detail:
-      "React Native and Next.js product work across mobile compatibility, CRM sales and payment flows, and the ARCA investor platform.",
+    logo: "/organisations/indiassetz.webp",
+    roles: [
+      {
+        period: "Mar - Oct 2026",
+        role: "Assistant Software Engineer",
+        detail:
+          "Modernised existing mobile apps and added CRM workflows for payment reviews, approvals, and revenue reporting. I also developed an investor and back-office platform for document access, capital-call tracking, and portfolio reporting.",
+      },
+      {
+        period: "Jun - Jul 2025",
+        role: "Frontend Web Dev Intern",
+        detail:
+          "Built React and MUI interfaces and refined interactions for production workflows.",
+      },
+    ],
   },
   {
-    period: "Jan - Mar 2026",
-    role: "Data Analyst Intern",
     place: "Qwixpert Consulting",
-    detail:
-      "Translated client data and legacy spreadsheet workflows into deployed software tools.",
+    logo: "/organisations/qwixpert.jpg",
+    roles: [
+      {
+        period: "Jan - Mar 2026",
+        role: "Data Analyst Intern",
+        detail:
+          "Analysed client data, automated reporting across linked workbooks, and prepared consulting presentations. I also built tools for planning supply-chain networks, comparing demand forecasts, and managing dispatch plans, with maps, dashboards, and spreadsheet reports.",
+      },
+    ],
   },
   {
-    period: "Jun - Jul 2025",
-    role: "Frontend Web Dev Intern",
-    place: "Indiassetz",
-    detail:
-      "Built React and MUI interfaces and refined interactions for production workflows.",
-  },
-  {
-    period: "Jun - Aug 2024",
-    role: "Solar Physics Intern",
     place: "IISc, Bengaluru",
-    detail:
-      "Worked under Dr. Prantika Bhowmik on solar magnetic field and cycle modeling with Python and scientific computing tools.",
+    logo: "/organisations/iisc.png",
+    roles: [
+      {
+        period: "Jun - Aug 2024",
+        role: "Solar Physics Intern",
+        detail:
+          "Worked under Dr. Prantika Bhowmik on solar magnetic field and cycle modeling with Python and scientific computing tools.",
+      },
+    ],
   },
 ];
 
@@ -470,9 +484,8 @@ function Practice() {
             </h2>
             <p>
               I move between models, interfaces, and the practical details that
-              make software useful. A physics question might become a
-              visualization. A messy business process might become a clearer
-              product.
+              make software useful. A physics question becomes a visualization.
+              A messy business process becomes a clearer product.
             </p>
             <div className="skill-groups">
               <div>
@@ -508,14 +521,34 @@ function Practice() {
           <div className="experience-list">
             <h3>Where I’ve worked</h3>
             {experience.map((item) => (
-              <div className="experience-item" key={item.role + item.place}>
-                <span>{item.period}</span>
-                <div>
-                  <strong>{item.role}</strong>
-                  <em>{item.place}</em>
-                  <p>{item.detail}</p>
+              <article className="experience-item" key={item.place}>
+                <img
+                  className="experience-logo"
+                  src={item.logo}
+                  alt=""
+                  width="64"
+                  height="64"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="experience-copy">
+                  <h4>{item.place}</h4>
+                  {item.roles.map((stint) => (
+                    <div
+                      className="experience-stint"
+                      key={stint.role + stint.period}
+                    >
+                      <div className="experience-meta">
+                        <p className="experience-role">{stint.role}</p>
+                        <span className="experience-period">
+                          {stint.period}
+                        </span>
+                      </div>
+                      <p className="experience-detail">{stint.detail}</p>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>

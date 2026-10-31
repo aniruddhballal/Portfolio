@@ -6,3 +6,4 @@ dist
 temp files
 .strava-cache.json
 artifacts/
+__pycache__/
