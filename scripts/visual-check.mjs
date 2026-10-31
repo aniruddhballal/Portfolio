@@ -149,7 +149,12 @@ for (const [name, viewport] of Object.entries({
     .allTextContents();
   if (
     JSON.stringify(collaborationNames) !==
-    JSON.stringify(["Bheeshma", "Project Gudi"])
+    JSON.stringify([
+      "Bheeshma",
+      "Project Gudi",
+      "Sankalpa For Change",
+      "Nikhil Lab Site",
+    ])
   )
     errors.push(
       `${name}: incorrect collaborations: ${collaborationNames.join(", ")}`,
@@ -184,13 +189,17 @@ for (const [name, viewport] of Object.entries({
     errors.push(
       `${name}: Credex should expose its source without an invented live demo`,
     );
-  const bheeshma = collaborationRows.filter({
-    has: page.getByText("Bheeshma", { exact: true }),
-  });
-  if (
-    (await bheeshma.getByRole("link", { name: /^Source code:/ }).count()) !== 0
-  )
-    errors.push(`${name}: private Bheeshma source must not be linked`);
+  for (const project of [
+    "Bheeshma",
+    "Sankalpa For Change",
+    "Nikhil Lab Site",
+  ]) {
+    const row = collaborationRows.filter({
+      has: page.getByText(project, { exact: true }),
+    });
+    if ((await row.getByRole("link", { name: /^Source code:/ }).count()) !== 0)
+      errors.push(`${name}: private ${project} source must not be linked`);
+  }
   const sources = await page
     .locator("#work a[aria-label^='Source code:']")
     .evaluateAll((links) =>
@@ -259,7 +268,7 @@ for (const [name, viewport] of Object.entries({
         errors.push(
           `${filter} filter returned ${count} projects instead of ${expected}`,
         );
-      if ((await collaborationRows.count()) !== 2)
+      if ((await collaborationRows.count()) !== 4)
         errors.push(`${filter} filter hid collaborations`);
       if (
         (await page.locator(".results-count").textContent()) !==

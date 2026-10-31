@@ -1,6 +1,6 @@
 # Project content sources
 
-Reviewed 31 October 2026. The selection follows the author's brief: nine personal projects, in the requested order, plus two websites built for people they know. Copy was checked against READMEs and key implementation files, rather than treating roadmaps as shipped functionality.
+Reviewed 31 October 2026. The selection follows the author's brief: nine personal projects, in the requested order, plus four websites built for people they know. Copy was checked against READMEs and key implementation files, rather than treating roadmaps as shipped functionality.
 
 ## Personal projects
 
@@ -22,6 +22,8 @@ Reviewed 31 October 2026. The selection follows the author's brief: nine persona
 - **Project Gudi:** reviewed the local repository at `D:/post engg/project-gudi`, including its README, frontend content adapter, donation form, and Payload configuration. [Public source](https://github.com/aniruddhballal/project-gudi), reviewed commit `91a0c85`. The supplied [preview](https://project-gudi.vercel.app) is labelled as a preview, not a production CMS deployment.
 
 ## Copy boundaries
+
+Sankalpa For Change and Nikhil Lab Site were restored to Collaborations at the author's request, using their previously approved portfolio content. Their repositories remain private, so only their public websites are linked.
 
 - Sunalyse's 500 seeds are an upper limit. Height and polarity filter field lines; field strength also controls their colouring.
 - SatLies' current production experience integrates locally in the browser. Dormant backend or development-only routes are not presented as deployed features.

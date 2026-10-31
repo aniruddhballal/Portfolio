@@ -214,4 +214,30 @@ export const collaborations: Project[] = [
     year: "2026",
     color: "#6A432B",
   },
+  {
+    id: 12,
+    name: "Sankalpa For Change",
+    tagline: "A website for children's life skills and counselling",
+    description:
+      "A public website for a Karnataka-based NGO focused on children's emotional well-being, life skills, and community outreach. Built with Next.js, it brings the organisation's mission, programmes, field stories, and support history into a responsive site. Article pages, social previews, a sitemap, and search metadata help its work reach people beyond the organisation.",
+    tech: ["Next.js", "TypeScript", "React", "Tailwind CSS"],
+    category: "Web App",
+    url: "https://www.sankalpaforchange.com",
+    repo: null,
+    year: "2025",
+    color: "#5C4A1A",
+  },
+  {
+    id: 13,
+    name: "Nikhil Lab Site",
+    tagline: "An academic home for the NRG Laboratory at IISc",
+    description:
+      "An academic website for Dr. Nikhil's NRG Laboratory at IISc, presenting its diabetes research, publications, lectures, and people. Structured local data powers the publication lists and current and alumni profiles; a research gallery offers larger image previews. Funding history and recruitment information round out a site built to make the lab's work easier to find and explore.",
+    tech: ["React", "TypeScript", "Vite", "Tailwind CSS", "React Router"],
+    category: "Web App",
+    url: "https://nikhil-lab-site.vercel.app",
+    repo: null,
+    year: "2025",
+    color: "#3D5C1A",
+  },
 ];

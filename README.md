@@ -15,7 +15,7 @@ The app uses Vite, React, TypeScript, Tailwind CSS, and Lucide icons. No runtime
 
 - `src/App.tsx` contains the page sections, project filter, experience summary, and inline project diagrams.
 - `src/portfolio.css` contains the responsive visual system.
-- `src/data/projects.ts` contains the nine selected personal projects and two collaborations, with verified public source, live demo, and Android download links. Sunalyse and SatLies lead as featured studies; the remaining personal projects retain their selected order in the expandable list.
+- `src/data/projects.ts` contains the nine selected personal projects and four collaborations, with verified public source, live demo, and Android download links. Sunalyse and SatLies lead as featured studies; the remaining personal projects retain their selected order in the expandable list.
 - `docs/project-sources.md` records the repository review, source revisions, and factual boundaries behind the project copy.
 - `src/data/creative.ts` contains the six written pieces and six artworks. The artwork JPGs remain in `public/creative`; smaller WebP thumbnails are in `public/creative/thumbs`.
 - `src/data/strava.json` is a dated snapshot. `scripts/fetch-strava.ts` refreshes it when Strava credentials are available locally. The visible page uses no visitor credentials.
