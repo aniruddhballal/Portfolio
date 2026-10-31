@@ -1,0 +1,119 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=15mm]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\renewcommand{\familydefault}{\sfdefault}
+\definecolor{ink}{HTML}{193337}
+\definecolor{muted}{HTML}{4D5C60}
+\definecolor{rule}{HTML}{CFD7D5}
+\definecolor{link}{HTML}{245C62}
+\hypersetup{
+  colorlinks=true,urlcolor=link,linkcolor=link,
+  pdftitle={Aniruddh Ballal - Software Engineer},
+  pdfauthor={Aniruddh Ballal}
+}
+\urlstyle{same}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{1em}
+\raggedright
+\raggedbottom
+
+\titleformat{\section}{\fontsize{10}{12}\selectfont\bfseries\color{ink}}{}{0pt}{}[\vspace{2pt}{\color{rule}\titlerule}]
+\titlespacing*{\section}{0pt}{9pt}{5pt}
+\setlist[itemize]{leftmargin=11pt,label=\textbullet,topsep=2pt,itemsep=1pt,parsep=0pt,partopsep=0pt}
+
+\newcommand{\job}[3]{%
+  \textbf{#1} {\color{muted}\textbar\ #2}\hfill{\fontsize{9}{11}\selectfont\color{muted}#3}\par
+}
+\newcommand{\project}[4]{%
+  \textbf{#1}\hspace{6pt}\href{#3}{{\fontsize{9}{11}\selectfont Source}}\hfill{\fontsize{9}{11}\selectfont\color{muted}#2}\par
+  #4\par\vspace{4pt}
+}
+
+\begin{document}
+\fontsize{10}{12}\selectfont
+
+{\fontsize{25}{29}\selectfont\bfseries\color{ink}Aniruddh Ballal}\par
+\vspace{3pt}
+{\fontsize{10.5}{13}\selectfont Software engineer building full-stack and mobile applications, with a background in scientific computing.}\par
+\vspace{5pt}
+{\fontsize{9}{11}\selectfont
+Bengaluru, India\enspace\textbar\enspace +91 9731006863\enspace\textbar\enspace
+\href{mailto:aniruddhballaldeeksha@gmail.com}{aniruddhballaldeeksha@gmail.com}\par
+\vspace{2pt}
+\href{https://aniruddhballalportfolio.vercel.app}{aniruddhballalportfolio.vercel.app}\enspace\textbar\enspace
+\href{https://github.com/aniruddhballal}{GitHub: aniruddhballal}\enspace\textbar\enspace
+\href{https://linkedin.com/in/aniruddh-ballal-979797276}{LinkedIn}
+}\par
+
+\section{EXPERIENCE}
+
+\job{Indiassetz}{Assistant Software Engineer}{Mar - Oct 2026}
+\begin{itemize}
+  \item Built an investor/back-office platform with Next.js, FastAPI and PostgreSQL: role-based document approvals, capital-call settlement tracking and portfolio reporting.
+  \item Migrated inherited React Native apps across framework and native-build changes; repaired authentication, navigation and third-party integrations.
+  \item Added CRM payment-review and exception-approval workflows, revenue-attribution dashboards and spreadsheet exports.
+\end{itemize}
+\vspace{3pt}
+
+\job{Qwixpert Consulting}{Data Analyst Intern}{Jan - Mar 2026}
+\begin{itemize}
+  \item Analysed client datasets, automated reporting across linked Excel workbooks and prepared consulting presentations.
+  \item Independently built supply-chain network design, demand-forecast comparison and dispatch-planning tools with maps, dashboards and spreadsheet reports.
+\end{itemize}
+\vspace{3pt}
+
+\job{Indiassetz}{Frontend Web Development Intern}{Jun - Jul 2025}
+\begin{itemize}
+  \item Built React/Material UI interfaces and reusable components, refining interactions and layouts with design and engineering teams.
+\end{itemize}
+\vspace{3pt}
+
+\job{IISc, Department of Physics}{Solar Physics Intern}{Jun - Aug 2024}
+\begin{itemize}
+  \item Modelled solar magnetic-field evolution using Python, spherical harmonics, NumPy and SciPy under Dr. Prantika Bhowmik; visualised solar-cycle behaviour.
+\end{itemize}
+
+\section{SELECTED PROJECTS}
+
+\project{Sunalyse}{2025-26}{https://github.com/aniruddhballal/sunalyse}{%
+Reconstructed coronal fields across 181 Carrington rotations with a Python PFSS pipeline and Three.js viewer. Vectorisation and four-core tracing achieved a documented \textbf{7.6x speedup} over the original implementation.}
+
+\project{Queen's Gambit 2.0}{2025-26}{https://github.com/aniruddhballal/queens-gambit-2.0}{%
+Built file steganography using legal chess moves, Rust/WASM and Web Workers, with optional AES-256-GCM encryption. Documented 32.1 KB encoding benchmark: \textbf{195 s to 5.2 s}.}
+
+\project{dedgram}{2026}{https://github.com/aniruddhballal/dedgram}{%
+Built an Instagram research toolkit with Android capture, Playwright scraping and a public atlas; stored profile/reel snapshots, source evidence and username history to investigate suspected automated accounts.}
+
+\project{kNupdate}{2026}{https://github.com/aniruddhballal/kNupdate}{%
+Built a Kotlin/Compose activity-sharing app with paired-device delivery and SQLite histories. A Cloudflare relay discards activity payloads after all recipients acknowledge or 30 seconds elapse.}
+
+\project{SatLies}{2026}{https://github.com/aniruddhballal/SatLies}{%
+Implemented a Three.js orbital simulator with RK4 integration, comparing Earth's oblateness (J2) and lunar/solar gravity against a two-body baseline through live trajectories and separation plots.}
+
+\project{Credex}{2026}{https://github.com/aniruddhballal/Credex}{%
+Built a Next.js/Node.js trade-finance prototype linking procurement, payment records and loan review; a Python/FastAPI service uses PuLP to schedule payments under cash-flow and deadline constraints.}
+
+\section{TECHNICAL SKILLS}
+\textbf{Languages:} TypeScript/JavaScript, Python, Kotlin, Rust, SQL.\par
+\textbf{Applications \& data:} React, Next.js, React Native, Node.js/Express, FastAPI, PostgreSQL, MongoDB, SQLite.\par
+\textbf{Scientific \& tooling:} Three.js, NumPy, SciPy, WebAssembly, Playwright, Git, Docker.
+
+\section{EDUCATION}
+\textbf{Manipal Institute of Technology}\hfill{\fontsize{9}{11}\selectfont\color{muted}Graduated Jul 2026}\par
+B.Tech, Information Technology\enspace\textbar\enspace CGPA: 8.1/10
+
+\section{LEADERSHIP \& ENGINEERING ACTIVITIES}
+\textbf{ThrustMIT} - Avionics member; PCB, telemetry and RF/GPS/IMU integration for student rocketry (2022-23).\par
+\textbf{Manipal Runners' Club} - Co-organised the 2024 marathon (8,000+ participants) and supported six-week runner training.
+
+\end{document}
