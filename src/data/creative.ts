@@ -11,6 +11,8 @@ export interface CreativeItem {
   // sketches
   imagePath?: string
   imageAlt?: string
+  imageWidth?: number
+  imageHeight?: number
   medium?: string
 }
 
@@ -273,13 +275,15 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
   },
 
   // ── SKETCHES ───────────────────────────────────────────────────────────
-  // Drop your image files into /public/creative/ and update the paths below.
+  // Add images to /public/creative/ with their paths and original pixel dimensions below.
   {
     id: 7,
     type: 'sketch',
     title: 'Udupi Shri Krishna',
     date: '2025',
     imagePath: '/creative/20250102_205807.jpg',
+    imageWidth: 1404,
+    imageHeight: 1872,
     imageAlt: 'A sketch of Udupi Shri Krishna',
     medium: 'Pencil Sketch + Digital Colouring',
   },
@@ -289,6 +293,8 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Bansuri Krishna',
     date: '2023',
     imagePath: '/creative/IMG_20230727_105014.jpg',
+    imageWidth: 2884,
+    imageHeight: 4000,
     imageAlt: 'A sketch of Bansuri Krishna',
     medium: 'Colour Pencil + Watercolor Paint',
   },
@@ -298,6 +304,8 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Hanuman',
     date: '2024',
     imagePath: '/creative/IMG_20260421_205649.jpg',
+    imageWidth: 1732,
+    imageHeight: 1606,
     imageAlt: 'A sketch of Hanuman',
     medium: 'Pencil Sketch',
   },
@@ -307,6 +315,8 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Poster Painting',
     date: '2024',
     imagePath: '/creative/IMG-20240310-WA0053.jpg',
+    imageWidth: 2252,
+    imageHeight: 4000,
     imageAlt: '2 poster paintings',
     medium: 'Acrylic Paint',
   },
@@ -316,6 +326,8 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Rama',
     date: '2023',
     imagePath: '/creative/IMG20240101193636.jpg',
+    imageWidth: 3000,
+    imageHeight: 3358,
     imageAlt: 'A sketch of Rama',
     medium: 'Ink Pen Sketch',
   },
@@ -325,6 +337,8 @@ Lies that a door wont lead one anywhere, when they have seen light shine from it
     title: 'Shiva Parvati',
     date: '2024',
     imagePath: '/creative/IMG20240615161313.jpg',
+    imageWidth: 1536,
+    imageHeight: 2048,
     imageAlt: 'A sketch of Shiva and Parvati',
     medium: 'Pencil Sketch',
   },

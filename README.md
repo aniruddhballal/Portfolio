@@ -31,7 +31,10 @@ The endurance feature shows a 50 km running highlight, lifetime running and cycl
 npm run lint
 npm run build
 npm run test:visual
+npm run test:artwork
 npm run format
 ```
 
 `test:visual` expects a running local Vite server at `http://localhost:5173/`; set `PORTFOLIO_TEST_URL` to use another URL. It uses Playwright with Microsoft Edge on Windows and Playwright Chromium elsewhere. The test captures desktop, tablet, mobile, and compact screenshots in ignored `artifacts/` and checks accessibility, filters, dialogs, keyboard interaction, mobile navigation, endurance highlights, and horizontal overflow. Update the expected running bests in the check when refreshing the snapshot. On non-Windows systems, install the browser with `npx playwright install chromium` if needed.
+
+`test:artwork` uses the same server setting and checks every artwork in Chromium and Firefox at six screen sizes, including landscape. It also checks delayed loading, failed requests and retry, stable dialog sizing, accessibility, focus restoration, and writing layout. Install Firefox with `npx playwright install firefox` if needed. Screenshots are saved in ignored `artifacts/`.
