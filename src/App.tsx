@@ -678,7 +678,7 @@ function Contact() {
               GitHub <ArrowUpRight size={19} />
             </a>
             <a
-              href="https://www.linkedin.com/in/aniruddh-ballal-979797276/"
+              href="https://linkedin.com/in/aniruddhballal"
               target="_blank"
               rel="noopener noreferrer"
             >
